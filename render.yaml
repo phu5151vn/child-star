@@ -1,0 +1,43 @@
+# Render Blueprint cho Bé Ngoan (child-star)
+# Deploy: Render Dashboard -> New -> Blueprint -> chọn repo này.
+# Các biến đánh dấu sync:false phải nhập thủ công trong dashboard (secret).
+services:
+  # ---------- Backend: FastAPI ----------
+  - type: web
+    name: benngoan-api
+    runtime: python
+    rootDir: backend
+    plan: free
+    region: singapore            # gần Supabase Seoul nhất trong các option của Render
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.12.7"
+      - key: ENV
+        value: prod
+      - key: JWT_SECRET          # nhập secret ở dashboard (bắt buộc khi ENV=prod)
+        sync: false
+      - key: DATABASE_URL        # chuỗi Session Pooler IPv4 (xem README bên dưới)
+        sync: false
+      - key: CORS_ORIGINS        # URL frontend, vd https://benngoan-web.onrender.com
+        sync: false
+
+  # ---------- Frontend: Vite static site ----------
+  - type: web
+    name: benngoan-web
+    runtime: static
+    rootDir: frontend
+    buildCommand: npm ci --include=dev && npm run build
+    staticPublishPath: dist
+    routes:
+      # Proxy API về backend -> trình duyệt thấy same-origin, không dính CORS.
+      # ĐỔI destination nếu Render đặt tên service khác.
+      - type: rewrite
+        source: /api/*
+        destination: https://benngoan-api.onrender.com/api/*
+      # SPA fallback cho react-router
+      - type: rewrite
+        source: /*
+        destination: /index.html
