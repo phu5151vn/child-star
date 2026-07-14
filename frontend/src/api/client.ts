@@ -79,6 +79,7 @@ export interface Me {
   id: string;
   role: 'parent' | 'child';
   display_name: string;
+  gender?: 'male' | 'female' | null;
   family_id: string;
   family_code?: string;
   child_id?: string;
@@ -90,6 +91,8 @@ export interface Task {
   title: string;
   description?: string;
   points: number;
+  icon_emoji?: string | null;
+  recurrence: 'once' | 'daily' | 'weekly';
   require_proof: boolean;
   is_active: boolean;
   assignment_status?: string;
@@ -103,7 +106,9 @@ export interface Assignment {
   status: string;
   task_title?: string;
   task_points?: number;
+  task_emoji?: string | null;
   child_name?: string;
+  child_gender?: 'male' | 'female' | null;
   proof_media_id?: string;
   reject_reason?: string;
   submitted_at?: string;
@@ -114,6 +119,7 @@ export interface Reward {
   title: string;
   description?: string;
   required_points: number;
+  icon_emoji?: string | null;
   stock?: number | null;
   is_active: boolean;
   is_unlocked?: boolean;
@@ -128,7 +134,9 @@ export interface Redemption {
   status: string;
   points_spent?: number;
   reward_title?: string;
+  reward_emoji?: string | null;
   child_name?: string;
+  child_gender?: 'male' | 'female' | null;
   reject_reason?: string;
   requested_at: string;
 }
@@ -144,17 +152,39 @@ export interface LedgerEntry {
 export interface ChildProfile {
   id: string;
   display_name: string;
+  gender?: 'male' | 'female' | null;
 }
 
 export interface Child {
   id: string;
   display_name: string;
+  gender?: 'male' | 'female' | null;
   is_active: boolean;
   balance: number;
+  weekly_completed: number;
 }
 
 export interface Family {
   id: string;
   name: string;
   family_code: string;
+}
+
+export interface WeeklyGoal {
+  id?: string | null;
+  target_count?: number | null;
+  bonus_points?: number | null;
+  is_active: boolean;
+}
+
+export interface WeeklyProgress {
+  child_id: string;
+  enabled: boolean;
+  target_count: number;
+  bonus_points: number;
+  completed: number;
+  remaining: number;
+  achieved: boolean;
+  bonus_earned: boolean;
+  week_start?: string | null;
 }

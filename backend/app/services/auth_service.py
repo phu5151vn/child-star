@@ -11,6 +11,7 @@ from app.core.integrity import is_unique_violation
 from app.core.security import create_access_token, hash_password, hash_pin, verify_password, verify_pin
 from app.models import Family, PointsLedger, User
 from app.repositories.base import AuditRepository, PointsRepository, generate_family_code, get_family_by_code
+from app.services.weekly_service import _count_completed_this_week
 from app.schemas import (
     ChildCreate,
     ChildProfile,
@@ -94,6 +95,7 @@ class AuthService:
             id=user.id,
             role=ctx.role,
             display_name=user.display_name,
+            gender=user.gender,
             family_id=ctx.family_id,
             family_code=family.family_code if family else None,
             child_id=ctx.child_id,
@@ -115,8 +117,10 @@ class ChildrenService:
                     id=child.id,
                     display_name=child.display_name,
                     avatar_media_id=child.avatar_media_id,
+                    gender=child.gender,
                     is_active=child.is_active,
                     balance=balance,
+                    weekly_completed=_count_completed_this_week(db, ctx.family_id, child.id),
                 )
             )
         return result
@@ -129,6 +133,7 @@ class ChildrenService:
             display_name=data.display_name,
             pin_hash=hash_pin(data.pin),
             avatar_media_id=data.avatar_media_id,
+            gender=data.gender,
         )
         db.add(child)
         try:
@@ -152,8 +157,10 @@ class ChildrenService:
             id=child.id,
             display_name=child.display_name,
             avatar_media_id=child.avatar_media_id,
+            gender=child.gender,
             is_active=child.is_active,
             balance=0,
+            weekly_completed=0,
         )
 
     @staticmethod
@@ -170,6 +177,8 @@ class ChildrenService:
             child.pin_hash = hash_pin(data.pin)
         if data.avatar_media_id is not None:
             child.avatar_media_id = data.avatar_media_id
+        if data.gender is not None:
+            child.gender = data.gender
         if data.is_active is not None:
             child.is_active = data.is_active
         AuditRepository.log(
@@ -193,8 +202,10 @@ class ChildrenService:
             id=child.id,
             display_name=child.display_name,
             avatar_media_id=child.avatar_media_id,
+            gender=child.gender,
             is_active=child.is_active,
             balance=balance,
+            weekly_completed=_count_completed_this_week(db, ctx.family_id, child.id),
         )
 
     @staticmethod

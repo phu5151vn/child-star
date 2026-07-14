@@ -5,8 +5,9 @@ import {
   LogoutOutlined,
   StarOutlined,
 } from '@ant-design/icons';
-import { Avatar, Layout, Tabs, theme, Typography } from 'antd';
+import { Layout, Tabs, theme, Typography } from 'antd';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
+import { ChildAvatar } from '@/components/CuteBits';
 import { PointsBadge } from '@/components/PointsBadge';
 import { useAuth } from '@/features/auth/AuthContext';
 
@@ -37,30 +38,44 @@ export function ChildLayout() {
   return (
     <Layout style={{ minHeight: '100vh', background: token.colorBgLayout }}>
       <Header
+        className="bn-gradient-header"
         style={{
-          background: token.colorBgContainer,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
           padding: `0 ${token.paddingMD}px`,
-          borderBottom: `1px solid ${token.colorBorderSecondary}`,
+          height: 72,
+          position: 'sticky',
+          top: 0,
+          zIndex: 10,
+          boxShadow: '0 4px 16px -8px rgba(124,92,252,0.6)',
         }}
       >
         <SpaceRow>
-          <Avatar size="large" style={{ background: token.colorPrimary }}>
-            {me?.display_name?.[0]}
-          </Avatar>
-          <Title level={4} style={{ margin: 0, fontFamily: '"Baloo 2", cursive' }}>
-            Chào {me?.display_name}!
+          <ChildAvatar name={me?.display_name} gender={me?.gender} size={46} float />
+          <Title level={4} style={{ margin: 0, color: '#fff', fontFamily: '"Baloo 2", cursive' }}>
+            Chào {me?.display_name}! 👋
           </Title>
         </SpaceRow>
         <SpaceRow>
-          <PointsBadge balance={me?.balance ?? 0} size="small" />
-          <LogoutOutlined onClick={logout} style={{ cursor: 'pointer', fontSize: 18 }} />
+          <div
+            style={{
+              background: '#fff',
+              borderRadius: 999,
+              padding: '2px 14px',
+              display: 'flex',
+              alignItems: 'center',
+            }}
+          >
+            <PointsBadge balance={me?.balance ?? 0} size="small" />
+          </div>
+          <LogoutOutlined onClick={logout} style={{ cursor: 'pointer', fontSize: 18, color: '#fff' }} />
         </SpaceRow>
       </Header>
-      <Content style={{ padding: token.paddingMD, paddingBottom: 80 }}>
-        <Outlet />
+      <Content style={{ padding: token.paddingMD, paddingBottom: 88 }}>
+        <div className="bn-fade-up">
+          <Outlet />
+        </div>
       </Content>
       <div
         style={{
@@ -70,6 +85,8 @@ export function ChildLayout() {
           right: 0,
           background: token.colorBgContainer,
           borderTop: `1px solid ${token.colorBorderSecondary}`,
+          borderRadius: '20px 20px 0 0',
+          boxShadow: '0 -6px 20px -10px rgba(124,92,252,0.4)',
           zIndex: 100,
         }}
       >

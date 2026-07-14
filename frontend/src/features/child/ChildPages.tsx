@@ -2,7 +2,7 @@ import { Button, Card, Space, Steps, Typography, message } from 'antd';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { api, ApiClientError, type LedgerEntry, type Reward, type Task } from '@/api/client';
+import { api, ApiClientError, type LedgerEntry, type Reward, type Task, type WeeklyProgress } from '@/api/client';
 import { PageState } from '@/components/PageState';
 import { MediaUpload } from '@/components/MediaUpload';
 import { LedgerTimeline } from '@/components/LedgerTimeline';
@@ -10,6 +10,7 @@ import { PointsBadge } from '@/components/PointsBadge';
 import { PointsProgress } from '@/components/PointsProgress';
 import { RewardCard } from '@/components/RewardCard';
 import { TaskCard } from '@/components/TaskCard';
+import { WeeklyProgressCard } from '@/components/WeeklyProgressCard';
 import { useAuth } from '@/features/auth/AuthContext';
 
 const { Title, Text } = Typography;
@@ -20,32 +21,37 @@ export function ChildHomePage() {
     queryKey: ['rewards'],
     queryFn: () => api.get<Reward[]>('/rewards'),
   });
+  const { data: weekly } = useQuery({
+    queryKey: ['weekly-progress', me?.child_id],
+    queryFn: () => api.get<WeeklyProgress>('/weekly-progress'),
+    enabled: !!me?.child_id,
+  });
 
   const locked = rewards?.filter((r) => !r.is_unlocked && !r.is_out_of_stock) ?? [];
   const nextTarget = locked.sort((a, b) => a.required_points - b.required_points)[0];
 
   return (
-    <PageState
-      isLoading={isLoading}
-      isError={isError}
-      onRetry={refetch}
-      isEmpty={!isLoading && !isError && !nextTarget}
-      emptyDescription="Con đã đạt hết mốc thưởng rồi! Tuyệt vời lắm! 🎉"
-    >
-      <Space direction="vertical" size="large" style={{ width: '100%' }}>
-        <Card>
+    <PageState isLoading={isLoading} isError={isError} onRetry={refetch}>
+      <Space direction="vertical" size="large" className="bn-stagger" style={{ width: '100%' }}>
+        <Card style={{ borderRadius: 24, background: 'linear-gradient(135deg,#efe9ff,#fdeef7)' }}>
           <Space direction="vertical" align="center" style={{ width: '100%' }}>
+            <div className="bn-float" style={{ fontSize: 44 }}>🌟</div>
             <Title level={2} style={{ fontFamily: '"Baloo 2", cursive', margin: 0 }}>
-              Tuyệt vời lắm! 🌟
+              Tuyệt vời lắm!
             </Title>
             <PointsBadge balance={me?.balance ?? 0} size="large" />
           </Space>
         </Card>
+        {weekly?.enabled && (
+          <Card className="bn-card-hover" style={{ borderRadius: 24 }}>
+            <WeeklyProgressCard progress={weekly} />
+          </Card>
+        )}
         {nextTarget && (
-          <Card title="Mốc thưởng gần nhất">
-            <Text>{nextTarget.title}</Text>
+          <Card className="bn-card-hover" title="🎁 Mốc thưởng gần nhất" style={{ borderRadius: 24 }}>
+            <Text strong>{nextTarget.title}</Text>
             <PointsProgress current={me?.balance ?? 0} target={nextTarget.required_points} />
-            <Text type="secondary">Còn thiếu {nextTarget.missing_points} sao</Text>
+            <Text type="secondary">Còn thiếu {nextTarget.missing_points} sao nữa nhé! 💪</Text>
           </Card>
         )}
       </Space>
@@ -71,9 +77,9 @@ export function ChildTasksPage() {
 
   return (
     <>
-      <Title level={3}>Nhiệm vụ của con</Title>
+      <Title level={3}>⭐ Nhiệm vụ của con</Title>
       <PageState isLoading={isLoading} isError={isError} isEmpty={!data?.length} onRetry={refetch} emptyDescription="Chưa có nhiệm vụ nào">
-        <Space direction="vertical" style={{ width: '100%' }} size="middle">
+        <Space direction="vertical" className="bn-stagger" style={{ width: '100%' }} size="middle">
           {data?.map((task) => (
             <TaskCard
               key={task.id}

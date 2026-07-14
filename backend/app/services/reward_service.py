@@ -52,6 +52,7 @@ class RewardService:
                     description=r.description,
                     required_points=r.required_points,
                     image_media_id=r.image_media_id,
+                    icon_emoji=r.icon_emoji,
                     stock=r.stock,
                     is_active=r.is_active,
                     is_unlocked=is_unlocked if ctx.role == "child" else None,
@@ -76,6 +77,7 @@ class RewardService:
             description=reward.description,
             required_points=reward.required_points,
             image_media_id=reward.image_media_id,
+            icon_emoji=reward.icon_emoji,
             stock=reward.stock,
             is_active=reward.is_active,
             is_unlocked=is_unlocked if ctx.role == "child" else None,
@@ -91,6 +93,7 @@ class RewardService:
             description=data.description,
             required_points=data.required_points,
             image_media_id=data.image_media_id,
+            icon_emoji=data.icon_emoji,
             stock=data.stock,
             is_active=data.is_active,
             created_by=ctx.user_id,
@@ -110,7 +113,7 @@ class RewardService:
         reward = get_reward_in_family(db, reward_id, ctx.family_id)
         if not reward:
             raise NotFoundError()
-        for field in ("title", "description", "required_points", "image_media_id", "stock", "is_active"):
+        for field in ("title", "description", "required_points", "image_media_id", "icon_emoji", "stock", "is_active"):
             val = getattr(data, field, None)
             if val is not None:
                 setattr(reward, field, val)
@@ -159,7 +162,9 @@ class RedemptionService:
                     status=r.status,
                     points_spent=r.points_spent,
                     reward_title=reward.title if reward else None,
+                    reward_emoji=reward.icon_emoji if reward else None,
                     child_name=child.display_name if child else None,
+                    child_gender=child.gender if child else None,
                     reject_reason=r.reject_reason,
                     requested_at=r.requested_at,
                     decided_at=r.decided_at,
@@ -336,7 +341,9 @@ class RedemptionService:
             status=redemption.status,
             points_spent=redemption.points_spent,
             reward_title=reward.title if reward else None,
+            reward_emoji=reward.icon_emoji if reward else None,
             child_name=child.display_name if child else None,
+            child_gender=child.gender if child else None,
             reject_reason=redemption.reject_reason,
             requested_at=redemption.requested_at,
             decided_at=redemption.decided_at,

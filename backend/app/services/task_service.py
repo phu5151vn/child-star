@@ -14,6 +14,7 @@ from app.core.exceptions import (
     ProofRequiredError,
 )
 from app.core.integrity import is_unique_violation
+from app.core.timeutil import is_completed_current_period
 from app.models import Media, PointsLedger, Task, TaskAssignment, User
 from app.repositories.base import (
     AuditRepository,
@@ -22,6 +23,22 @@ from app.repositories.base import (
     get_task_in_family,
 )
 from app.schemas import AssignmentResponse, LedgerEntry, SubmitAssignmentRequest, TaskResponse
+from app.services.weekly_service import WeeklyService
+
+
+def _child_assignment_state(task: Task, assignment: "TaskAssignment | None") -> tuple[str, "UUID | None"]:
+    """Trạng thái nhiệm vụ hiển thị cho con dựa trên assignment mới nhất + kiểu lặp lại."""
+    if not assignment:
+        return "available", None
+    if assignment.status in ("in_progress", "submitted"):
+        return assignment.status, assignment.id
+    if assignment.status == "approved":
+        if is_completed_current_period(task.recurrence, assignment.decided_at):
+            return "approved", assignment.id
+        # Nhiệm vụ lặp lại đã sang chu kỳ mới -> mở lại cho con nhận tiếp
+        return "available", None
+    # rejected: cho phép làm lại
+    return "available", None
 
 ASSIGNMENT_TRANSITIONS = {
     "in_progress": {"submitted"},
@@ -55,15 +72,7 @@ class TaskService:
                         TaskAssignment.child_id == ctx.child_id,
                     ).order_by(TaskAssignment.created_at.desc())
                 )
-                if assignment and assignment.status in ("in_progress", "submitted", "approved"):
-                    assignment_status = assignment.status
-                    assignment_id = assignment.id
-                    if assignment.status == "approved":
-                        pass  # still show as completed
-                elif assignment and assignment.status == "rejected":
-                    assignment_status = "available"
-                else:
-                    assignment_status = "available"
+                assignment_status, assignment_id = _child_assignment_state(task, assignment)
             result.append(
                 TaskResponse(
                     id=task.id,
@@ -71,6 +80,8 @@ class TaskService:
                     description=task.description,
                     points=task.points,
                     icon_media_id=task.icon_media_id,
+                    icon_emoji=task.icon_emoji,
+                    recurrence=task.recurrence,
                     require_proof=task.require_proof,
                     is_active=task.is_active,
                     assignment_status=assignment_status,
@@ -93,17 +104,15 @@ class TaskService:
                     TaskAssignment.child_id == ctx.child_id,
                 ).order_by(TaskAssignment.created_at.desc())
             )
-            if assignment and assignment.status in ("in_progress", "submitted", "approved", "rejected"):
-                assignment_status = assignment.status if assignment.status != "rejected" else "available"
-                assignment_id = assignment.id if assignment.status != "rejected" else None
-            else:
-                assignment_status = "available"
+            assignment_status, assignment_id = _child_assignment_state(task, assignment)
         return TaskResponse(
             id=task.id,
             title=task.title,
             description=task.description,
             points=task.points,
             icon_media_id=task.icon_media_id,
+            icon_emoji=task.icon_emoji,
+            recurrence=task.recurrence,
             require_proof=task.require_proof,
             is_active=task.is_active,
             assignment_status=assignment_status,
@@ -118,6 +127,8 @@ class TaskService:
             description=data.description,
             points=data.points,
             icon_media_id=data.icon_media_id,
+            icon_emoji=data.icon_emoji,
+            recurrence=data.recurrence,
             require_proof=data.require_proof,
             is_active=data.is_active,
             created_by=ctx.user_id,
@@ -138,7 +149,7 @@ class TaskService:
         if not task:
             raise NotFoundError()
         before = {"title": task.title, "points": task.points, "is_active": task.is_active}
-        for field in ("title", "description", "points", "icon_media_id", "require_proof", "is_active"):
+        for field in ("title", "description", "points", "icon_media_id", "icon_emoji", "recurrence", "require_proof", "is_active"):
             val = getattr(data, field, None)
             if val is not None:
                 setattr(task, field, val)
@@ -188,7 +199,9 @@ class AssignmentService:
                     status=a.status,
                     task_title=task.title if task else None,
                     task_points=task.points if task else None,
+                    task_emoji=task.icon_emoji if task else None,
                     child_name=child.display_name if child else None,
+                    child_gender=child.gender if child else None,
                     proof_media_id=a.proof_media_id,
                     reject_reason=a.reject_reason,
                     submitted_at=a.submitted_at,
@@ -218,10 +231,15 @@ class AssignmentService:
                 TaskAssignment.task_id == task_id,
                 TaskAssignment.child_id == ctx.child_id,
                 TaskAssignment.status == "approved",
-            )
+            ).order_by(TaskAssignment.decided_at.desc())
         )
-        if approved:
-            raise InvalidTransitionError("Nhiệm vụ đã hoàn thành")
+        if approved and is_completed_current_period(task.recurrence, approved.decided_at):
+            messages = {
+                "once": "Nhiệm vụ đã hoàn thành",
+                "daily": "Hôm nay con đã hoàn thành rồi, mai làm tiếp nhé!",
+                "weekly": "Tuần này con đã hoàn thành nhiệm vụ này rồi!",
+            }
+            raise InvalidTransitionError(messages.get(task.recurrence, "Nhiệm vụ đã hoàn thành"))
         assignment = TaskAssignment(
             family_id=ctx.family_id,
             task_id=task_id,
@@ -325,6 +343,9 @@ class AssignmentService:
                 return AssignmentService._to_response(db, assignment)
             raise
 
+        # Sau khi cộng điểm nhiệm vụ, kiểm tra mục tiêu tuần để trao bonus nếu đạt.
+        WeeklyService.maybe_award_bonus(db, ctx.family_id, ctx.user_id, assignment.child_id)
+
         return AssignmentService._to_response(db, assignment)
 
     @staticmethod
@@ -371,7 +392,9 @@ class AssignmentService:
             status=assignment.status,
             task_title=task.title if task else None,
             task_points=task.points if task else None,
+            task_emoji=task.icon_emoji if task else None,
             child_name=child.display_name if child else None,
+            child_gender=child.gender if child else None,
             proof_media_id=assignment.proof_media_id,
             reject_reason=assignment.reject_reason,
             submitted_at=assignment.submitted_at,

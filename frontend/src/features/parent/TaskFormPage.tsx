@@ -1,11 +1,12 @@
-import { Button, Form, Input, InputNumber, Switch, Typography, message } from 'antd';
+import { Button, Form, Input, InputNumber, Segmented, Switch, Typography, message } from 'antd';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useNavigate, useParams } from 'react-router-dom';
 import { api, type Task } from '@/api/client';
-import { MediaUpload } from '@/components/MediaUpload';
+import { EmojiPicker } from '@/components/EmojiPicker';
 import { PageState } from '@/components/PageState';
+import { RECURRENCE_OPTIONS, TASK_EMOJIS } from '@/theme/cute';
 
-const { Title } = Typography;
+const { Title, Text } = Typography;
 
 export function TaskFormPage() {
   const { id } = useParams();
@@ -41,21 +42,28 @@ export function TaskFormPage() {
       <Form
         form={form}
         layout="vertical"
-        style={{ maxWidth: 480, marginTop: 24 }}
-        initialValues={{ require_proof: false, is_active: true, points: 10 }}
+        style={{ maxWidth: 520, marginTop: 24 }}
+        initialValues={{ require_proof: false, is_active: true, points: 10, recurrence: 'once', icon_emoji: '⭐' }}
         onFinish={(v) => saveMut.mutate(v)}
       >
         <Form.Item name="title" label="Tên nhiệm vụ" rules={[{ required: true, max: 80 }]}>
-          <Input />
+          <Input placeholder="Ví dụ: Dọn phòng" />
+        </Form.Item>
+        <Form.Item name="icon_emoji" label="Chọn icon dễ thương">
+          <EmojiPicker options={TASK_EMOJIS} />
         </Form.Item>
         <Form.Item name="description" label="Mô tả">
           <Input.TextArea rows={3} />
         </Form.Item>
-        <Form.Item name="points" label="Điểm thưởng (sao)" rules={[{ required: true, type: 'number', min: 1 }]}>
+        <Form.Item name="points" label="Điểm thưởng (sao) ⭐" rules={[{ required: true, type: 'number', min: 1 }]}>
           <InputNumber min={1} style={{ width: '100%' }} />
         </Form.Item>
-        <Form.Item name="icon_media_id" label="Ảnh nhiệm vụ">
-          <MediaUpload kind="task_icon" />
+        <Form.Item
+          name="recurrence"
+          label="Lặp lại"
+          extra={<Text type="secondary">Nhiệm vụ lặp lại sẽ tự mở lại cho con sau mỗi ngày/tuần, không cần tạo mới.</Text>}
+        >
+          <Segmented options={RECURRENCE_OPTIONS} />
         </Form.Item>
         <Form.Item name="require_proof" label="Yêu cầu ảnh minh chứng" valuePropName="checked">
           <Switch />

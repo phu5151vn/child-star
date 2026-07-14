@@ -5,7 +5,7 @@ from uuid import UUID
 
 from app.core.db import get_db
 from app.core.deps import AuthContext, get_auth_context, require_role
-from app.core.exceptions import DomainError
+from app.core.exceptions import DomainError, NotFoundError
 from app.core.rate_limit import check_login_rate_limit
 from app.schemas import (
     AssignmentResponse,
@@ -32,11 +32,15 @@ from app.schemas import (
     TaskResponse,
     TaskUpdate,
     TokenResponse,
+    WeeklyGoalResponse,
+    WeeklyGoalUpsert,
+    WeeklyProgressResponse,
 )
 from app.services.auth_service import AuthService, ChildrenService
 from app.services.media_service import MediaService
 from app.services.reward_service import RedemptionService, RewardService
 from app.services.task_service import AssignmentService, PointsService, TaskService
+from app.services.weekly_service import WeeklyService
 
 router = APIRouter()
 
@@ -155,6 +159,36 @@ def manual_adjust(
     try:
         balance = PointsService.manual_adjust(db, ctx, child_id, data.delta, data.reason)
         return {"child_id": child_id, "balance": balance}
+    except DomainError as e:
+        _handle_domain(e)
+
+
+# Weekly goal & progress
+@router.get("/weekly-goal", response_model=WeeklyGoalResponse)
+def get_weekly_goal(ctx: AuthContext = Depends(get_auth_context), db: Session = Depends(get_db)):
+    return WeeklyService.get_goal(db, ctx.family_id)
+
+
+@router.put("/weekly-goal", response_model=WeeklyGoalResponse)
+def upsert_weekly_goal(
+    data: WeeklyGoalUpsert,
+    ctx: AuthContext = Depends(require_role("parent")),
+    db: Session = Depends(get_db),
+):
+    return WeeklyService.upsert_goal(db, ctx, data)
+
+
+@router.get("/weekly-progress", response_model=WeeklyProgressResponse)
+def get_weekly_progress(
+    child_id: UUID | None = None,
+    ctx: AuthContext = Depends(get_auth_context),
+    db: Session = Depends(get_db),
+):
+    target = child_id or ctx.child_id
+    if not target:
+        _handle_domain(NotFoundError("Thiếu child_id"))
+    try:
+        return WeeklyService.get_progress(db, ctx, target)
     except DomainError as e:
         _handle_domain(e)
 

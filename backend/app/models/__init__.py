@@ -1,9 +1,12 @@
 import uuid
 from datetime import datetime
 
+from datetime import date
+
 from sqlalchemy import (
     Boolean,
     CheckConstraint,
+    Date,
     DateTime,
     ForeignKey,
     Index,
@@ -37,6 +40,7 @@ class User(Base):
     __tablename__ = "users"
     __table_args__ = (
         CheckConstraint("role IN ('parent','child')", name="ck_users_role"),
+        CheckConstraint("gender IS NULL OR gender IN ('male','female')", name="ck_users_gender"),
         Index("ix_users_family_role", "family_id", "role"),
     )
 
@@ -44,6 +48,7 @@ class User(Base):
     family_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("families.id"), nullable=False)
     role: Mapped[str] = mapped_column(String(10), nullable=False)
     display_name: Mapped[str] = mapped_column(Text, nullable=False)
+    gender: Mapped[str | None] = mapped_column(String(10), nullable=True)
     avatar_media_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True), ForeignKey("media.id"), nullable=True)
     email: Mapped[str | None] = mapped_column(Text, nullable=True, unique=True)
     password_hash: Mapped[str | None] = mapped_column(Text, nullable=True)
@@ -78,6 +83,7 @@ class Task(Base):
     __tablename__ = "tasks"
     __table_args__ = (
         CheckConstraint("points > 0", name="ck_tasks_points"),
+        CheckConstraint("recurrence IN ('once','daily','weekly')", name="ck_tasks_recurrence"),
         Index("ix_tasks_family_active", "family_id", "is_active"),
     )
 
@@ -87,6 +93,8 @@ class Task(Base):
     description: Mapped[str | None] = mapped_column(Text, nullable=True)
     points: Mapped[int] = mapped_column(Integer, nullable=False)
     icon_media_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True), ForeignKey("media.id"), nullable=True)
+    icon_emoji: Mapped[str | None] = mapped_column(String(16), nullable=True)
+    recurrence: Mapped[str] = mapped_column(String(10), nullable=False, default="once", server_default="once")
     require_proof: Mapped[bool] = mapped_column(Boolean, default=False, server_default="false")
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, server_default="true")
     created_by: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
@@ -136,6 +144,7 @@ class Reward(Base):
     description: Mapped[str | None] = mapped_column(Text, nullable=True)
     required_points: Mapped[int] = mapped_column(Integer, nullable=False)
     image_media_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True), ForeignKey("media.id"), nullable=True)
+    icon_emoji: Mapped[str | None] = mapped_column(String(16), nullable=True)
     stock: Mapped[int | None] = mapped_column(Integer, nullable=True)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, server_default="true")
     created_by: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
@@ -173,7 +182,7 @@ class PointsLedger(Base):
     __table_args__ = (
         CheckConstraint("delta <> 0", name="ck_ledger_delta"),
         CheckConstraint(
-            "kind IN ('task_approved','reward_redeemed','manual_adjust')",
+            "kind IN ('task_approved','reward_redeemed','manual_adjust','weekly_bonus')",
             name="ck_ledger_kind",
         ),
         Index("ix_ledger_child_created", "child_id", "created_at"),
@@ -206,4 +215,42 @@ class AuditLog(Base):
     entity_type: Mapped[str] = mapped_column(String(20), nullable=False)
     entity_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True), nullable=True)
     changes: Mapped[dict | None] = mapped_column(JSON, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+
+class WeeklyGoal(Base):
+    """Mục tiêu số nhiệm vụ hoàn thành mỗi tuần cho mỗi gia đình (áp dụng cho từng con)."""
+
+    __tablename__ = "weekly_goals"
+    __table_args__ = (
+        CheckConstraint("target_count > 0", name="ck_weekly_goal_target"),
+        CheckConstraint("bonus_points > 0", name="ck_weekly_goal_bonus"),
+        UniqueConstraint("family_id", name="uq_weekly_goal_family"),
+    )
+
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    family_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("families.id"), nullable=False)
+    target_count: Mapped[int] = mapped_column(Integer, nullable=False)
+    bonus_points: Mapped[int] = mapped_column(Integer, nullable=False)
+    is_active: Mapped[bool] = mapped_column(Boolean, default=True, server_default="true")
+    created_by: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
+    )
+
+
+class WeeklyBonusAward(Base):
+    """Đánh dấu con đã được thưởng bonus tuần nào — đảm bảo mỗi con chỉ nhận 1 lần/tuần."""
+
+    __tablename__ = "weekly_bonus_awards"
+    __table_args__ = (
+        UniqueConstraint("child_id", "week_start", name="uq_weekly_bonus_child_week"),
+    )
+
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    family_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("families.id"), nullable=False)
+    child_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
+    week_start: Mapped[date] = mapped_column(Date, nullable=False)
+    goal_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("weekly_goals.id"), nullable=False)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())

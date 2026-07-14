@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { api, ApiClientError, type ChildProfile } from '@/api/client';
+import { ChildAvatar } from '@/components/CuteBits';
 import { useAuth } from '@/features/auth/AuthContext';
 
 const { Title, Text, Link } = Typography;
@@ -132,11 +133,19 @@ export function ProfilesPage() {
             <Card
               key={p.id}
               hoverable
+              className="bn-card-hover"
               onClick={() => setSelectedChild(p)}
-              style={{ borderColor: selectedChild?.id === p.id ? '#7C5CFC' : undefined, width: 100, textAlign: 'center' }}
+              styles={{ body: { padding: 12 } }}
+              style={{
+                borderColor: selectedChild?.id === p.id ? '#7C5CFC' : undefined,
+                borderWidth: selectedChild?.id === p.id ? 2 : 1,
+                width: 110,
+                textAlign: 'center',
+                borderRadius: 20,
+              }}
             >
-              <UserOutlined style={{ fontSize: 32 }} />
-              <div>{p.display_name}</div>
+              <ChildAvatar name={p.display_name} gender={p.gender} size={56} />
+              <div style={{ marginTop: 8, fontWeight: 600 }}>{p.display_name}</div>
             </Card>
           ))}
         </Space>

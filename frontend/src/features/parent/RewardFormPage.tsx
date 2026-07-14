@@ -2,8 +2,9 @@ import { Button, Form, Input, InputNumber, Switch, Typography, message } from 'a
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useNavigate, useParams } from 'react-router-dom';
 import { api, type Reward } from '@/api/client';
-import { MediaUpload } from '@/components/MediaUpload';
+import { EmojiPicker } from '@/components/EmojiPicker';
 import { PageState } from '@/components/PageState';
+import { REWARD_EMOJIS } from '@/theme/cute';
 
 const { Title } = Typography;
 
@@ -42,20 +43,20 @@ export function RewardFormPage() {
         form={form}
         layout="vertical"
         style={{ maxWidth: 480, marginTop: 24 }}
-        initialValues={{ is_active: true, required_points: 50 }}
+        initialValues={{ is_active: true, required_points: 50, icon_emoji: '🎁' }}
         onFinish={(v) => saveMut.mutate(v)}
       >
         <Form.Item name="title" label="Tên phần thưởng" rules={[{ required: true }]}>
-          <Input />
+          <Input placeholder="Ví dụ: Kem que" />
+        </Form.Item>
+        <Form.Item name="icon_emoji" label="Chọn icon dễ thương">
+          <EmojiPicker options={REWARD_EMOJIS} />
         </Form.Item>
         <Form.Item name="description" label="Mô tả">
           <Input.TextArea rows={3} />
         </Form.Item>
-        <Form.Item name="required_points" label="Mốc điểm mở khóa" rules={[{ required: true, type: 'number', min: 1 }]}>
+        <Form.Item name="required_points" label="Mốc điểm mở khóa ⭐" rules={[{ required: true, type: 'number', min: 1 }]}>
           <InputNumber min={1} style={{ width: '100%' }} />
-        </Form.Item>
-        <Form.Item name="image_media_id" label="Ảnh phần thưởng">
-          <MediaUpload kind="reward_image" />
         </Form.Item>
         <Form.Item name="stock" label="Số lượng (để trống = không giới hạn)">
           <InputNumber min={0} style={{ width: '100%' }} />

@@ -27,13 +27,13 @@ export function ParentTasksPage() {
   return (
     <>
       <Space style={{ width: '100%', justifyContent: 'space-between', marginBottom: 16 }}>
-        <Title level={3} style={{ margin: 0 }}>Quản lý nhiệm vụ</Title>
-        <Button type="primary" icon={<PlusOutlined />} onClick={() => navigate('/parent/tasks/new')}>
+        <Title level={3} style={{ margin: 0 }}>📋 Quản lý nhiệm vụ</Title>
+        <Button type="primary" shape="round" icon={<PlusOutlined />} onClick={() => navigate('/parent/tasks/new')}>
           Tạo mới
         </Button>
       </Space>
       <PageState isLoading={isLoading} isError={isError} isEmpty={!data?.length} onRetry={refetch} emptyDescription="Chưa có nhiệm vụ nào">
-        <Space direction="vertical" style={{ width: '100%' }} size="middle">
+        <Space direction="vertical" className="bn-stagger" style={{ width: '100%' }} size="middle">
           {data?.map((task) => (
             <div key={task.id} style={{ display: 'flex', gap: 8, alignItems: 'flex-start' }}>
               <div style={{ flex: 1 }}><TaskCard task={task} /></div>
