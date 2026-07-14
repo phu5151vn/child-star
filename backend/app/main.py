@@ -28,7 +28,9 @@ async def domain_error_handler(_request: Request, exc: DomainError):
     )
 
 
-@app.get("/health")
+# Hỗ trợ cả GET và HEAD để tương thích các dịch vụ uptime monitor
+# (UptimeRobot mặc định gửi HEAD).
+@app.api_route("/health", methods=["GET", "HEAD"])
 def health():
     return {"status": "ok"}
 
