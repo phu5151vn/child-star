@@ -4,7 +4,7 @@
 services:
   # ---------- Backend: FastAPI ----------
   - type: web
-    name: benngoan-api
+    name: bengoan-api
     runtime: python
     rootDir: backend
     plan: free
@@ -21,12 +21,12 @@ services:
         sync: false
       - key: DATABASE_URL        # chuỗi Session Pooler IPv4 (xem README bên dưới)
         sync: false
-      - key: CORS_ORIGINS        # URL frontend, vd https://benngoan-web.onrender.com
+      - key: CORS_ORIGINS        # URL frontend, vd https://bengoan-web.onrender.com
         sync: false
 
   # ---------- Frontend: Vite static site ----------
   - type: web
-    name: benngoan-web
+    name: bengoan-web
     runtime: static
     rootDir: frontend
     buildCommand: npm ci --include=dev && npm run build
@@ -36,7 +36,7 @@ services:
       # ĐỔI destination nếu Render đặt tên service khác.
       - type: rewrite
         source: /api/*
-        destination: https://benngoan-api.onrender.com/api/*
+        destination: https://bengoan-api.onrender.com/api/*
       # SPA fallback cho react-router
       - type: rewrite
         source: /*
