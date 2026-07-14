@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+
+<html class="light" lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Bé Ngoan - Nhiệm vụ của con (Loading)</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;700;900&amp;family=Nunito+Sans:wght@400;600;700;800&amp;family=Quicksand:wght@500;600;700&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#7C5CFC",
+                        secondary: "#FF8FA3",
+                        accent: "#FFC531",
+                        background: "#FBF7FF",
+                        success: "#3DD598",
+                        error: "#FF5C5C",
+                        locked: "#C7C2E0",
+                        textPrimary: "#2D2A45",
+                        textSecondary: "#8E8AA8"
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "2xl": "24px",
+                        "full": "9999px"
+                    },
+                    fontFamily: {
+                        headline: ["Public Sans", "sans-serif"],
+                        display: ["Quicksand", "sans-serif"],
+                        body: ["Nunito Sans", "sans-serif"],
+                        label: ["Public Sans", "sans-serif"]
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'bounce-short': 'bounce 1s ease-in-out infinite'
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            background-color: #FBF7FF;
+            font-family: 'Nunito Sans', sans-serif;
+            color: #2D2A45;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .skeleton-shimmer {
+            background: linear-gradient(90deg, #F3E8FF 25%, #EDE9FE 50%, #F3E8FF 75%);
+            background-size: 200% 100%;
+            animation: shimmer 2s infinite linear;
+        }
+        @keyframes shimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+        .curved-edge {
+            border-radius: 24px;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="flex flex-col min-h-screen max-w-[390px] mx-auto bg-[#FBF7FF] dark:bg-slate-900 shadow-2xl relative overflow-hidden">
+<!-- TopAppBar -->
+<header class="flex justify-between items-center px-4 py-2 w-full docked full-width top-0 bg-[#FBF7FF] dark:bg-slate-900 z-50">
+<div class="flex items-center gap-2">
+<div class="w-10 h-10 rounded-full border-2 border-[#7C5CFC] overflow-hidden bg-white">
+<img class="w-full h-full object-cover" data-alt="A cute 3D cartoon avatar of a happy Vietnamese child with large expressive eyes and a friendly smile, wearing a purple cap. The art style is polished and high-quality, reminiscent of modern animated films, with soft lighting and a clean, pastel background that aligns with the Bé Ngoan brand identity." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCrCANR8V1VGy7aou366H2scQJtkETqxNv1U_JFlvds1Ke1Qt5aiuoxnb4mrL_-ug7Quc3K6eZDsuCcUfU1ZJlwBVHa5Ajql9K3kVhPbQSF1LxdcZfMST4MRMLko4Z5K2DHMj_A5XtSDe3rdj5FoKgid5NoOBq0b6qk72_oV9vzJwWj3m00QbjahlEfq6j7q1f1P_SAiCVDb-vZuj5gkxYVnwhKPspMjZgpjGUI2hqeKaqhEGW-nFfAlke8jvmZ--HQngMT2F6AhFw"/>
+</div>
+<span class="font-display font-bold text-lg text-[#7C5CFC] dark:text-[#FF8FA3]">Bé Ngoan</span>
+</div>
+<div class="font-headline font-black text-[#7C5CFC] dark:text-[#FF8FA3] text-lg">
+            Nhiệm vụ của con
+        </div>
+<div class="flex items-center bg-white/80 dark:bg-slate-800 px-3 py-1.5 rounded-full shadow-sm scale-95 active:scale-90 transition-transform cursor-pointer">
+<span class="text-sm font-bold text-[#7C5CFC]">⭐ 150</span>
+</div>
+</header>
+<!-- Main Content (Loading State) -->
+<main class="flex-1 px-4 pt-4 pb-24 overflow-y-auto space-y-6">
+<!-- Welcome Message Skeleton -->
+<div class="space-y-2 py-4">
+<div class="h-8 w-48 bg-[#EDE9FE] rounded-xl animate-pulse"></div>
+<div class="h-4 w-64 bg-[#F3E8FF] rounded-lg animate-pulse"></div>
+</div>
+<!-- Bento Loading Grid -->
+<div class="grid grid-cols-1 gap-4">
+<!-- Skeleton Card 1 (Large) -->
+<div class="bg-white dark:bg-slate-800 rounded-2xl p-4 shadow-[0_6px_16px_rgba(124,92,252,0.12)] space-y-4 border border-transparent">
+<div class="flex justify-between items-center">
+<div class="h-6 w-32 bg-[#F3E8FF] rounded-pill animate-pulse"></div>
+<div class="h-8 w-8 bg-[#FFE4E9] rounded-full animate-pulse"></div>
+</div>
+<div class="flex gap-4 items-center">
+<div class="h-20 w-20 bg-[#EDE9FE] rounded-2xl animate-pulse flex-shrink-0"></div>
+<div class="flex-1 space-y-3">
+<div class="h-5 w-full bg-[#F3E8FF] rounded-lg animate-pulse"></div>
+<div class="h-4 w-3/4 bg-[#F3E8FF] rounded-lg animate-pulse opacity-60"></div>
+<div class="w-full bg-[#F5F3FF] h-2 rounded-full overflow-hidden">
+<div class="bg-[#7C5CFC]/20 h-full w-1/3 animate-pulse"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Skeleton Card 2 (Medium) -->
+<div class="bg-white dark:bg-slate-800 rounded-2xl p-4 shadow-[0_6px_16px_rgba(124,92,252,0.12)] space-y-4 border border-transparent">
+<div class="flex gap-4 items-center">
+<div class="h-16 w-16 bg-[#FFE4E9] rounded-2xl animate-pulse flex-shrink-0"></div>
+<div class="flex-1 space-y-2">
+<div class="h-5 w-40 bg-[#F3E8FF] rounded-lg animate-pulse"></div>
+<div class="h-4 w-24 bg-[#F3E8FF] rounded-lg animate-pulse opacity-50"></div>
+</div>
+<div class="h-10 w-10 bg-[#F5F3FF] rounded-xl animate-pulse"></div>
+</div>
+</div>
+<!-- Skeleton Card 3 (Medium) -->
+<div class="bg-white dark:bg-slate-800 rounded-2xl p-4 shadow-[0_6px_16px_rgba(124,92,252,0.12)] space-y-4 border border-transparent">
+<div class="flex gap-4 items-center">
+<div class="h-16 w-16 bg-[#FFF4D6] rounded-2xl animate-pulse flex-shrink-0"></div>
+<div class="flex-1 space-y-2">
+<div class="h-5 w-32 bg-[#F3E8FF] rounded-lg animate-pulse"></div>
+<div class="h-4 w-48 bg-[#F3E8FF] rounded-lg animate-pulse opacity-50"></div>
+</div>
+<div class="h-10 w-10 bg-[#F5F3FF] rounded-xl animate-pulse"></div>
+</div>
+</div>
+<!-- Decorative Element for context -->
+<div class="flex flex-col items-center justify-center py-8 opacity-40">
+<span class="material-symbols-outlined text-5xl text-[#7C5CFC] mb-2 animate-bounce-short">auto_stories</span>
+<p class="font-display font-bold text-[#8E8AA8]">Đang tìm nhiệm vụ cho bé...</p>
+</div>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-2 py-3 bg-white dark:bg-slate-800 rounded-t-2xl shadow-[0_-6px_16px_rgba(124,92,252,0.12)]">
+<!-- Active Tab: Nhiệm vụ -->
+<a class="flex flex-col items-center justify-center bg-[#7C5CFC] text-white rounded-xl px-4 py-2 hover:opacity-80 transition-transform scale-95 active:scale-90" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">task_alt</span>
+<span class="font-label font-bold text-xs">Nhiệm vụ</span>
+</a>
+<!-- Inactive Tab: Phần thưởng -->
+<a class="flex flex-col items-center justify-center text-[#8E8AA8] p-2 hover:bg-[#FBF7FF] transition-transform scale-95 active:scale-90" href="#">
+<span class="material-symbols-outlined">redeem</span>
+<span class="font-label font-bold text-xs">Phần thưởng</span>
+</a>
+<!-- Inactive Tab: Của con -->
+<a class="flex flex-col items-center justify-center text-[#8E8AA8] p-2 hover:bg-[#FBF7FF] transition-transform scale-95 active:scale-90" href="#">
+<span class="material-symbols-outlined">face</span>
+<span class="font-label font-bold text-xs">Của con</span>
+</a>
+</nav>
+<!-- Floating Background Effects -->
+<div class="absolute top-20 -left-10 w-32 h-32 bg-[#FF8FA3]/5 rounded-full blur-3xl pointer-events-none"></div>
+<div class="absolute bottom-40 -right-10 w-40 h-40 bg-[#7C5CFC]/5 rounded-full blur-3xl pointer-events-none"></div>
+<script>
+        // Micro-interactions for potential touch feedback
+        document.querySelectorAll('a, div[role="button"]').forEach(el => {
+            el.addEventListener('touchstart', () => {
+                el.classList.add('scale-95');
+            });
+            el.addEventListener('touchend', () => {
+                el.classList.remove('scale-95');
+            });
+        });
+
+        // Simulating completion of loading after some time if needed for demo
+        /*
+        setTimeout(() => {
+            console.log("Loading complete - here we would replace skeletons with content");
+        }, 3000);
+        */
+    </script>
+</body></html>

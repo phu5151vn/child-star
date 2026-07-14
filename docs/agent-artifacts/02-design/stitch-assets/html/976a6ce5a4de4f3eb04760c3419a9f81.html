@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+
+<html lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;700&amp;family=Nunito+Sans:wght@400;600;700;900&amp;family=Public+Sans:wght@400;700;900&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 48;
+        }
+        body {
+            font-family: 'Nunito Sans', sans-serif;
+            background-color: #FBF7FF;
+        }
+        .font-headline { font-family: 'Public Sans', sans-serif; }
+        .font-label { font-family: 'Public Sans', sans-serif; }
+        .font-comfortaa { font-family: 'Comfortaa', cursive; }
+        
+        /* Floating animation for the empty state illustration */
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+        .animate-float {
+            animation: float 4s ease-in-out infinite;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#7C5CFC",
+                        secondary: "#FF8FA3",
+                        accent: "#FFC531",
+                        background: "#FBF7FF",
+                        "text-primary": "#2D2A45",
+                        "secondary-text": "#8E8AA8",
+                        success: "#3DD598",
+                        error: "#FF5C5C",
+                        locked: "#C7C2E0"
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "2xl": "24px",
+                        "full": "9999px"
+                    },
+                    fontFamily: {
+                        headline: ["Public Sans"],
+                        display: ["Public Sans"],
+                        body: ["Nunito Sans"],
+                        label: ["Public Sans"]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-background min-h-screen flex flex-col text-text-primary">
+<!-- TopAppBar -->
+<header class="bg-surface dark:bg-surface flex items-center justify-between px-4 h-16 w-full docked full-width top-0 rounded-b-xl shadow-lg shadow-primary/10 sticky top-0 z-40 bg-white">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">stars</span>
+<h1 class="font-headline font-bold text-headline-sm text-primary">Cửa hàng quà tặng</h1>
+</div>
+<div class="active:scale-95 duration-200 hover:bg-primary/5 transition-colors px-3 py-1.5 rounded-full flex items-center gap-1 border border-primary/20">
+<span class="text-primary font-bold">500 ⭐</span>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-grow flex flex-col items-center justify-center px-6 py-12">
+<!-- Empty State Container -->
+<div class="w-full max-w-md flex flex-col items-center text-center space-y-8">
+<!-- Bento-style decorative background for the illustration -->
+<div class="relative w-full aspect-square max-w-[280px] group">
+<div class="absolute inset-0 bg-primary/5 rounded-full scale-110 blur-3xl opacity-50 group-hover:bg-primary/10 transition-all duration-500"></div>
+<!-- Main Illustration -->
+<div class="relative z-10 animate-float">
+<img alt="Chưa có phần thưởng nào" class="w-full h-full object-contain rounded-2xl" src="https://lh3.googleusercontent.com/aida/AP1WRLsj4sol-5d9taUdad3wQx9jCfRACqla8LynM0_Vgd09LcMaEsEytluab9NBmetNxH4QxZqs2PAohAw2l9gZ_Esg6vx1-U0e8F5KZXwYK9Y36URDBIk0vg9YbVGDIf0prjOOeuE1DzOx8cer4XdaeXppZ6NJKH57tEGNSWd8Q492tz07Bx4D_Ige3YchY3aQ0XSx9EjMlkGmo5BKpEtXFR2xj8h_AVVNGJDtOInD5PmIhNTlETqXlbdUJQ"/>
+</div>
+<!-- Floating sparkles -->
+<div class="absolute -top-4 -right-4 text-accent animate-pulse">
+<span class="material-symbols-outlined text-4xl" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+</div>
+<div class="absolute -bottom-2 -left-4 text-secondary/40">
+<span class="material-symbols-outlined text-3xl">favorite</span>
+</div>
+</div>
+<!-- Content -->
+<div class="space-y-3">
+<h2 class="font-comfortaa font-bold text-2xl text-text-primary">Chưa có phần thưởng nào</h2>
+<p class="text-secondary-text text-lg max-w-[280px] mx-auto">
+                    Hãy tạo những món quà thú vị để khích lệ bé hoàn thành nhiệm vụ nhé!
+                </p>
+</div>
+<!-- Action Button -->
+<button class="bg-primary text-white font-bold py-4 px-10 rounded-2xl shadow-[0_8px_20px_rgba(124,92,252,0.3)] hover:shadow-[0_10px_25px_rgba(124,92,252,0.4)] hover:-translate-y-1 active:scale-95 transition-all duration-200 flex items-center gap-2 group">
+<span class="material-symbols-outlined group-hover:rotate-90 transition-transform duration-300">add_circle</span>
+<span class="text-lg">Thêm phần thưởng</span>
+</button>
+<!-- Quick Tips (Bento Hint) -->
+<div class="grid grid-cols-2 gap-4 w-full mt-12 opacity-60">
+<div class="bg-white p-4 rounded-2xl shadow-sm border border-primary/5 flex flex-col items-center gap-2">
+<span class="material-symbols-outlined text-primary">redeem</span>
+<span class="text-xs font-bold text-secondary-text">Quà hiện vật</span>
+</div>
+<div class="bg-white p-4 rounded-2xl shadow-sm border border-primary/5 flex flex-col items-center gap-2">
+<span class="material-symbols-outlined text-secondary">videogame_asset</span>
+<span class="text-xs font-bold text-secondary-text">Giờ chơi game</span>
+</div>
+</div>
+</div>
+</main>
+<!-- Spacer for Bottom Nav -->
+<div class="h-20"></div>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center h-20 px-4 bg-white shadow-[0_-4px_12px_rgba(124,92,252,0.12)] rounded-t-2xl">
+<!-- Tab 1: Nhiệm vụ -->
+<a class="flex flex-col items-center justify-center text-secondary-text hover:text-primary transition-all active:scale-90 duration-150" href="#">
+<span class="material-symbols-outlined mb-1">assignment</span>
+<span class="font-label font-bold text-label-sm">Nhiệm vụ</span>
+</a>
+<!-- Tab 2: Phần thưởng (ACTIVE) -->
+<a class="flex flex-col items-center justify-center bg-primary/10 text-primary rounded-full px-5 py-2 active:scale-90 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined mb-0.5" style="font-variation-settings: 'FILL' 1;">redeem</span>
+<span class="font-label font-bold text-label-sm">Phần thưởng</span>
+</a>
+<!-- Tab 3: Của con -->
+<a class="flex flex-col items-center justify-center text-secondary-text hover:text-primary transition-all active:scale-90 duration-150" href="#">
+<span class="material-symbols-outlined mb-1">face</span>
+<span class="font-label font-bold text-label-sm">Của con</span>
+</a>
+</nav>
+<!-- Particle Script for background charm -->
+<script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const colors = ['#7C5CFC', '#FF8FA3', '#FFC531'];
+            const container = document.body;
+            
+            for(let i = 0; i < 15; i++) {
+                const particle = document.createElement('div');
+                particle.style.position = 'fixed';
+                particle.style.width = Math.random() * 8 + 4 + 'px';
+                particle.style.height = particle.style.width;
+                particle.style.borderRadius = '50%';
+                particle.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                particle.style.opacity = '0.1';
+                particle.style.left = Math.random() * 100 + 'vw';
+                particle.style.top = Math.random() * 100 + 'vh';
+                particle.style.zIndex = '-1';
+                particle.style.pointerEvents = 'none';
+                
+                container.appendChild(particle);
+                
+                const speed = Math.random() * 2 + 1;
+                let angle = Math.random() * Math.PI * 2;
+                
+                function move() {
+                    let x = parseFloat(particle.style.left);
+                    let y = parseFloat(particle.style.top);
+                    
+                    x += Math.cos(angle) * speed * 0.2;
+                    y += Math.sin(angle) * speed * 0.2;
+                    
+                    if(x < -5) x = 105;
+                    if(x > 105) x = -5;
+                    if(y < -5) y = 105;
+                    if(y > 105) y = -5;
+                    
+                    particle.style.left = x + 'vw';
+                    particle.style.top = y + 'vh';
+                    
+                    requestAnimationFrame(move);
+                }
+                move();
+            }
+        });
+    </script>
+</body></html>

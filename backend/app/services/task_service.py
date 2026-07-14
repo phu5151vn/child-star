@@ -1,0 +1,432 @@
+from datetime import datetime, timezone
+from uuid import UUID
+
+from sqlalchemy import select
+from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm import Session
+
+from app.core.db import advisory_lock_child
+from app.core.deps import AuthContext, require_owner_child
+from app.core.exceptions import (
+    InsufficientPointsError,
+    InvalidTransitionError,
+    NotFoundError,
+    ProofRequiredError,
+)
+from app.core.integrity import is_unique_violation
+from app.models import Media, PointsLedger, Task, TaskAssignment, User
+from app.repositories.base import (
+    AuditRepository,
+    PointsRepository,
+    get_assignment_in_family,
+    get_task_in_family,
+)
+from app.schemas import AssignmentResponse, LedgerEntry, SubmitAssignmentRequest, TaskResponse
+
+ASSIGNMENT_TRANSITIONS = {
+    "in_progress": {"submitted"},
+    "submitted": {"approved", "rejected"},
+    "rejected": {"in_progress"},
+}
+
+
+def assert_transition(current: str, target: str) -> None:
+    allowed = ASSIGNMENT_TRANSITIONS.get(current, set())
+    if target not in allowed:
+        raise InvalidTransitionError()
+
+
+class TaskService:
+    @staticmethod
+    def list_tasks(db: Session, ctx: AuthContext) -> list[TaskResponse]:
+        tasks = db.scalars(
+            select(Task).where(Task.family_id == ctx.family_id).order_by(Task.created_at.desc())
+        ).all()
+        result = []
+        for task in tasks:
+            assignment_status = None
+            assignment_id = None
+            if ctx.role == "child" and ctx.child_id:
+                if not task.is_active:
+                    continue
+                assignment = db.scalar(
+                    select(TaskAssignment).where(
+                        TaskAssignment.task_id == task.id,
+                        TaskAssignment.child_id == ctx.child_id,
+                    ).order_by(TaskAssignment.created_at.desc())
+                )
+                if assignment and assignment.status in ("in_progress", "submitted", "approved"):
+                    assignment_status = assignment.status
+                    assignment_id = assignment.id
+                    if assignment.status == "approved":
+                        pass  # still show as completed
+                elif assignment and assignment.status == "rejected":
+                    assignment_status = "available"
+                else:
+                    assignment_status = "available"
+            result.append(
+                TaskResponse(
+                    id=task.id,
+                    title=task.title,
+                    description=task.description,
+                    points=task.points,
+                    icon_media_id=task.icon_media_id,
+                    require_proof=task.require_proof,
+                    is_active=task.is_active,
+                    assignment_status=assignment_status,
+                    assignment_id=assignment_id,
+                )
+            )
+        return result
+
+    @staticmethod
+    def get_task(db: Session, ctx: AuthContext, task_id: UUID) -> TaskResponse:
+        task = get_task_in_family(db, task_id, ctx.family_id)
+        if not task:
+            raise NotFoundError()
+        assignment_status = None
+        assignment_id = None
+        if ctx.role == "child" and ctx.child_id:
+            assignment = db.scalar(
+                select(TaskAssignment).where(
+                    TaskAssignment.task_id == task.id,
+                    TaskAssignment.child_id == ctx.child_id,
+                ).order_by(TaskAssignment.created_at.desc())
+            )
+            if assignment and assignment.status in ("in_progress", "submitted", "approved", "rejected"):
+                assignment_status = assignment.status if assignment.status != "rejected" else "available"
+                assignment_id = assignment.id if assignment.status != "rejected" else None
+            else:
+                assignment_status = "available"
+        return TaskResponse(
+            id=task.id,
+            title=task.title,
+            description=task.description,
+            points=task.points,
+            icon_media_id=task.icon_media_id,
+            require_proof=task.require_proof,
+            is_active=task.is_active,
+            assignment_status=assignment_status,
+            assignment_id=assignment_id,
+        )
+
+    @staticmethod
+    def create_task(db: Session, ctx: AuthContext, data) -> TaskResponse:
+        task = Task(
+            family_id=ctx.family_id,
+            title=data.title,
+            description=data.description,
+            points=data.points,
+            icon_media_id=data.icon_media_id,
+            require_proof=data.require_proof,
+            is_active=data.is_active,
+            created_by=ctx.user_id,
+        )
+        db.add(task)
+        db.flush()
+        AuditRepository.log(
+            db, family_id=ctx.family_id, actor_id=ctx.user_id,
+            action="task.create", entity_type="task", entity_id=task.id,
+            changes={"title": task.title, "points": task.points},
+        )
+        db.commit()
+        return TaskResponse.model_validate(task)
+
+    @staticmethod
+    def update_task(db: Session, ctx: AuthContext, task_id: UUID, data) -> TaskResponse:
+        task = get_task_in_family(db, task_id, ctx.family_id)
+        if not task:
+            raise NotFoundError()
+        before = {"title": task.title, "points": task.points, "is_active": task.is_active}
+        for field in ("title", "description", "points", "icon_media_id", "require_proof", "is_active"):
+            val = getattr(data, field, None)
+            if val is not None:
+                setattr(task, field, val)
+        AuditRepository.log(
+            db, family_id=ctx.family_id, actor_id=ctx.user_id,
+            action="task.update", entity_type="task", entity_id=task.id,
+            changes={"before": before},
+        )
+        db.commit()
+        return TaskResponse.model_validate(task)
+
+    @staticmethod
+    def delete_task(db: Session, ctx: AuthContext, task_id: UUID) -> None:
+        task = get_task_in_family(db, task_id, ctx.family_id)
+        if not task:
+            raise NotFoundError()
+        task.is_active = False
+        AuditRepository.log(
+            db, family_id=ctx.family_id, actor_id=ctx.user_id,
+            action="task.delete", entity_type="task", entity_id=task.id, changes={},
+        )
+        db.commit()
+
+
+class AssignmentService:
+    @staticmethod
+    def list_assignments(
+        db: Session, ctx: AuthContext, child_id: UUID | None = None, status: str | None = None
+    ) -> list[AssignmentResponse]:
+        q = select(TaskAssignment).where(TaskAssignment.family_id == ctx.family_id)
+        if ctx.role == "child":
+            q = q.where(TaskAssignment.child_id == ctx.child_id)
+        elif child_id:
+            q = q.where(TaskAssignment.child_id == child_id)
+        if status:
+            q = q.where(TaskAssignment.status == status)
+        assignments = db.scalars(q.order_by(TaskAssignment.created_at.desc())).all()
+        result = []
+        for a in assignments:
+            task = db.get(Task, a.task_id)
+            child = db.get(User, a.child_id)
+            result.append(
+                AssignmentResponse(
+                    id=a.id,
+                    task_id=a.task_id,
+                    child_id=a.child_id,
+                    status=a.status,
+                    task_title=task.title if task else None,
+                    task_points=task.points if task else None,
+                    child_name=child.display_name if child else None,
+                    proof_media_id=a.proof_media_id,
+                    reject_reason=a.reject_reason,
+                    submitted_at=a.submitted_at,
+                    decided_at=a.decided_at,
+                )
+            )
+        return result
+
+    @staticmethod
+    def claim(db: Session, ctx: AuthContext, task_id: UUID) -> AssignmentResponse:
+        task = get_task_in_family(db, task_id, ctx.family_id)
+        if not task or not task.is_active:
+            raise NotFoundError("Nhiệm vụ không khả dụng")
+        if not ctx.child_id:
+            raise InvalidTransitionError()
+        existing = db.scalar(
+            select(TaskAssignment).where(
+                TaskAssignment.task_id == task_id,
+                TaskAssignment.child_id == ctx.child_id,
+                TaskAssignment.status.in_(("in_progress", "submitted")),
+            )
+        )
+        if existing:
+            raise InvalidTransitionError("Đã nhận nhiệm vụ này rồi")
+        approved = db.scalar(
+            select(TaskAssignment).where(
+                TaskAssignment.task_id == task_id,
+                TaskAssignment.child_id == ctx.child_id,
+                TaskAssignment.status == "approved",
+            )
+        )
+        if approved:
+            raise InvalidTransitionError("Nhiệm vụ đã hoàn thành")
+        assignment = TaskAssignment(
+            family_id=ctx.family_id,
+            task_id=task_id,
+            child_id=ctx.child_id,
+            status="in_progress",
+        )
+        try:
+            db.add(assignment)
+            db.commit()
+        except IntegrityError as exc:
+            db.rollback()
+            if is_unique_violation(exc, "uq_assignment_active"):
+                raise InvalidTransitionError("Đã nhận nhiệm vụ này rồi") from exc
+            raise
+        return AssignmentResponse(
+            id=assignment.id,
+            task_id=assignment.task_id,
+            child_id=assignment.child_id,
+            status=assignment.status,
+            task_title=task.title,
+            task_points=task.points,
+        )
+
+    @staticmethod
+    def submit(db: Session, ctx: AuthContext, assignment_id: UUID, data: SubmitAssignmentRequest) -> AssignmentResponse:
+        assignment = get_assignment_in_family(db, assignment_id, ctx.family_id)
+        if not assignment or assignment.child_id != ctx.child_id:
+            raise NotFoundError()
+        if assignment.status != "in_progress":
+            raise InvalidTransitionError()
+        assert_transition(assignment.status, "submitted")
+        task = db.get(Task, assignment.task_id)
+        if task and task.require_proof and not data.proof_media_id:
+            raise ProofRequiredError()
+        if data.proof_media_id is not None:
+            media = db.get(Media, data.proof_media_id)
+            if (
+                not media
+                or media.family_id != ctx.family_id
+                or media.kind != "proof"
+                or media.uploaded_by != ctx.user_id
+            ):
+                raise NotFoundError("Ảnh minh chứng không hợp lệ")
+        assignment.status = "submitted"
+        assignment.proof_media_id = data.proof_media_id
+        assignment.submitted_at = datetime.now(timezone.utc)
+        db.commit()
+        return AssignmentService._to_response(db, assignment)
+
+    @staticmethod
+    def approve(db: Session, ctx: AuthContext, assignment_id: UUID) -> AssignmentResponse:
+        assignment = get_assignment_in_family(db, assignment_id, ctx.family_id)
+        if not assignment:
+            raise NotFoundError()
+
+        advisory_lock_child(db, assignment.child_id)
+
+        if assignment.status == "approved" or PointsRepository.has_ledger_for_assignment(db, assignment.id):
+            if assignment.status != "approved":
+                assignment.status = "approved"
+                assignment.decided_at = datetime.now(timezone.utc)
+                assignment.decided_by = ctx.user_id
+                db.commit()
+            return AssignmentService._to_response(db, assignment)
+
+        if assignment.status != "submitted":
+            raise InvalidTransitionError()
+        assert_transition(assignment.status, "approved")
+
+        task = db.get(Task, assignment.task_id)
+        assignment.status = "approved"
+        assignment.decided_at = datetime.now(timezone.utc)
+        assignment.decided_by = ctx.user_id
+        points_delta = task.points if task else 0
+
+        try:
+            db.add(
+                PointsLedger(
+                    family_id=ctx.family_id,
+                    child_id=assignment.child_id,
+                    delta=points_delta,
+                    kind="task_approved",
+                    task_assignment_id=assignment.id,
+                    created_by=ctx.user_id,
+                )
+            )
+            AuditRepository.log(
+                db,
+                family_id=ctx.family_id,
+                actor_id=ctx.user_id,
+                action="assignment.approve",
+                entity_type="assignment",
+                entity_id=assignment.id,
+                changes={"points_delta": points_delta},
+            )
+            db.commit()
+        except IntegrityError as exc:
+            db.rollback()
+            if is_unique_violation(exc, "uq_ledger_task_approved"):
+                db.refresh(assignment)
+                return AssignmentService._to_response(db, assignment)
+            raise
+
+        return AssignmentService._to_response(db, assignment)
+
+    @staticmethod
+    def reject(db: Session, ctx: AuthContext, assignment_id: UUID, reason: str | None) -> AssignmentResponse:
+        assignment = get_assignment_in_family(db, assignment_id, ctx.family_id)
+        if not assignment:
+            raise NotFoundError()
+        if assignment.status != "submitted":
+            raise InvalidTransitionError()
+        assert_transition(assignment.status, "rejected")
+        assignment.status = "rejected"
+        assignment.reject_reason = reason
+        assignment.decided_at = datetime.now(timezone.utc)
+        assignment.decided_by = ctx.user_id
+        AuditRepository.log(
+            db,
+            family_id=ctx.family_id,
+            actor_id=ctx.user_id,
+            action="assignment.reject",
+            entity_type="assignment",
+            entity_id=assignment.id,
+            changes={"reason": reason},
+        )
+        db.commit()
+        # Create new in_progress for retry
+        new_assignment = TaskAssignment(
+            family_id=ctx.family_id,
+            task_id=assignment.task_id,
+            child_id=assignment.child_id,
+            status="in_progress",
+        )
+        db.add(new_assignment)
+        db.commit()
+        return AssignmentService._to_response(db, assignment)
+
+    @staticmethod
+    def _to_response(db: Session, assignment: TaskAssignment) -> AssignmentResponse:
+        task = db.get(Task, assignment.task_id)
+        child = db.get(User, assignment.child_id)
+        return AssignmentResponse(
+            id=assignment.id,
+            task_id=assignment.task_id,
+            child_id=assignment.child_id,
+            status=assignment.status,
+            task_title=task.title if task else None,
+            task_points=task.points if task else None,
+            child_name=child.display_name if child else None,
+            proof_media_id=assignment.proof_media_id,
+            reject_reason=assignment.reject_reason,
+            submitted_at=assignment.submitted_at,
+            decided_at=assignment.decided_at,
+        )
+
+
+class PointsService:
+    @staticmethod
+    def get_balance(db: Session, ctx: AuthContext, child_id: UUID) -> int:
+        require_owner_child(child_id, ctx)
+        child = db.scalar(
+            select(User).where(User.id == child_id, User.family_id == ctx.family_id, User.role == "child")
+        )
+        if not child:
+            raise NotFoundError()
+        return PointsRepository.get_balance(db, child_id)
+
+    @staticmethod
+    def get_ledger(db: Session, ctx: AuthContext, child_id: UUID, limit: int = 50) -> list[LedgerEntry]:
+        require_owner_child(child_id, ctx)
+        entries = db.scalars(
+            select(PointsLedger)
+            .where(PointsLedger.child_id == child_id, PointsLedger.family_id == ctx.family_id)
+            .order_by(PointsLedger.created_at.desc())
+            .limit(limit)
+        ).all()
+        return [LedgerEntry.model_validate(e) for e in entries]
+
+    @staticmethod
+    def manual_adjust(db: Session, ctx: AuthContext, child_id: UUID, delta: int, reason: str) -> int:
+        child = db.scalar(
+            select(User).where(User.id == child_id, User.family_id == ctx.family_id, User.role == "child")
+        )
+        if not child:
+            raise NotFoundError()
+        if delta < 0:
+            advisory_lock_child(db, child_id)
+            balance = PointsRepository.get_balance(db, child_id)
+            if balance + delta < 0:
+                raise InsufficientPointsError()
+        db.add(
+            PointsLedger(
+                family_id=ctx.family_id,
+                child_id=child_id,
+                delta=delta,
+                kind="manual_adjust",
+                reason=reason,
+                created_by=ctx.user_id,
+            )
+        )
+        AuditRepository.log(
+            db, family_id=ctx.family_id, actor_id=ctx.user_id,
+            action="points.manual_adjust", entity_type="child", entity_id=child_id,
+            changes={"delta": delta, "reason": reason},
+        )
+        db.commit()
+        return PointsRepository.get_balance(db, child_id)

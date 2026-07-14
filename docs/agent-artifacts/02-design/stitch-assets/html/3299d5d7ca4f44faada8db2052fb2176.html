@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+
+<html lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Bé Ngoan - Đổi quà thành công</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;700;900&amp;family=Nunito+Sans:wght@400;600;700;800&amp;family=Comfortaa:wght@400;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#7C5CFC",
+                        secondary: "#FF8FA3",
+                        accent: "#FFC531",
+                        background: "#FBF7FF",
+                        success: "#3DD598",
+                        error: "#FF5C5C",
+                        "text-main": "#2D2A45",
+                        "text-sub": "#8E8AA8",
+                        locked: "#C7C2E0"
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "2xl": "24px",
+                        "full": "9999px"
+                    },
+                    fontFamily: {
+                        headline: ["Public Sans", "sans-serif"],
+                        display: ["Comfortaa", "cursive"],
+                        body: ["Nunito Sans", "sans-serif"],
+                        label: ["Public Sans", "sans-serif"]
+                    },
+                    animation: {
+                        'bounce-short': 'bounce-short 0.5s ease-in-out infinite alternate',
+                        'float': 'float 3s ease-in-out infinite',
+                        'confetti-fall': 'confetti-fall 4s linear forwards'
+                    },
+                    keyframes: {
+                        'bounce-short': {
+                            '0%': { transform: 'translateY(0)' },
+                            '100%': { transform: 'translateY(-4px)' }
+                        },
+                        'float': {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-15px)' }
+                        },
+                        'confetti-fall': {
+                            '0%': { transform: 'translateY(-100vh) rotate(0deg)', opacity: '1' },
+                            '100%': { transform: 'translateY(100vh) rotate(720deg)', opacity: '0' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            background-color: #FBF7FF;
+            overflow: hidden;
+            font-family: 'Nunito Sans', sans-serif;
+        }
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            z-index: 10;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="flex flex-col h-screen max-w-[390px] mx-auto relative overflow-hidden bg-[#FBF7FF]">
+<!-- Confetti Layer -->
+<div class="absolute inset-0 pointer-events-none overflow-hidden" id="confetti-container"></div>
+<!-- Main Content Canvas -->
+<main class="flex-grow flex flex-col items-center justify-center px-6 relative z-20">
+<!-- Celebration Element: opening gift box -->
+<div class="relative w-72 h-72 mb-8 animate-float">
+<!-- Glow Effect -->
+<div class="absolute inset-0 bg-[#FFC531] opacity-20 blur-3xl rounded-full scale-110"></div>
+<!-- Success Image Placeholder -->
+<div class="relative w-full h-full flex items-center justify-center transition-transform hover:scale-105 duration-500">
+<img class="w-full h-full object-contain" data-alt="A magical 3D cartoon style opening gift box emitting vibrant rainbow sparkles and glowing stars. The gift box is wrapped in soft purple paper with a big pink ribbon, floating in mid-air against a soft cream background. Tiny gold coins and heart icons fly out of the box, creating a sense of wonder and achievement for children. High-quality render with soft lighting and playful character design." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAvI4F6U4Pe75HalsYlXksQ1XMCUoJ-o4DRZ8n_G5kI4J-rLZY7mkxet3G9fuQsc8suWAHVpnZnBNT_KWPIPaSZCxQBRqFJcxFf9myJAfcU_S6mSqZoc4u6bQTO3oV_YZo93jzwsfPCFOIWUk2K6Qo8q1gljIgMoJXwlMT-79-I2NbgcKb0fEQHkcfZK06QMX-PPM4ZrPe7_v6UEKINs5Rk-meni1woBKx6VA-Py6kwaagtm_33hg89wPHQWBm3F9IEgr46f3gZw7c"/>
+</div>
+<!-- Floating Stars -->
+<span class="material-symbols-outlined absolute top-4 left-4 text-[#FFC531] text-3xl animate-pulse" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined absolute bottom-12 right-0 text-[#FF8FA3] text-2xl animate-bounce-short" style="font-variation-settings: 'FILL' 1;">favorite</span>
+<span class="material-symbols-outlined absolute top-20 right-4 text-[#7C5CFC] text-xl animate-pulse" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+</div>
+<!-- Success Text Group -->
+<div class="text-center space-y-4">
+<h1 class="font-display font-black text-3xl text-[#7C5CFC] leading-tight">
+                Đổi quà thành công! 🎊
+            </h1>
+<p class="font-body text-lg text-[#8E8AA8] font-semibold max-w-[280px] mx-auto">
+                Bố mẹ sẽ trao quà cho con nhé
+            </p>
+</div>
+<!-- Call to Action -->
+<div class="mt-12 w-full max-w-[300px]">
+<button class="w-full bg-[#7C5CFC] text-white font-headline font-black text-lg py-5 rounded-2xl shadow-[0_8px_20px_rgba(124,92,252,0.3)] active:scale-95 transition-transform flex items-center justify-center gap-3" onclick="window.location.reload()">
+<span>Về cửa hàng</span>
+<span class="material-symbols-outlined">shopping_bag</span>
+</button>
+</div>
+</main>
+<!-- Bottom Navigation Mockup (Filtered - Hidden as per Transactional/Success screen rule, but keeping for structure if needed) -->
+<!-- The prompt requires full screen celebration, navigation is suppressed to focus on the success state -->
+<script>
+        // Confetti Generator for celebration effect
+        const container = document.getElementById('confetti-container');
+        const colors = ['#7C5CFC', '#FF8FA3', '#FFC531', '#3DD598', '#FF5C5C'];
+        const shapes = ['rounded-full', 'rounded-sm'];
+
+        function createConfetti() {
+            for (let i = 0; i < 50; i++) {
+                const confetti = document.createElement('div');
+                const color = colors[Math.floor(Math.random() * colors.length)];
+                const shape = shapes[Math.floor(Math.random() * shapes.length)];
+                
+                confetti.className = `confetti ${shape} animate-confetti-fall`;
+                confetti.style.backgroundColor = color;
+                confetti.style.left = Math.random() * 100 + 'vw';
+                confetti.style.top = '-20px';
+                confetti.style.width = Math.random() * 12 + 8 + 'px';
+                confetti.style.height = confetti.style.width;
+                confetti.style.animationDelay = Math.random() * 3 + 's';
+                confetti.style.opacity = Math.random();
+                
+                container.appendChild(confetti);
+
+                // Clean up
+                setTimeout(() => {
+                    confetti.remove();
+                }, 4000);
+            }
+        }
+
+        // Initial burst
+        createConfetti();
+        // Periodic drizzle
+        setInterval(createConfetti, 2500);
+
+        // Micro-interactions for the button
+        document.querySelector('button').addEventListener('mousedown', () => {
+            const burst = document.createElement('div');
+            burst.className = 'absolute inset-0 bg-white opacity-20 rounded-2xl animate-ping';
+            document.querySelector('button').appendChild(burst);
+            setTimeout(() => burst.remove(), 400);
+        });
+    </script>
+</body></html>

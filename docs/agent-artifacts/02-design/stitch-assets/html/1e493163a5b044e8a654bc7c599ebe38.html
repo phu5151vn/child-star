@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+
+<html lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Bé Ngoan - Tạo nhiệm vụ</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700;800&amp;family=Public+Sans:wght@600;700;900&amp;family=Quicksand:wght@500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              'primary': '#7C5CFC',
+              'secondary': '#FF8FA3',
+              'accent': '#FFC531',
+              'background': '#FBF7FF',
+              'success': '#3DD598',
+              'error': '#FF5C5C',
+              'locked': '#C7C2E0',
+              'text-primary': '#2D2A45',
+              'text-secondary': '#8E8AA8',
+            },
+            borderRadius: {
+              'DEFAULT': '0.5rem',
+              'lg': '1rem',
+              'xl': '1.5rem',
+              '2xl': '20px',
+              '3xl': '24px',
+              'full': '9999px'
+            },
+            fontFamily: {
+              'headline': ['Public Sans', 'sans-serif'],
+              'display': ['Quicksand', 'sans-serif'],
+              'body': ['Nunito Sans', 'sans-serif'],
+              'label': ['Public Sans', 'sans-serif']
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            font-family: 'Nunito Sans', sans-serif;
+            background-color: #FBF7FF;
+            color: #2D2A45;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .font-quicksand { font-family: 'Quicksand', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .custom-shadow {
+            box-shadow: 0 6px 16px rgba(124, 92, 252, 0.12);
+        }
+        ::-webkit-scrollbar {
+            display: none;
+        }
+        .switch-checkbox:checked + .switch-label {
+            background-color: #7C5CFC;
+        }
+        .switch-checkbox:checked + .switch-label .switch-dot {
+            transform: translateX(1.25rem);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="flex justify-center items-start min-h-screen">
+<!-- Mobile Container (390x844) -->
+<div class="w-[390px] h-[844px] bg-background relative flex flex-col overflow-hidden shadow-2xl">
+<!-- Top Bar -->
+<header class="bg-[#FBF7FF] px-4 py-3 flex items-center justify-between z-10">
+<button class="w-10 h-10 flex items-center justify-start text-primary active:scale-90 transition-transform">
+<span class="material-symbols-outlined text-2xl">arrow_back_ios</span>
+</button>
+<h1 class="text-[17px] font-semibold text-text-primary">Tạo nhiệm vụ</h1>
+<div class="w-10"></div> <!-- Placeholder for balance -->
+</header>
+<!-- Scrollable Content -->
+<main class="flex-1 overflow-y-auto px-4 pb-32 pt-2">
+<form class="space-y-6">
+<!-- Task Name Section -->
+<section class="space-y-2">
+<label class="text-[15px] font-bold text-text-primary px-1">Tên nhiệm vụ *</label>
+<div class="bg-white rounded-2xl p-4 custom-shadow">
+<input class="w-full border-none focus:ring-0 p-0 text-lg font-medium placeholder:text-text-secondary/50 text-text-primary" placeholder="VD: Đọc sách 20 phút" type="text"/>
+</div>
+</section>
+<!-- Icon & Color Picker -->
+<section class="space-y-3">
+<label class="text-[15px] font-bold text-text-primary px-1">Chọn biểu tượng &amp; màu sắc</label>
+<div class="bg-white rounded-2xl p-5 custom-shadow space-y-5">
+<!-- Emoji Grid -->
+<div class="grid grid-cols-6 gap-2">
+<button class="w-10 h-10 flex items-center justify-center rounded-xl bg-primary/10 text-xl border-2 border-primary" type="button">📚</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-gray-50 text-xl border-2 border-transparent" type="button">🧹</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-gray-50 text-xl border-2 border-transparent" type="button">⚽</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-gray-50 text-xl border-2 border-transparent" type="button">🎨</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-gray-50 text-xl border-2 border-transparent" type="button">🍎</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-gray-50 text-xl border-2 border-transparent" type="button">🦷</button>
+</div>
+<!-- Color Dots -->
+<div class="flex justify-between items-center px-1">
+<button class="w-8 h-8 rounded-full bg-[#E0D7FF] ring-4 ring-[#E0D7FF]/30 border-2 border-white ring-offset-0" type="button"></button>
+<button class="w-8 h-8 rounded-full bg-[#FFD6E0] border-2 border-white" type="button"></button>
+<button class="w-8 h-8 rounded-full bg-[#FFF0CC] border-2 border-white" type="button"></button>
+<button class="w-8 h-8 rounded-full bg-[#D4F5E9] border-2 border-white" type="button"></button>
+<button class="w-8 h-8 rounded-full bg-[#D9F2FF] border-2 border-white" type="button"></button>
+<button class="w-8 h-8 rounded-full bg-[#FFE3D9] border-2 border-white" type="button"></button>
+</div>
+</div>
+</section>
+<!-- Points Stepper -->
+<section class="space-y-2">
+<label class="text-[15px] font-bold text-text-primary px-1">Điểm thưởng *</label>
+<div class="bg-white rounded-2xl p-4 custom-shadow flex items-center justify-between">
+<button class="w-12 h-12 flex items-center justify-center rounded-xl bg-gray-50 text-text-primary active:scale-95 transition-all" type="button">
+<span class="material-symbols-outlined text-2xl">remove</span>
+</button>
+<div class="flex items-center gap-2">
+<span class="text-2xl">⭐</span>
+<span class="text-3xl font-black font-headline text-text-primary tracking-tight">30</span>
+</div>
+<button class="w-12 h-12 flex items-center justify-center rounded-xl bg-primary/10 text-primary active:scale-95 transition-all" type="button">
+<span class="material-symbols-outlined text-2xl">add</span>
+</button>
+</div>
+</section>
+<!-- Task Category Chips -->
+<section class="space-y-2">
+<label class="text-[15px] font-bold text-text-primary px-1">Loại nhiệm vụ</label>
+<div class="flex flex-wrap gap-2">
+<button class="px-5 py-2.5 rounded-full bg-primary text-white text-[14px] font-bold shadow-md shadow-primary/20" type="button">Học tập</button>
+<button class="px-5 py-2.5 rounded-full bg-white text-text-secondary text-[14px] font-semibold custom-shadow" type="button">Việc nhà</button>
+<button class="px-5 py-2.5 rounded-full bg-white text-text-secondary text-[14px] font-semibold custom-shadow" type="button">Thể thao</button>
+<button class="px-5 py-2.5 rounded-full bg-white text-text-secondary text-[14px] font-semibold custom-shadow" type="button">Ngoan ngoãn</button>
+</div>
+</section>
+<!-- Assign To Kids -->
+<section class="space-y-2">
+<label class="text-[15px] font-bold text-text-primary px-1">Gán cho</label>
+<div class="flex gap-3">
+<div class="flex items-center gap-3 p-1.5 pr-4 rounded-full bg-primary/10 ring-2 ring-primary">
+<div class="w-10 h-10 rounded-full bg-white border-2 border-primary overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A cute flat 2D cartoon avatar of a little boy with brown hair, wearing a yellow shirt, styled in a friendly child-friendly illustrated manner for a mobile app icon, soft lighting, pastel background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCfGQYxzvEF-JEamQ94RQFrXleXn6gGyCuPH2-qmMueVYBYbRUDF-psNODg5yUndaJZi6mVgCEAEluM2n0zQEbZq-sVI-3WjsMVZPy52wzxnODZc5g0LYStJJ6doB3Sk8CMD3C0fYC0dHmnEaq9hP-JnGZGFylOncCPElaFaH4S9sEEJLcz3t4hnxvXiiLv_Ell40JEzsr4EB_X9tTBWefdU1cp6dagCnfZWrt-02yT6ngz3jF56pW3XhsPGhizURhGi2h5jhm_bN8"/>
+</div>
+<span class="text-primary font-bold text-sm">Bin</span>
+</div>
+<div class="flex items-center gap-3 p-1.5 pr-4 rounded-full bg-white custom-shadow">
+<div class="w-10 h-10 rounded-full bg-white border-2 border-transparent overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A cute flat 2D cartoon avatar of a little girl with a pink bow in her hair, wearing a teal dress, smiling, child-friendly illustration style with simple shapes and soft colors, soft professional lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAndQF3WVRKGwsKNKHypMam5z-yvLpEZsqoyxBv7ew8uyFT50QJ3adR2ynBPa2ybn3rkf5JfLSPd9POstZMm74dYkszzBp__rkjRfOuUlQPuAv-ZVuSVDqe0HHNFS2Yc8-uPdZKCf2HlqAa1zx5SJijoFxTfw9NRuY7cXS1NumrqMlvZ6V1EnLw4lvMzYQ_Bj-K1_6Wam6lNUecPwaQUy6-PgdE0u84pXRQpaC-4BGnRahJNT9CQTpmfykYPWiIwVo9REeGPnTxIWs"/>
+</div>
+<span class="text-text-secondary font-bold text-sm">Miu</span>
+</div>
+</div>
+</section>
+<!-- Repeat Frequency -->
+<section class="space-y-2">
+<label class="text-[15px] font-bold text-text-primary px-1">Lặp lại</label>
+<div class="flex gap-2">
+<button class="flex-1 py-2.5 rounded-xl bg-white text-text-secondary text-[14px] font-bold custom-shadow border-2 border-transparent" type="button">Một lần</button>
+<button class="flex-1 py-2.5 rounded-xl bg-primary/5 text-primary text-[14px] font-bold border-2 border-primary" type="button">Hằng ngày</button>
+<button class="flex-1 py-2.5 rounded-xl bg-white text-text-secondary text-[14px] font-bold custom-shadow border-2 border-transparent" type="button">Hằng tuần</button>
+</div>
+</section>
+<!-- Deadline Picker -->
+<section class="space-y-2">
+<label class="text-[15px] font-bold text-text-primary px-1">Hạn hoàn thành</label>
+<div class="grid grid-cols-2 gap-3">
+<div class="bg-white rounded-xl p-4 custom-shadow flex items-center gap-3">
+<span class="material-symbols-outlined text-primary">calendar_today</span>
+<span class="text-sm font-semibold text-text-primary">15/05/2024</span>
+</div>
+<div class="bg-white rounded-xl p-4 custom-shadow flex items-center gap-3">
+<span class="material-symbols-outlined text-primary">schedule</span>
+<span class="text-sm font-semibold text-text-primary">20:00</span>
+</div>
+</div>
+</section>
+<!-- Approval Switch -->
+<section class="flex items-center justify-between py-2">
+<div class="flex-1 pr-4">
+<p class="text-[15px] font-bold text-text-primary">Cần duyệt</p>
+<p class="text-[13px] text-text-secondary leading-tight">Bố mẹ duyệt trước khi cộng điểm</p>
+</div>
+<div class="relative inline-block w-11 h-6 transition duration-200 ease-in">
+<input checked="" class="switch-checkbox opacity-0 absolute w-0 h-0" id="switch" type="checkbox"/>
+<label class="switch-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer transition-colors duration-200" for="switch">
+<span class="switch-dot block w-4 h-4 bg-white rounded-full mt-1 ml-1 transition-transform duration-200 shadow-sm"></span>
+</label>
+</div>
+</section>
+<!-- Notes for kid -->
+<section class="space-y-2">
+<label class="text-[15px] font-bold text-text-primary px-1">Ghi chú cho con</label>
+<div class="bg-white rounded-2xl p-4 custom-shadow">
+<textarea class="w-full border-none focus:ring-0 p-0 text-sm font-medium placeholder:text-text-secondary/50 text-text-primary resize-none" placeholder="Nhắn nhủ bé điều gì đó..." rows="3"></textarea>
+</div>
+</section>
+</form>
+</main>
+<!-- Sticky Bottom Button -->
+<div class="absolute bottom-0 left-0 w-full p-4 pb-8 bg-gradient-to-t from-background via-background/95 to-transparent z-20">
+<button class="w-full h-[52px] bg-primary text-white font-bold rounded-2xl shadow-xl shadow-primary/30 flex items-center justify-center gap-2 active:scale-95 transition-all">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">task_alt</span>
+                Lưu nhiệm vụ
+            </button>
+</div>
+</div>
+<script>
+        // Simple toggle for the custom switch logic
+        const checkbox = document.getElementById('switch');
+        const switchLabel = document.querySelector('.switch-label');
+        
+        checkbox.addEventListener('change', function() {
+            if(this.checked) {
+                switchLabel.style.backgroundColor = '#7C5CFC';
+            } else {
+                switchLabel.style.backgroundColor = '#C7C2E0';
+            }
+        });
+
+        // Initialize state
+        if(checkbox.checked) switchLabel.style.backgroundColor = '#7C5CFC';
+    </script>
+</body></html>

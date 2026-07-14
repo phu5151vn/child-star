@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+
+<html lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;700&amp;family=Nunito+Sans:wght@400;600;700;800&amp;family=Public+Sans:wght@400;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              primary: "#7C5CFC",
+              secondary: "#FF8FA3",
+              accent: "#FFC531",
+              background: "#FBF7FF",
+              success: "#3DD598",
+              error: "#FF5C5C",
+              locked: "#C7C2E0",
+              "primary-text": "#2D2A45",
+              "secondary-text": "#8E8AA8",
+            },
+            borderRadius: {
+              DEFAULT: "0.5rem",
+              lg: "1rem",
+              xl: "1.5rem",
+              "2xl": "20px",
+              "3xl": "24px",
+              full: "9999px"
+            },
+            fontFamily: {
+              headline: ["Comfortaa", "Public Sans", "sans-serif"],
+              display: ["Public Sans", "sans-serif"],
+              body: ["Nunito Sans", "sans-serif"],
+              label: ["Public Sans", "sans-serif"]
+            },
+            boxShadow: {
+              'soft': '0 6px 16px rgba(124,92,252,0.12)',
+              'card': '0 8px 24px rgba(124,92,252,0.08)',
+            }
+          },
+        },
+      }
+    </script>
+<style>
+      body {
+        background-color: #FBF7FF;
+        font-family: 'Nunito Sans', sans-serif;
+        -webkit-tap-highlight-color: transparent;
+      }
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+      .fill-icon {
+        font-variation-settings: 'FILL' 1;
+      }
+      .custom-scrollbar::-webkit-scrollbar {
+        display: none;
+      }
+      .custom-scrollbar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+      }
+      .glass-effect {
+        backdrop-filter: blur(8px);
+        background: rgba(255, 255, 255, 0.7);
+      }
+      @keyframes float {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-5px); }
+      }
+      .animate-float {
+        animation: float 3s ease-in-out infinite;
+      }
+    </style>
+</head>
+<body class="text-primary-text min-h-screen pb-24">
+<!-- Top App Bar -->
+<header class="fixed top-0 left-0 w-full z-50 bg-white shadow-sm rounded-b-xl flex items-center justify-between px-4 h-16 w-full">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">stars</span>
+<h1 class="font-headline font-bold text-lg text-primary-text">Cửa hàng quà 🎁</h1>
+</div>
+<div class="bg-accent/20 px-3 py-1 rounded-full flex items-center gap-1 border border-accent/30 active:scale-95 transition-transform duration-200 cursor-pointer">
+<span class="text-accent font-bold text-sm">320</span>
+<span class="material-symbols-outlined text-sm text-accent fill-icon">star</span>
+</div>
+</header>
+<main class="pt-20 px-4 space-y-6">
+<!-- Star Progress Card -->
+<section class="bg-white p-5 rounded-3xl shadow-soft border border-primary/5 relative overflow-hidden">
+<div class="absolute -right-6 -top-6 w-24 h-24 bg-primary/5 rounded-full blur-2xl"></div>
+<div class="relative z-10">
+<div class="flex justify-between items-end mb-3">
+<h2 class="text-primary-text font-bold text-lg">Sao của con: <span class="text-primary">320</span> <span class="material-symbols-outlined text-primary align-middle text-xl fill-icon">star</span></h2>
+<span class="text-xs font-bold text-secondary-text">Tiến độ: 91%</span>
+</div>
+<!-- Large Progress Bar -->
+<div class="w-full h-5 bg-locked/20 rounded-full overflow-hidden mb-3 p-1">
+<div class="h-full bg-gradient-to-r from-primary to-secondary rounded-full relative" style="width: 91%;">
+<div class="absolute right-0 top-0 h-full w-2 bg-white/30 rounded-full"></div>
+</div>
+</div>
+<p class="text-sm font-medium text-secondary-text flex items-center gap-1">
+<span class="material-symbols-outlined text-primary text-base">info</span>
+                    Còn <span class="text-primary font-bold">30 sao</span> nữa để mở khoá <span class="font-bold">Vé xem phim!</span>
+</p>
+</div>
+</section>
+<!-- Grid of Rewards -->
+<div class="grid grid-cols-2 gap-3">
+<!-- Item 1: Unlocked -->
+<div class="bg-white rounded-2xl shadow-soft p-3 flex flex-col items-center border border-primary/5 active:scale-[0.98] transition-transform">
+<div class="w-full aspect-square bg-background rounded-xl mb-3 overflow-hidden relative group">
+<img alt="Kem ngon tuyệt" class="w-full h-full object-contain p-2 group-hover:scale-110 transition-transform duration-300" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBGYHYiPlaTD68Rgp1dlpe3hboxzLX-7Y-GhWMr6ZHTvpxTYct_P5PX418LAEVbrH7fISOuGai_RpFxxSu2vcF0p5xwl0LGXHcw8DQ_ejBR2lLqnkX1pYkpNnjaB5H5cbVG1aOjr-4_oY_sdVJx3AhqsAzc8Few9SmiKRMvSo_a_OYMsjB7trXUe8e1zL6yseqAcOcM01c2q7_hjsssp_Rb12N5yvl66Wfb6_quJIFZP1EES5KAjF1D_rBcd2gRAQFud8J0-QuqP9k"/>
+<div class="absolute top-2 right-2 bg-success text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm">Sẵn sàng</div>
+</div>
+<h3 class="font-bold text-primary-text text-sm mb-2 text-center">Kem ngon tuyệt</h3>
+<span class="bg-success/10 text-success text-[10px] font-bold py-1 px-3 rounded-full mb-3 text-center border border-success/20">Đủ điểm — Đổi ngay</span>
+<button class="w-full py-2 bg-primary text-white rounded-xl font-bold text-sm shadow-lg shadow-primary/20 active:scale-95 transition-all">Đổi 150 ⭐</button>
+</div>
+<!-- Item 2: Locked (80%+) -->
+<div class="bg-white rounded-2xl shadow-soft p-3 flex flex-col items-center border border-primary/5 opacity-90 relative overflow-hidden">
+<div class="w-full aspect-square bg-background rounded-xl mb-3 overflow-hidden relative">
+<img alt="Vé xem phim" class="w-full h-full object-contain p-2 grayscale-[0.4] blur-[1px]" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCLBSflFHqw0_LsFFQoJopnatzzqxO7207_spi3eU_QF1JyekUjIz8cxfCS94jhNzlA0TdOyFhQiH-V3MXfqFyxj8iVVHon7470_O7X682RHET0bxAxwbhLnhYs20LbujmM4tMlPME0iqaQwlx3mjD9Z__M3iuho9Jr6DRsIblRYR6R2DNPxYOajqxVnBy77ZEYIb4n47NVpRbO-G2YAQ91T2st_Y5TtCHkbJPfYlOTr7Z2P_iOGNL1PFBqVz8TyeUbnM65cUndF4U"/>
+<!-- Overlay lock -->
+<div class="absolute inset-0 flex items-center justify-center bg-black/10">
+<div class="bg-white/80 w-10 h-10 rounded-full flex items-center justify-center shadow-lg border border-white">
+<span class="material-symbols-outlined text-locked text-xl">lock</span>
+</div>
+</div>
+<!-- Badge Sắp mở -->
+<div class="absolute top-2 left-2 bg-accent text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-[10px] fill-icon">bolt</span>
+                        Sắp mở khoá
+                    </div>
+</div>
+<h3 class="font-bold text-primary-text text-sm mb-2 text-center">Vé xem phim</h3>
+<!-- Mini Progress -->
+<div class="w-full space-y-1 mb-3">
+<div class="w-full h-2 bg-locked/20 rounded-full overflow-hidden">
+<div class="h-full bg-accent rounded-full" style="width: 91%;"></div>
+</div>
+<div class="flex justify-between text-[10px] font-bold">
+<span class="text-accent">320/350</span>
+<span class="text-secondary-text">Còn 30 sao</span>
+</div>
+</div>
+<button class="w-full py-2 bg-locked text-white rounded-xl font-bold text-sm" disabled="">Chưa đủ sao</button>
+</div>
+<!-- Item 3: Locked (Robot) -->
+<div class="bg-white rounded-2xl shadow-soft p-3 flex flex-col items-center border border-primary/5 opacity-80 relative">
+<div class="w-full aspect-square bg-background rounded-xl mb-3 overflow-hidden relative">
+<img alt="Robot đồ chơi" class="w-full h-full object-contain p-2 grayscale blur-[2px]" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC6uhm8ywsSijoD2xeuIzj4VnY24lrO8mgotvrrKiBcUaRVFhqPuJlAs2lgVcWIDLOJ8kPhZMpM-4EhRTFPw5Aorc19CHCIpF8nABObmW6NNyWZPI1W3YJbk-KhIuJJJoIus61yEk-fMJhkXQG8_ARp-T-en5MlBH5vV9Nq_B3jEonN3aOKiAemLiWq0JKKl6iMKD-odm9yrFfl2mtrWVT8dxxYIapnEel7DvZ_cUI5o-nT71DrJoVNp-CFRsOZfHOAPB2Q6tBE7-E"/>
+<!-- Overlay lock -->
+<div class="absolute inset-0 flex items-center justify-center bg-black/10">
+<div class="bg-white/80 w-10 h-10 rounded-full flex items-center justify-center shadow-lg border border-white">
+<span class="material-symbols-outlined text-locked text-xl">lock</span>
+</div>
+</div>
+</div>
+<h3 class="font-bold text-primary-text text-sm mb-2 text-center">Robot đồ chơi</h3>
+<!-- Mini Progress -->
+<div class="w-full space-y-1 mb-3">
+<div class="w-full h-2 bg-locked/20 rounded-full overflow-hidden">
+<div class="h-full bg-primary/40 rounded-full" style="width: 64%;"></div>
+</div>
+<div class="flex justify-between text-[10px] font-bold">
+<span class="text-secondary-text">320/500</span>
+<span class="text-secondary-text">Còn 180 sao</span>
+</div>
+</div>
+<button class="w-full py-2 bg-locked/60 text-white rounded-xl font-bold text-sm" disabled="">Chưa đủ sao</button>
+</div>
+<!-- Empty State / Placeholder for more -->
+<div class="bg-locked/5 rounded-2xl border-2 border-dashed border-locked/20 p-3 flex flex-col items-center justify-center min-h-[220px]">
+<span class="material-symbols-outlined text-locked/40 text-4xl mb-2">auto_awesome</span>
+<p class="text-[10px] font-bold text-locked text-center px-4 uppercase tracking-wider">Sẽ có thêm quà vào tuần tới!</p>
+</div>
+</div>
+<!-- Recently Exchanged Section -->
+<section class="space-y-3 pb-8">
+<div class="flex justify-between items-center">
+<h2 class="text-primary-text font-bold text-lg">Đã đổi gần đây</h2>
+<button class="text-primary text-xs font-bold flex items-center gap-1">Tất cả <span class="material-symbols-outlined text-xs">chevron_right</span></button>
+</div>
+<div class="flex gap-4 overflow-x-auto custom-scrollbar pb-2">
+<!-- Gift Item 1 -->
+<div class="flex-shrink-0 w-24 space-y-1">
+<div class="w-24 h-24 bg-white rounded-2xl shadow-soft p-2 border border-primary/5 flex items-center justify-center relative">
+<img alt="Kem cũ" class="w-full h-full object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBGYHYiPlaTD68Rgp1dlpe3hboxzLX-7Y-GhWMr6ZHTvpxTYct_P5PX418LAEVbrH7fISOuGai_RpFxxSu2vcF0p5xwl0LGXHcw8DQ_ejBR2lLqnkX1pYkpNnjaB5H5cbVG1aOjr-4_oY_sdVJx3AhqsAzc8Few9SmiKRMvSo_a_OYMsjB7trXUe8e1zL6yseqAcOcM01c2q7_hjsssp_Rb12N5yvl66Wfb6_quJIFZP1EES5KAjF1D_rBcd2gRAQFud8J0-QuqP9k"/>
+<div class="absolute -bottom-1 -right-1 bg-success w-6 h-6 rounded-full border-2 border-white flex items-center justify-center">
+<span class="material-symbols-outlined text-white text-[14px]">check</span>
+</div>
+</div>
+<p class="text-[11px] font-bold text-primary-text truncate">Kem ốc quế</p>
+<p class="text-[9px] text-secondary-text">Hôm qua</p>
+</div>
+<!-- Gift Item 2 -->
+<div class="flex-shrink-0 w-24 space-y-1">
+<div class="w-24 h-24 bg-white rounded-2xl shadow-soft p-2 border border-primary/5 flex items-center justify-center relative">
+<div class="bg-secondary/10 w-full h-full rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-secondary text-4xl fill-icon animate-float">redeem</span>
+</div>
+<div class="absolute -bottom-1 -right-1 bg-success w-6 h-6 rounded-full border-2 border-white flex items-center justify-center">
+<span class="material-symbols-outlined text-white text-[14px]">check</span>
+</div>
+</div>
+<p class="text-[11px] font-bold text-primary-text truncate">Sticker hổ</p>
+<p class="text-[9px] text-secondary-text">3 ngày trước</p>
+</div>
+<!-- Gift Item 3 -->
+<div class="flex-shrink-0 w-24 space-y-1">
+<div class="w-24 h-24 bg-white rounded-2xl shadow-soft p-2 border border-primary/5 flex items-center justify-center relative">
+<div class="bg-accent/10 w-full h-full rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-accent text-4xl fill-icon">fastfood</span>
+</div>
+<div class="absolute -bottom-1 -right-1 bg-success w-6 h-6 rounded-full border-2 border-white flex items-center justify-center">
+<span class="material-symbols-outlined text-white text-[14px]">check</span>
+</div>
+</div>
+<p class="text-[11px] font-bold text-primary-text truncate">Gà rán</p>
+<p class="text-[9px] text-secondary-text">1 tuần trước</p>
+</div>
+</div>
+</section>
+</main>
+<!-- Bottom Navigation Bar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center h-20 px-4 bg-white rounded-t-3xl shadow-[0_-4px_12px_rgba(124,92,252,0.12)]">
+<!-- Tab: Nhiệm vụ -->
+<a class="flex flex-col items-center justify-center text-secondary-text hover:text-primary transition-all active:scale-90 duration-150" href="#">
+<span class="material-symbols-outlined">assignment</span>
+<span class="font-label font-bold text-[10px]">Nhiệm vụ</span>
+</a>
+<!-- Tab: Phần thưởng (Active) -->
+<a class="flex flex-col items-center justify-center bg-primary/10 text-primary rounded-full px-4 py-2 active:scale-90 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined fill-icon">redeem</span>
+<span class="font-label font-bold text-[10px]">Phần thưởng</span>
+</a>
+<!-- Tab: Của con -->
+<a class="flex flex-col items-center justify-center text-secondary-text hover:text-primary transition-all active:scale-90 duration-150" href="#">
+<span class="material-symbols-outlined">face</span>
+<span class="font-label font-bold text-[10px]">Của con</span>
+</a>
+</nav>
+<!-- Micro-interaction for clicking Reward buttons -->
+<script>
+        document.querySelectorAll('button:not([disabled])').forEach(button => {
+            button.addEventListener('click', function(e) {
+                if (this.innerText.includes('Đổi')) {
+                    // Create confetti-like effect (simplified)
+                    const ripple = document.createElement('div');
+                    ripple.className = 'fixed inset-0 pointer-events-none z-[100] flex items-center justify-center';
+                    ripple.innerHTML = `
+                        <div class="animate-ping bg-accent/40 rounded-full w-32 h-32"></div>
+                    `;
+                    document.body.appendChild(ripple);
+                    setTimeout(() => ripple.remove(), 600);
+                    
+                    // Small toast notification
+                    const toast = document.createElement('div');
+                    toast.className = 'fixed bottom-24 left-1/2 -translate-x-1/2 bg-primary-text text-white px-6 py-3 rounded-full text-sm font-bold shadow-2xl z-[100] animate-bounce';
+                    toast.innerText = '🎉 Tuyệt vời! Chờ ba mẹ phê duyệt nhé!';
+                    document.body.appendChild(toast);
+                    setTimeout(() => toast.remove(), 2500);
+                }
+            });
+        });
+    </script>
+</body></html>

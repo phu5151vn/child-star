@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+
+<html lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Cửa hàng phần thưởng - Loading</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;700;900&amp;family=Nunito+Sans:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              primary: "#7C5CFC",
+              secondary: "#FF8FA3",
+              accent: "#FFC531",
+              background: "#FBF7FF",
+              "secondary-text": "#8E8AA8",
+              "primary-text": "#2D2A45",
+              "surface": "#FFFFFF",
+              "locked": "#C7C2E0"
+            },
+            borderRadius: {
+              "DEFAULT": "0.5rem",
+              "lg": "1rem",
+              "xl": "1.25rem", // 20dp approx
+              "2xl": "1.5rem",
+              "full": "9999px"
+            },
+            fontFamily: {
+              headline: ["Public Sans", "sans-serif"],
+              display: ["Public Sans", "sans-serif"],
+              body: ["Nunito Sans", "sans-serif"],
+              label: ["Public Sans", "sans-serif"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+      .skeleton {
+        background: linear-gradient(90deg, #F3F0FF 25%, #EBE5FF 50%, #F3F0FF 75%);
+        background-size: 200% 100%;
+        animation: loading 1.5s infinite;
+      }
+      @keyframes loading {
+        0% { background-position: 200% 0; }
+        100% { background-position: -200% 0; }
+      }
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background font-body text-primary-text min-h-screen flex flex-col items-center">
+<!-- TopAppBar Component -->
+<header class="bg-surface dark:bg-surface text-primary dark:text-primary font-headline font-bold text-headline-sm docked full-width top-0 rounded-b-xl shadow-sm flex items-center justify-between px-4 h-16 w-full fixed z-50">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary" data-icon="stars">stars</span>
+<span class="font-headline font-black text-xl text-primary">Cửa hàng quà tặng</span>
+</div>
+<div class="bg-primary/10 px-3 py-1 rounded-full flex items-center gap-1">
+<span class="text-sm font-bold">500 ⭐</span>
+</div>
+</header>
+<main class="w-full max-w-[390px] px-4 pt-20 pb-24 flex flex-col gap-6">
+<!-- Skeleton Header Info -->
+<div class="flex flex-col gap-2">
+<div class="h-8 w-48 skeleton rounded-lg"></div>
+<div class="h-4 w-32 skeleton rounded-md opacity-60"></div>
+</div>
+<!-- Total Wallet Card Skeleton (Card tổng) -->
+<div class="w-full h-40 bg-surface rounded-xl shadow-[0_6px_16px_rgba(124,92,252,0.12)] p-5 flex flex-col justify-between relative overflow-hidden">
+<div class="flex justify-between items-start">
+<div class="flex flex-col gap-2">
+<div class="h-4 w-24 skeleton rounded-md"></div>
+<div class="h-10 w-32 skeleton rounded-lg"></div>
+</div>
+<div class="w-12 h-12 skeleton rounded-full"></div>
+</div>
+<div class="w-full h-3 skeleton rounded-full bg-primary/5"></div>
+<!-- Decorative pastel circle -->
+<div class="absolute -bottom-10 -right-10 w-32 h-32 bg-primary/5 rounded-full"></div>
+</div>
+<!-- Section Title Skeleton -->
+<div class="h-6 w-40 skeleton rounded-md"></div>
+<!-- Reward Grid 2x2 (4 cards) -->
+<div class="grid grid-cols-2 gap-4">
+<!-- Reward Card 1 -->
+<div class="bg-surface rounded-xl shadow-[0_6px_16px_rgba(124,92,252,0.12)] p-3 flex flex-col gap-3">
+<div class="w-full aspect-square skeleton rounded-lg"></div>
+<div class="h-4 w-3/4 skeleton rounded-md"></div>
+<div class="h-8 w-full skeleton rounded-full"></div>
+</div>
+<!-- Reward Card 2 -->
+<div class="bg-surface rounded-xl shadow-[0_6px_16px_rgba(124,92,252,0.12)] p-3 flex flex-col gap-3">
+<div class="w-full aspect-square skeleton rounded-lg"></div>
+<div class="h-4 w-3/4 skeleton rounded-md"></div>
+<div class="h-8 w-full skeleton rounded-full"></div>
+</div>
+<!-- Reward Card 3 -->
+<div class="bg-surface rounded-xl shadow-[0_6px_16px_rgba(124,92,252,0.12)] p-3 flex flex-col gap-3">
+<div class="w-full aspect-square skeleton rounded-lg"></div>
+<div class="h-4 w-3/4 skeleton rounded-md"></div>
+<div class="h-8 w-full skeleton rounded-full"></div>
+</div>
+<!-- Reward Card 4 -->
+<div class="bg-surface rounded-xl shadow-[0_6px_16px_rgba(124,92,252,0.12)] p-3 flex flex-col gap-3">
+<div class="w-full aspect-square skeleton rounded-lg"></div>
+<div class="h-4 w-3/4 skeleton rounded-md"></div>
+<div class="h-8 w-full skeleton rounded-full"></div>
+</div>
+</div>
+</main>
+<!-- BottomNavBar Component -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center h-20 px-4 bg-white rounded-t-xl shadow-[0_-4px_12px_rgba(124,92,252,0.12)]">
+<!-- Destination: Nhiệm vụ -->
+<button class="flex flex-col items-center justify-center text-secondary-text hover:text-primary transition-all active:scale-90 duration-150">
+<span class="material-symbols-outlined mb-1" data-icon="assignment">assignment</span>
+<span class="font-label font-bold text-label-sm">Nhiệm vụ</span>
+</button>
+<!-- Destination: Phần thưởng (Active State) -->
+<button class="flex flex-col items-center justify-center bg-primary/10 text-primary rounded-full px-4 py-1 transition-all active:scale-90 duration-150">
+<span class="material-symbols-outlined mb-1" data-icon="redeem" style="font-variation-settings: 'FILL' 1;">redeem</span>
+<span class="font-label font-bold text-label-sm">Phần thưởng</span>
+</button>
+<!-- Destination: Của con -->
+<button class="flex flex-col items-center justify-center text-secondary-text hover:text-primary transition-all active:scale-90 duration-150">
+<span class="material-symbols-outlined mb-1" data-icon="face">face</span>
+<span class="font-label font-bold text-label-sm">Của con</span>
+</button>
+</nav>
+<script>
+      // Subtle background movement or additional interactions can be added here
+      document.addEventListener('DOMContentLoaded', () => {
+          console.log("Loading state active for Cửa hàng phần thưởng");
+      });
+    </script>
+</body></html>

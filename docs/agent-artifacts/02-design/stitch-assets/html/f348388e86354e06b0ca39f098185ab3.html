@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+
+<html lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Tạo phần thưởng (Error) - Bé Ngoan</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@300;400;500;600;700&amp;family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&amp;family=Public+Sans:ital,wght@0,100..900;1,100..900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+                primary: "#7C5CFC",
+                secondary: "#FF8FA3",
+                accent: "#FFC531",
+                background: "#FBF7FF",
+                "secondary-text": "#8E8AA8",
+                "text-primary": "#2D2A45",
+                success: "#3DD598",
+                error: "#FF5C5C",
+                locked: "#C7C2E0"
+            },
+            borderRadius: {
+                "DEFAULT": "0.5rem",
+                "lg": "1rem",
+                "xl": "1.5rem",
+                "2xl": "20px",
+                "3xl": "24px",
+                "full": "9999px"
+            },
+            fontFamily: {
+                headline: ["Public Sans", "sans-serif"],
+                display: ["Public Sans", "sans-serif"],
+                body: ["Nunito Sans", "sans-serif"],
+                label: ["Public Sans", "sans-serif"],
+                rounded: ["Comfortaa", "cursive"]
+            },
+            boxShadow: {
+                'card': '0 6px 16px rgba(124,92,252,0.12)',
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            background-color: #FBF7FF;
+            font-family: 'Nunito Sans', sans-serif;
+            color: #2D2A45;
+        }
+        .font-rounded { font-family: 'Comfortaa', cursive; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .error-shake {
+            animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both;
+        }
+        @keyframes shake {
+            10%, 90% { transform: translate3d(-1px, 0, 0); }
+            20%, 80% { transform: translate3d(2px, 0, 0); }
+            30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+            40%, 60% { transform: translate3d(4px, 0, 0); }
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="antialiased pb-24">
+<!-- Top AppBar (JSON Authority) -->
+<header class="bg-surface dark:bg-surface flex items-center justify-between px-4 h-16 w-full docked full-width top-0 rounded-b-xl shadow-lg shadow-primary/10 sticky z-50">
+<div class="flex items-center gap-2">
+<button class="material-symbols-outlined text-primary hover:bg-primary/5 p-2 rounded-full transition-colors active:scale-95 duration-200">arrow_back</button>
+<h1 class="font-headline font-bold text-headline-sm text-primary">Tạo phần thưởng</h1>
+</div>
+<div class="flex items-center gap-1 bg-primary/10 px-3 py-1 rounded-full">
+<span class="material-symbols-outlined text-accent" style="font-variation-settings: 'FILL' 1;">stars</span>
+<span class="font-headline font-bold text-primary">500 ⭐</span>
+</div>
+</header>
+<main class="max-w-md mx-auto p-4 space-y-6">
+<!-- Illustration Section -->
+<div class="relative flex flex-col items-center justify-center pt-4">
+<div class="w-32 h-32 bg-white rounded-3xl shadow-card flex items-center justify-center relative overflow-hidden group">
+<div class="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+<span class="material-symbols-outlined text-6xl text-primary" style="font-variation-settings: 'FILL' 1;">card_giftcard</span>
+<button class="absolute bottom-1 right-1 w-8 h-8 bg-accent text-white rounded-full flex items-center justify-center shadow-lg active:scale-90 transition-transform">
+<span class="material-symbols-outlined text-sm">add_a_photo</span>
+</button>
+</div>
+<p class="mt-4 font-rounded font-bold text-primary">Thêm hình ảnh minh hoạ</p>
+</div>
+<!-- Form Section -->
+<div class="space-y-5">
+<!-- Tên phần thưởng (Error State) -->
+<div class="space-y-2 error-shake">
+<label class="block font-bold text-text-primary px-1">Tên phần thưởng <span class="text-error">*</span></label>
+<div class="relative">
+<input class="w-full bg-white border-2 border-error rounded-2xl px-4 py-3.5 focus:ring-0 focus:outline-none text-text-primary placeholder:text-secondary-text/50 shadow-sm transition-all" placeholder="Ví dụ: Đi công viên, Xem phim..." type="text"/>
+<span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-error">error</span>
+</div>
+<p class="text-error text-sm font-medium px-1 flex items-center gap-1">
+<span class="material-symbols-outlined text-xs">info</span>
+                    Vui lòng nhập tên phần thưởng
+                </p>
+</div>
+<!-- Mốc điểm cần đổi (Error State) -->
+<div class="space-y-2 error-shake">
+<label class="block font-bold text-text-primary px-1">Mốc điểm cần đổi <span class="text-error">*</span></label>
+<div class="relative">
+<input class="w-full bg-white border-2 border-error rounded-2xl px-4 py-3.5 focus:ring-0 focus:outline-none text-text-primary placeholder:text-secondary-text/50 shadow-sm transition-all" placeholder="Nhập số sao (ví dụ: 100)" type="number"/>
+<div class="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-1">
+<span class="material-symbols-outlined text-accent" style="font-variation-settings: 'FILL' 1;">stars</span>
+<span class="material-symbols-outlined text-error">error</span>
+</div>
+</div>
+<p class="text-error text-sm font-medium px-1 flex items-center gap-1">
+<span class="material-symbols-outlined text-xs">info</span>
+                    Vui lòng nhập số sao hợp lệ
+                </p>
+</div>
+<!-- Ghi chú thêm -->
+<div class="space-y-2">
+<label class="block font-bold text-text-primary px-1">Ghi chú (không bắt buộc)</label>
+<textarea class="w-full bg-white border-2 border-transparent rounded-2xl px-4 py-3.5 focus:border-primary/30 focus:ring-0 focus:outline-none text-text-primary placeholder:text-secondary-text/50 shadow-card transition-all" placeholder="Mô tả chi tiết phần thưởng hoặc điều kiện..." rows="3"></textarea>
+</div>
+</div>
+<!-- Suggestions Chips -->
+<div class="space-y-3">
+<h3 class="font-bold text-sm text-secondary-text uppercase tracking-wider px-1">Gợi ý phổ biến</h3>
+<div class="flex flex-wrap gap-2">
+<button class="px-4 py-2 bg-white border border-primary/10 rounded-full text-sm font-bold text-primary shadow-sm hover:bg-primary/5 active:scale-95 transition-all">🎡 Đi chơi công viên</button>
+<button class="px-4 py-2 bg-white border border-primary/10 rounded-full text-sm font-bold text-primary shadow-sm hover:bg-primary/5 active:scale-95 transition-all">🍦 Ăn kem</button>
+<button class="px-4 py-2 bg-white border border-primary/10 rounded-full text-sm font-bold text-primary shadow-sm hover:bg-primary/5 active:scale-95 transition-all">🎮 Chơi game 30p</button>
+<button class="px-4 py-2 bg-white border border-primary/10 rounded-full text-sm font-bold text-primary shadow-sm hover:bg-primary/5 active:scale-95 transition-all">🎁 Một món đồ chơi mới</button>
+</div>
+</div>
+<!-- Action Button -->
+<div class="pt-4">
+<button class="w-full bg-locked text-white font-rounded font-extrabold text-lg py-4 rounded-3xl shadow-lg shadow-locked/20 active:scale-95 transition-transform flex items-center justify-center gap-2 cursor-not-allowed">
+                Tạo ngay
+                <span class="material-symbols-outlined">add_circle</span>
+</button>
+<p class="text-center text-secondary-text text-sm mt-4 italic">Vui lòng sửa các lỗi trên để tiếp tục</p>
+</div>
+</main>
+<!-- Bottom Navigation Bar (JSON Authority) -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center h-20 px-4 bg-white shadow-[0_-4px_12px_rgba(124,92,252,0.12)] rounded-t-xl">
+<a class="flex flex-col items-center justify-center text-secondary-text hover:text-primary transition-all active:scale-90 duration-150" href="#">
+<span class="material-symbols-outlined">assignment</span>
+<span class="font-label font-bold text-label-sm">Nhiệm vụ</span>
+</a>
+<!-- Active Tab: Phần thưởng -->
+<a class="flex flex-col items-center justify-center bg-primary/10 text-primary rounded-full px-4 py-1 active:scale-90 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">redeem</span>
+<span class="font-label font-bold text-label-sm">Phần thưởng</span>
+</a>
+<a class="flex flex-col items-center justify-center text-secondary-text hover:text-primary transition-all active:scale-90 duration-150" href="#">
+<span class="material-symbols-outlined">face</span>
+<span class="font-label font-bold text-label-sm">Của con</span>
+</a>
+</nav>
+<!-- Micro-interaction for errors -->
+<script>
+        document.querySelectorAll('input').forEach(input => {
+            input.addEventListener('input', function() {
+                if(this.value.trim() !== "") {
+                    this.classList.remove('border-error');
+                    this.classList.add('border-primary/20');
+                    const errorMsg = this.closest('.space-y-2').querySelector('.text-error.text-sm');
+                    if(errorMsg) errorMsg.style.display = 'none';
+                    const errorIcon = this.parentNode.querySelector('.text-error.material-symbols-outlined');
+                    if(errorIcon) errorIcon.style.display = 'none';
+                }
+            });
+        });
+    </script>
+</body></html>

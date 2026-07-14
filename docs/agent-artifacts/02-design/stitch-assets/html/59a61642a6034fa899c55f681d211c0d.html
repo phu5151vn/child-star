@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+
+<html lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>S9a — Quản lý phần thưởng</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;700&amp;family=Nunito+Sans:wght@400;600;700;900&amp;family=Public+Sans:wght@400;700;900&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              'primary': '#7C5CFC',
+              'secondary': '#FF8FA3',
+              'accent': '#FFC531',
+              'background': '#FBF7FF',
+              'card': '#FFFFFF',
+              'success': '#3DD598',
+              'error': '#FF5C5C',
+              'locked': '#C7C2E0',
+              'text-primary': '#2D2A45',
+              'text-secondary': '#8E8AA8',
+            },
+            borderRadius: {
+              'DEFAULT': '0.5rem',
+              'lg': '1rem',
+              'xl': '1.5rem',
+              '2xl': '20px',
+              '3xl': '24px',
+              'full': '9999px'
+            },
+            fontFamily: {
+              'headline': ['Comfortaa', 'Public Sans', 'sans-serif'],
+              'display': ['Comfortaa', 'Public Sans', 'sans-serif'],
+              'body': ['Nunito Sans', 'sans-serif'],
+              'label': ['Public Sans', 'sans-serif']
+            },
+            boxShadow: {
+              'soft': '0 6px 16px rgba(124,92,252,0.12)',
+              'fab': '0 8px 24px rgba(124,92,252,0.3)',
+            }
+          },
+        },
+      }
+    </script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+      .active-pill {
+        font-variation-settings: 'FILL' 1;
+      }
+      body {
+        background-color: #FBF7FF;
+        font-family: 'Nunito Sans', sans-serif;
+        color: #2D2A45;
+      }
+      .custom-scrollbar::-webkit-scrollbar {
+        width: 0px;
+        background: transparent;
+      }
+      .toggle-checkbox:checked + .toggle-label {
+        background-color: #7C5CFC;
+      }
+      .toggle-checkbox:checked + .toggle-label .toggle-dot {
+        transform: translateX(100%);
+      }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen max-w-[390px] mx-auto bg-background relative overflow-x-hidden">
+<!-- Top AppBar (from JSON guidance) -->
+<header class="flex items-center justify-between px-4 h-16 w-full bg-surface dark:bg-surface docked full-width top-0 rounded-b-xl shadow-sm z-40 sticky top-0 bg-white">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary" data-icon="stars">stars</span>
+<h1 class="font-headline font-bold text-headline-sm text-primary text-[20px]">Phần thưởng</h1>
+</div>
+<div class="flex items-center gap-2 bg-primary/5 px-3 py-1.5 rounded-full active:scale-95 duration-200 transition-colors">
+<span class="text-primary font-bold text-sm">500 ⭐</span>
+</div>
+</header>
+<!-- Content ScrollView -->
+<main class="flex-1 px-4 pt-4 pb-32 custom-scrollbar overflow-y-auto">
+<!-- Summary/Filter section (Optional, for polish) -->
+<div class="flex items-center justify-between mb-6">
+<h2 class="text-text-primary font-bold text-lg">Danh sách quà</h2>
+<button class="flex items-center gap-1 text-primary font-bold text-sm bg-primary/5 px-3 py-1 rounded-full">
+<span class="material-symbols-outlined text-sm" data-icon="filter_list">filter_list</span>
+                Lọc
+            </button>
+</div>
+<!-- Reward Grid -->
+<div class="grid grid-cols-2 gap-4">
+<!-- Card 1: Kem -->
+<div class="bg-white rounded-2xl p-3 shadow-soft border border-primary/5 flex flex-col gap-2">
+<div class="relative w-full aspect-square bg-slate-50 rounded-2xl overflow-hidden mb-1">
+<img alt="Kem ngon" class="w-full h-full object-contain p-2" src="https://lh3.googleusercontent.com/aida/AP1WRLvTBB7Pofdd5YWOVuztKh5lbjWyky-QWcwQsCC8JIV8Y7SkRD4cSfQr38DGfJ1vPrafA-PYLUQe7neBiVBrNYeZaiZHnPhh0HxURb80LW0-YVA_hDq8pYJRg_LP6vPfDkvF9GLJZrk1pZTKn1g63T3d8Sz0MMwccxLmZjzfNCNsHdM9sJx0RXXRMkosTCB5w_CJaJ-8DnhyJ_uXduU3p5EhvQUprJ-JifSAK4_isl6dl-UMODyCegWmlTc"/>
+</div>
+<h3 class="font-bold text-text-primary text-[15px] leading-tight">Cây kem 7 màu</h3>
+<div class="flex items-center justify-between">
+<div class="bg-accent/20 text-text-primary px-2 py-0.5 rounded-full text-xs font-black flex items-center gap-1">
+                        350 <span class="text-[10px]">⭐</span>
+</div>
+<span class="text-[10px] text-text-secondary">Đã đổi: 12</span>
+</div>
+<div class="flex items-center justify-between mt-1 pt-2 border-t border-slate-50">
+<span class="text-[11px] font-bold text-text-secondary">Hoạt động</span>
+<div class="relative inline-block w-10 h-5 align-middle select-none transition duration-200 ease-in">
+<input checked="" class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-4 border-slate-200 appearance-none cursor-pointer checked:border-primary" id="toggle-1" name="toggle-1" type="checkbox"/>
+<label class="toggle-label block overflow-hidden h-5 rounded-full bg-slate-200 cursor-pointer transition-colors duration-200" for="toggle-1"></label>
+</div>
+</div>
+</div>
+<!-- Card 2: Robot -->
+<div class="bg-white rounded-2xl p-3 shadow-soft border border-primary/5 flex flex-col gap-2">
+<div class="relative w-full aspect-square bg-slate-50 rounded-2xl overflow-hidden mb-1">
+<img alt="Robot đồ chơi" class="w-full h-full object-contain p-2" src="https://lh3.googleusercontent.com/aida/AP1WRLukTJDwfsHD4w5AjecW38w9-4MXbyJr1DTbppW3Tr-v366OjkvZWx_Ah9NYfCMFz8V6z3XM2LfSXo3-lL2arpn9z2bB3BNvP9sUsOKMZhtWrVgTQF4DLXblRwvO0EnU7wxt1vAmk3NPAHp7bWMUmH6bAOb6HPAIi0mrZeulNPLSp_UmrsppI5eW97fDq368Nl5p9OFvnpxZWk9zQRqpkFkx0O6_QIfHjx5ZELMmLgM5VJ1IQ_lqgGnNkcM"/>
+</div>
+<h3 class="font-bold text-text-primary text-[15px] leading-tight">Robot chiến binh</h3>
+<div class="flex items-center justify-between">
+<div class="bg-accent/20 text-text-primary px-2 py-0.5 rounded-full text-xs font-black flex items-center gap-1">
+                        1.200 <span class="text-[10px]">⭐</span>
+</div>
+<span class="text-[10px] text-text-secondary">Đã đổi: 2</span>
+</div>
+<div class="flex items-center justify-between mt-1 pt-2 border-t border-slate-50">
+<span class="text-[11px] font-bold text-text-secondary">Hoạt động</span>
+<div class="relative inline-block w-10 h-5 align-middle select-none transition duration-200 ease-in">
+<input checked="" class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-4 border-slate-200 appearance-none cursor-pointer checked:border-primary" id="toggle-2" name="toggle-2" type="checkbox"/>
+<label class="toggle-label block overflow-hidden h-5 rounded-full bg-slate-200 cursor-pointer transition-colors duration-200" for="toggle-2"></label>
+</div>
+</div>
+</div>
+<!-- Card 3: Movie -->
+<div class="bg-white rounded-2xl p-3 shadow-soft border border-primary/5 flex flex-col gap-2">
+<div class="relative w-full aspect-square bg-slate-50 rounded-2xl overflow-hidden mb-1">
+<img alt="Vé xem phim" class="w-full h-full object-contain p-2" src="https://lh3.googleusercontent.com/aida/AP1WRLsfkoFCaaA4r7DzNryAMnNR7KRKDAf9uk1pSEGnAM6us4SiV7oFnCXPNUuzsSPHUSrHlhimnod77BNdgvi_3B52TdT_4ciy6cky9WpRlJ6ge18-2KudKxMib7ZkGYSqjHEnLjxfjQuun8UV-zQnP831IxK3lJjXruMYvffQvRj9OrbaUquiiXhtPUtRGGrqtxyoaVswMP6olapLOeluLEvlUMPs0WrvHWHqqXV3t1vaTadr5RP1_XC031E"/>
+</div>
+<h3 class="font-bold text-text-primary text-[15px] leading-tight">Vé xem phim</h3>
+<div class="flex items-center justify-between">
+<div class="bg-accent/20 text-text-primary px-2 py-0.5 rounded-full text-xs font-black flex items-center gap-1">
+                        500 <span class="text-[10px]">⭐</span>
+</div>
+<span class="text-[10px] text-text-secondary">Đã đổi: 6</span>
+</div>
+<div class="flex items-center justify-between mt-1 pt-2 border-t border-slate-50">
+<span class="text-[11px] font-bold text-text-secondary">Hoạt động</span>
+<div class="relative inline-block w-10 h-5 align-middle select-none transition duration-200 ease-in">
+<input checked="" class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-4 border-slate-200 appearance-none cursor-pointer checked:border-primary" id="toggle-3" name="toggle-3" type="checkbox"/>
+<label class="toggle-label block overflow-hidden h-5 rounded-full bg-slate-200 cursor-pointer transition-colors duration-200" for="toggle-3"></label>
+</div>
+</div>
+</div>
+<!-- Add New Placeholder Card -->
+<div class="bg-primary/5 border-2 border-dashed border-primary/20 rounded-2xl p-3 flex flex-col items-center justify-center gap-2 aspect-[3/4] active:scale-95 transition-transform">
+<div class="w-12 h-12 rounded-full bg-white flex items-center justify-center text-primary shadow-sm">
+<span class="material-symbols-outlined text-2xl" data-icon="add">add</span>
+</div>
+<span class="text-xs font-bold text-primary">Thêm quà mới</span>
+</div>
+</div>
+</main>
+<!-- FAB -->
+<button class="fixed bottom-24 right-6 w-14 h-14 bg-primary text-white rounded-full flex items-center justify-center shadow-fab active:scale-90 transition-transform z-50">
+<span class="material-symbols-outlined text-3xl" data-icon="add">add</span>
+</button>
+<!-- Bottom Navigation (from JSON guidance) -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center h-20 px-4 bg-white shadow-[0_-4px_12px_rgba(124,92,252,0.12)] rounded-t-xl">
+<a class="flex flex-col items-center justify-center text-secondary-text hover:text-primary transition-all active:scale-90 duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="assignment">assignment</span>
+<span class="font-label font-bold text-[10px]">Nhiệm vụ</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-primary/10 text-primary rounded-full px-4 py-1 active:scale-90 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined active-pill" data-icon="redeem" style="font-variation-settings: 'FILL' 1;">redeem</span>
+<span class="font-label font-bold text-[10px]">Phần thưởng</span>
+</a>
+<a class="flex flex-col items-center justify-center text-secondary-text hover:text-primary transition-all active:scale-90 duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="face">face</span>
+<span class="font-label font-bold text-[10px]">Của con</span>
+</a>
+</nav>
+<!-- Micro-interaction Script -->
+<script>
+      // Add simple feedback when toggles are clicked
+      document.querySelectorAll('.toggle-checkbox').forEach(toggle => {
+        toggle.addEventListener('change', function() {
+          const card = this.closest('.bg-white');
+          if (!this.checked) {
+            card.classList.add('opacity-60');
+            card.style.filter = 'grayscale(0.5)';
+          } else {
+            card.classList.remove('opacity-60');
+            card.style.filter = 'none';
+          }
+        });
+      });
+    </script>
+</body></html>

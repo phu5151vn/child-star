@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+
+<html class="light" lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<title>Theo dõi con - Bé Ngoan</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700;800&amp;family=Public+Sans:wght@600;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#7C5CFC",
+                        secondary: "#FF8FA3",
+                        accent: "#FFC531",
+                        background: "#FBF7FF",
+                        success: "#3DD598",
+                        error: "#FF5C5C",
+                        locked: "#C7C2E0",
+                        textPrimary: "#2D2A45",
+                        textSecondary: "#8E8AA8"
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "2xl": "20px",
+                        "3xl": "24px",
+                        "full": "9999px"
+                    },
+                    fontFamily: {
+                        headline: ["Public Sans", "sans-serif"],
+                        display: ["Public Sans", "sans-serif"],
+                        body: ["Nunito Sans", "sans-serif"],
+                        label: ["Public Sans", "sans-serif"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            background-color: #FBF7FF;
+            font-family: 'Nunito Sans', sans-serif;
+            color: #2D2A45;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .font-headline { font-family: 'Public Sans', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        .card-shadow {
+            box-shadow: 0 6px 16px rgba(124, 92, 252, 0.12);
+        }
+        
+        .active-child-ring {
+            box-shadow: 0 0 0 2px #7C5CFC;
+        }
+
+        @keyframes sparkle {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.6; transform: scale(1.2); }
+        }
+        .animate-sparkle { animation: sparkle 2s infinite ease-in-out; }
+    </style>
+</head>
+<body class="bg-background min-h-screen pb-24">
+<!-- Top App Bar -->
+<header class="sticky top-0 z-40 bg-[#FBF7FF] px-4 py-3 flex justify-between items-center w-full">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full overflow-hidden border-2 border-primary/20">
+<img class="w-full h-full object-cover" data-alt="A friendly and warm portrait of a young Vietnamese mother with a kind smile, styled in a clean 2D vector cartoon aesthetic. She has soft features and neatly styled hair, fitting the playful and caring theme of a parenting app. The background is a soft lavender gradient." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAtNbj4UdSR6FEcgby8dZET8zlcYLLQKo_9tkRIysohWfqTb4sgjHDBLXwHjiqcihm9FDZdg0GEh88ajhIuFOaK1WeNVxCHMdfEF6B4-7SWYOvCNSDMxtkcgL_BKQcFqk0bA2YB8xSv-YIESBjP-Icy26LdUP3CMfbSWnbp159_tqGuX1XOB8JRwN4t0xKinKuHiXCDuFvy_Q663zHytC-e4LP5RDyHZRBN9-cER0Sf-M3QyJ9fxqa1_jwaLQOESKZIayHmGD7z22g"/>
+</div>
+<h1 class="font-headline text-xl font-bold tracking-tight text-primary">Theo dõi con</h1>
+</div>
+<button class="w-10 h-10 flex items-center justify-center text-textSecondary active:scale-95 duration-150">
+<span class="material-symbols-outlined text-2xl" data-icon="logout">logout</span>
+</button>
+</header>
+<main class="px-4 space-y-6">
+<!-- Child Selector -->
+<section class="mt-2">
+<div class="flex gap-4 overflow-x-auto hide-scrollbar py-2">
+<!-- Active Child: Bin -->
+<button class="flex items-center gap-2 bg-white px-3 py-1.5 rounded-full card-shadow ring-2 ring-primary transition-all flex-shrink-0">
+<div class="w-8 h-8 rounded-full overflow-hidden bg-blue-100">
+<img class="w-full h-full object-cover" data-alt="A cute cartoon avatar of a young boy named Bin with short black hair and a cheerful expression. He is wearing a yellow t-shirt. The style is flat 2D vector with soft rounded lines, consistent with a premium kids educational app. Simple pastel blue background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAr-zwUynq3Wxt1ZqYrj-S3OpB6Pcy163ypEueMsMffwWmD9D-OJIPWLRhVmGCVUlzSwdOspnP-gZRXV0VmunFcsaZl8vRj6XDPKqqe3ZRAtdGnOB7tgBnGpkJe4BmsjyutCAhaq3wjEMo46gQYs6VT4sYHRa5-CKNfn1P9iqGmVb_ji29Ir1M39S9k6ywIEArsWzS5QPli33v4pIOJyVNLFo6WlYdy6yUHoOddZYSATFIITREl4CeiGJuIeHRhtMVFuFsjub50mGk"/>
+</div>
+<span class="text-sm font-bold text-primary">Bin</span>
+</button>
+<!-- Other Child: Miu -->
+<button class="flex items-center gap-2 bg-white/60 px-3 py-1.5 rounded-full transition-all flex-shrink-0">
+<div class="w-8 h-8 rounded-full overflow-hidden bg-pink-100">
+<img class="w-full h-full object-cover" data-alt="A sweet cartoon avatar of a young girl named Miu with two small pigtails and a happy smile. She is wearing a soft pink dress. The illustration is high-quality 2D vector art with a friendly and approachable feel for children. Minimalist lavender background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCyPzEpl5lPgEVZd_zxoByr1gEupX--pY_2SXf0N0IwuED1OuGLHN-ZxOfAyd4PMQ8TgzzUye2fyqrk542lIXQq6mR__pCa2tDdDh_gXLel1D4ucT-oyhSJrF0-KG-i-Wn-wCipSAPLLxQre4mks82hJNqb-q0YwvOUhFtGahAWdvhP27IXPqdS5CBPWf7lCK5XpAY7IlCHpjZt2oStydQ65XwOxcwd0vBXCJ7owxvBY39nQag_KGXn6kQusg031cPkqodULTDwRC4"/>
+</div>
+<span class="text-sm font-semibold text-textSecondary">Miu</span>
+</button>
+<!-- Add Child Button -->
+<button class="w-11 h-11 rounded-full border-2 border-dashed border-locked flex items-center justify-center text-locked">
+<span class="material-symbols-outlined" data-icon="add">add</span>
+</button>
+</div>
+</section>
+<!-- Overview Card -->
+<section class="relative overflow-hidden bg-white rounded-3xl p-5 card-shadow">
+<div class="absolute top-[-20px] right-[-20px] opacity-10 pointer-events-none">
+<img class="w-40 h-40" src="https://lh3.googleusercontent.com/aida/AP1WRLs5DrUGG8GJsfcXBh6GYox31IQHHv_LAQewqP1Fb18YKXvAZghSSzxgv06gf4GaW-X3PO2eBpZqTzUtFiP1jXIMeJ1eYzs-NuQTgolQ9wIPerD2Dwz3H1S3sIito4gFMhqTJGTj6MSPd46VZqafaWYFbJaKqy98Ew015we1yI83r_yxbmqqsVUHBRwRVN9R4fzTGAAWvEiyrnnIfOl2kmVc4Sa44Psul9WqWwwXU1EWb--eAS4avqIh--g"/>
+</div>
+<div class="flex items-center gap-4 relative z-10">
+<div class="relative">
+<div class="w-20 h-20 rounded-2xl overflow-hidden border-4 border-white shadow-md">
+<img class="w-full h-full object-cover" data-alt="A full profile portrait of a happy young boy named Bin in a playful cartoon style. He is holding a small trophy and smiling. The artwork features vibrant colors like purple, pink, and gold stars, matching the 'Bé Ngoan' app brand. Professional digital vector illustration." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBnGie2lLurxMhx_vc32PfMzweeg8g7-9tv6G4xXnM-dNwHrGXeWAVf__O-RXrNgoWNLGiRaxa0kJ9eGIsFJ-q9V6HuVM2oMWvjhO6aRgPtJFnOjc_HsPAs8EX-iQogsXBi_aF33LUnNCVv-UCYJaz9lmtVujLxay-X75fzEv4zH48piT45_AJz8TjP-bHuGSfKxu0YCQeTveasIiM7Sbg8Ve6vBLL2L6D6Jf5-1SIN29eqHRjOrLP1BBexQSzeMVhfDq_u75AJ7tA"/>
+</div>
+<div class="absolute -bottom-2 -right-2 bg-accent text-white text-[10px] font-black px-2 py-0.5 rounded-full shadow-sm">
+                        LV. 5
+                    </div>
+</div>
+<div class="flex-1">
+<div class="flex items-center justify-between">
+<h2 class="text-xl font-bold text-textPrimary">Bin</h2>
+<span class="text-secondary font-bold flex items-center gap-1">
+                            7 <span class="material-symbols-outlined text-lg" data-icon="local_fire_department" style="font-variation-settings: 'FILL' 1;">local_fire_department</span>
+</span>
+</div>
+<div class="mt-1 flex items-center gap-2">
+<span class="bg-primary/10 text-primary text-sm font-bold px-3 py-0.5 rounded-full">
+                            320 ⭐
+                        </span>
+<span class="text-textSecondary text-xs">Sắp lên Cấp 6!</span>
+</div>
+<div class="w-full h-2 bg-background rounded-full mt-3 overflow-hidden">
+<div class="h-full bg-primary rounded-full" style="width: 75%"></div>
+</div>
+</div>
+</div>
+</section>
+<!-- Filter Tabs -->
+<nav class="flex gap-2">
+<button class="flex-1 py-2 rounded-xl text-sm font-bold transition-all bg-primary text-white shadow-md">Chờ duyệt</button>
+<button class="flex-1 py-2 rounded-xl text-sm font-semibold transition-all bg-white text-textSecondary">Đã duyệt</button>
+<button class="flex-1 py-2 rounded-xl text-sm font-semibold transition-all bg-white text-textSecondary">Đã đổi quà</button>
+</nav>
+<!-- Section: Nhiệm vụ chờ duyệt -->
+<section class="space-y-4">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<h3 class="font-bold text-textPrimary">Nhiệm vụ chờ duyệt</h3>
+<span class="bg-secondary text-white text-[10px] font-bold px-2 py-0.5 rounded-full">3</span>
+</div>
+<button class="text-primary text-xs font-bold">Xem tất cả</button>
+</div>
+<!-- Task Card List -->
+<div class="space-y-3">
+<!-- Task 1 -->
+<div class="bg-white p-4 rounded-2xl card-shadow border border-primary/5">
+<div class="flex items-start gap-3">
+<div class="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center text-blue-500">
+<span class="material-symbols-outlined text-3xl" data-icon="menu_book">menu_book</span>
+</div>
+<div class="flex-1">
+<h4 class="font-bold text-textPrimary text-sm">Đọc sách 20 phút</h4>
+<p class="text-textSecondary text-xs mt-0.5">Bin nộp lúc 19:30</p>
+<!-- Proof Thumbnail -->
+<div class="mt-3 relative w-24 h-16 rounded-lg overflow-hidden border border-background">
+<img class="w-full h-full object-cover" data-alt="A photo showing a colorful children's storybook open on a wooden table, capturing the evidence of a task completion. The lighting is warm and domestic, suggesting a cozy evening reading session. Soft focus in the background to emphasize the book." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDITB7P5IUudtplAXkLbI7-Lx3iCR2IfcnVoT_AD4HUmDS87JalJGEkL-AxsPGxtvHtEuP-gePVIa5iXEYeRcsX_muMxaXUDLBnCnEW3NUnem7Pb-aa9pigus364RAGQ7d7HXnRDradoJ_nEAQl3Ay1rhUsxmFQ0t9ZSBLVOP7AlrACNi5Q667xknqAgxsma0oiE0VYtzjO9rS_CreBuDx_EntWNnPo1PvJlZvM6sSdSqAGTFOwb--180knc-n6vJyfTLniGTAvgpE"/>
+<div class="absolute inset-0 bg-black/20 flex items-center justify-center">
+<span class="material-symbols-outlined text-white text-lg" data-icon="zoom_in">zoom_in</span>
+</div>
+</div>
+<div class="flex gap-2 mt-4">
+<button class="flex-1 py-2 bg-success text-white rounded-xl text-xs font-bold flex items-center justify-center gap-1 active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-sm" data-icon="check_circle" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+                                    Duyệt
+                                </button>
+<button class="flex-1 py-2 border-2 border-error text-error rounded-xl text-xs font-bold active:scale-95 transition-transform">
+                                    Từ chối
+                                </button>
+</div>
+</div>
+</div>
+</div>
+<!-- Task 2 -->
+<div class="bg-white p-4 rounded-2xl card-shadow border border-primary/5">
+<div class="flex items-start gap-3">
+<div class="w-12 h-12 rounded-xl bg-orange-50 flex items-center justify-center text-orange-500">
+<span class="material-symbols-outlined text-3xl" data-icon="cleaning_services">cleaning_services</span>
+</div>
+<div class="flex-1">
+<h4 class="font-bold text-textPrimary text-sm">Dọn dẹp đồ chơi</h4>
+<p class="text-textSecondary text-xs mt-0.5">Bin nộp lúc 18:15</p>
+<div class="flex gap-2 mt-4">
+<button class="flex-1 py-2 bg-success text-white rounded-xl text-xs font-bold flex items-center justify-center gap-1 active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-sm" data-icon="check_circle" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+                                    Duyệt
+                                </button>
+<button class="flex-1 py-2 border-2 border-error text-error rounded-xl text-xs font-bold active:scale-95 transition-transform">
+                                    Từ chối
+                                </button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Section: Hoạt động gần đây -->
+<section class="space-y-4 pb-10">
+<h3 class="font-bold text-textPrimary">Hoạt động gần đây</h3>
+<div class="space-y-1 relative before:absolute before:left-[19px] before:top-2 before:bottom-2 before:w-0.5 before:bg-background">
+<!-- Activity 1 -->
+<div class="flex gap-4 items-center relative">
+<div class="w-10 h-10 rounded-full bg-success/10 text-success flex items-center justify-center z-10 border-4 border-background">
+<span class="material-symbols-outlined text-xl" data-icon="task_alt">task_alt</span>
+</div>
+<div class="flex-1">
+<p class="text-sm font-semibold text-textPrimary">Đã duyệt: Uống sữa đúng giờ</p>
+<p class="text-[11px] text-textSecondary italic">Hôm nay, 08:00</p>
+</div>
+<div class="text-accent font-bold text-sm">+10 ⭐</div>
+</div>
+<!-- Activity 2 -->
+<div class="flex gap-4 items-center relative">
+<div class="w-10 h-10 rounded-full bg-secondary/10 text-secondary flex items-center justify-center z-10 border-4 border-background">
+<span class="material-symbols-outlined text-xl" data-icon="redeem">redeem</span>
+</div>
+<div class="flex-1">
+<p class="text-sm font-semibold text-textPrimary">Đã đổi: 30 phút xem TV</p>
+<p class="text-[11px] text-textSecondary italic">Hôm qua, 20:15</p>
+</div>
+<div class="text-error font-bold text-sm">-50 ⭐</div>
+</div>
+<!-- Activity 3 -->
+<div class="flex gap-4 items-center relative">
+<div class="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center z-10 border-4 border-background">
+<span class="material-symbols-outlined text-xl" data-icon="star">star</span>
+</div>
+<div class="flex-1">
+<p class="text-sm font-semibold text-textPrimary">Lên cấp: Bin đạt Cấp 5</p>
+<p class="text-[11px] text-textSecondary italic">Hôm qua, 19:30</p>
+</div>
+<div class="animate-sparkle"><span class="material-symbols-outlined text-accent" data-icon="auto_awesome">auto_awesome</span></div>
+</div>
+</div>
+</section>
+</main>
+<!-- Bottom Navigation Bar (Parent Role) -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center h-16 px-2 pb-safe bg-white dark:bg-gray-800 rounded-t-[24px] shadow-[0_-6px_16px_rgba(124,92,252,0.12)]">
+<!-- Tab 1: Nhiệm vụ -->
+<a class="flex flex-col items-center justify-center text-[#8E8AA8] px-4 py-2 hover:text-[#FF8FA3] transition-colors active:scale-90 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="task_alt">task_alt</span>
+<span class="font-label text-xs font-semibold">Nhiệm vụ</span>
+</a>
+<!-- Tab 2: Phần thưởng -->
+<a class="flex flex-col items-center justify-center text-[#8E8AA8] px-4 py-2 hover:text-[#FF8FA3] transition-colors active:scale-90 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="redeem">redeem</span>
+<span class="font-label text-xs font-semibold">Phần thưởng</span>
+</a>
+<!-- Tab 3: Theo dõi con (Active) -->
+<a class="flex flex-col items-center justify-center text-[#7C5CFC] bg-[#7C5CFC]/10 rounded-xl px-4 py-2 hover:text-[#FF8FA3] transition-colors active:scale-90 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="insights" style="font-variation-settings: 'FILL' 1;">insights</span>
+<span class="font-label text-xs font-semibold">Theo dõi con</span>
+</a>
+</nav>
+<script>
+        // Simple micro-interaction for buttons
+        document.querySelectorAll('button').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const icon = this.querySelector('.material-symbols-outlined');
+                if (icon) {
+                    icon.style.transform = 'scale(1.2)';
+                    setTimeout(() => icon.style.transform = 'scale(1)', 150);
+                }
+            });
+        });
+    </script>
+</body></html>

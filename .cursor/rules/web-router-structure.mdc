@@ -1,0 +1,13 @@
+---
+description: Enforce route/module structure from approved architecture
+alwaysApply: true
+---
+
+# Route Structure Rule
+
+When editing the application:
+
+- Keep routes/pages under the frontend route structure defined in `architecture.md`.
+- Keep API routes under backend router structure defined in `architecture.md`.
+- Do not introduce ad-hoc route folders outside approved module boundaries.
+- If generated files land in wrong module, move them to the approved location and fix imports.

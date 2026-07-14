@@ -1,0 +1,14 @@
+---
+description: Enforce fidelity to approved product and flow artifacts
+alwaysApply: true
+---
+
+# Product Flow Fidelity Rule
+
+When editing UI/API behavior, preserve high fidelity to approved intake/product/flow artifacts.
+
+- Treat `docs/agent-artifacts/00-intake/`, `01-product/`, `02-design/`, `03-architecture/`, and `04-data/` as source of truth.
+- Do not redesign flows on your own unless explicitly requested.
+- Match approved screen/flow structure, state transitions, and role permissions.
+- Implement all intended states: loading, empty, error, success, disabled.
+- If a detail is missing, infer the smallest reasonable change and record deviation.

@@ -1,0 +1,59 @@
+{
+  "app": "Ung dung tao diem loyalty cho con",
+  "router": "react-router-v6",
+  "authStrategy": "role-based route guard, enforce backend",
+  "roles": ["parent", "child"],
+  "shells": [
+    {
+      "id": "auth",
+      "role": "public",
+      "layout": "centered-card",
+      "routes": [
+        { "id": "S0-login", "path": "/login", "screen": "Đăng nhập bố mẹ" },
+        { "id": "S0-profiles", "path": "/profiles", "screen": "Chọn hồ sơ (parent/child + PIN con)" }
+      ]
+    },
+    {
+      "id": "parent",
+      "role": "parent",
+      "layout": "sider-menu",
+      "defaultRoute": "/parent",
+      "menu": [
+        { "key": "dashboard", "label": "Tổng quan", "path": "/parent", "screen": "S1" },
+        { "key": "tasks", "label": "Nhiệm vụ", "path": "/parent/tasks", "screen": "S2" },
+        { "key": "rewards", "label": "Phần thưởng", "path": "/parent/rewards", "screen": "S4" },
+        { "key": "approvals", "label": "Duyệt hoàn thành", "path": "/parent/approvals", "screen": "S6", "badge": "submittedCount" },
+        { "key": "redemptions", "label": "Duyệt đổi thưởng", "path": "/parent/redemptions", "screen": "S7", "badge": "requestedCount" },
+        { "key": "children", "label": "Con & Sổ điểm", "path": "/parent/children", "screen": "S8" }
+      ],
+      "hiddenRoutes": [
+        { "path": "/parent/tasks/new", "screen": "S3" },
+        { "path": "/parent/tasks/:id/edit", "screen": "S3" },
+        { "path": "/parent/rewards/new", "screen": "S5" },
+        { "path": "/parent/rewards/:id/edit", "screen": "S5" },
+        { "path": "/parent/children/:id", "screen": "S8" }
+      ]
+    },
+    {
+      "id": "child",
+      "role": "child",
+      "layout": "topbar-points + bottom-tab (mobile)",
+      "defaultRoute": "/child",
+      "topBar": { "shows": ["pointsBalance", "avatar", "mascot"] },
+      "tabs": [
+        { "key": "home", "label": "Trang chính", "path": "/child", "screen": "S9", "icon": "home" },
+        { "key": "tasks", "label": "Nhiệm vụ", "path": "/child/tasks", "screen": "S10", "icon": "check" },
+        { "key": "rewards", "label": "Kho thưởng", "path": "/child/rewards", "screen": "S12", "icon": "gift" },
+        { "key": "history", "label": "Lịch sử điểm", "path": "/child/history", "screen": "S13", "icon": "history" }
+      ],
+      "hiddenRoutes": [
+        { "path": "/child/tasks/:id", "screen": "S11" }
+      ]
+    }
+  ],
+  "guards": {
+    "unauthenticated": "redirect /login",
+    "wrongRole": "redirect defaultRoute của role hiện tại",
+    "note": "Route guard chỉ ẩn/hiện UI. Quyền thực thi enforce ở backend theo role matrix PRD §4."
+  }
+}

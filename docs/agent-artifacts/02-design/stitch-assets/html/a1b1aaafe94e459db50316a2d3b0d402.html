@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+
+<html class="light" lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Bé Ngoan - Nhiệm vụ của con</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;700&amp;family=Nunito+Sans:wght@400;600;700;800&amp;family=Public+Sans:wght@400;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              primary: "#7C5CFC",
+              secondary: "#FF8FA3",
+              accent: "#FFC531",
+              background: "#FBF7FF",
+              success: "#3DD598",
+              error: "#FF5C5C",
+              locked: "#C7C2E0",
+              textPrimary: "#2D2A45",
+              textSecondary: "#8E8AA8"
+            },
+            borderRadius: {
+              "DEFAULT": "0.5rem",
+              "lg": "1rem",
+              "xl": "1.5rem",
+              "2xl": "24px",
+              "full": "9999px"
+            },
+            fontFamily: {
+              headline: ["Public Sans", "sans-serif"],
+              display: ["Comfortaa", "cursive"],
+              body: ["Nunito Sans", "sans-serif"],
+              label: ["Public Sans", "sans-serif"]
+            },
+            boxShadow: {
+              'soft': '0 6px 16px rgba(124, 92, 252, 0.12)',
+              'nav': '0 -6px 16px rgba(124, 92, 252, 0.12)'
+            },
+            animation: {
+              'bounce-short': 'bounce 1s ease-in-out 2',
+              'float': 'float 3s ease-in-out infinite',
+              'z-cloud': 'zCloud 4s ease-in-out infinite'
+            },
+            keyframes: {
+              float: {
+                '0%, 100%': { transform: 'translateY(0)' },
+                '50%': { transform: 'translateY(-10px)' },
+              },
+              zCloud: {
+                '0%': { opacity: 0, transform: 'translate(0, 0) scale(0.5)' },
+                '50%': { opacity: 1 },
+                '100%': { opacity: 0, transform: 'translate(20px, -40px) scale(1.2)' },
+              }
+            }
+          },
+        },
+      }
+    </script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+      body {
+        background-color: #FBF7FF;
+        font-family: 'Nunito Sans', sans-serif;
+        -webkit-tap-highlight-color: transparent;
+      }
+      .font-display { font-family: 'Comfortaa', cursive; }
+      .font-headline { font-family: 'Public Sans', sans-serif; }
+      
+      /* Custom background texture */
+      .bg-dots {
+        background-image: radial-gradient(#7C5CFC 0.5px, transparent 0.5px);
+        background-size: 24px 24px;
+        opacity: 0.05;
+      }
+
+      .floating-z {
+        position: absolute;
+        font-weight: bold;
+        color: #7C5CFC;
+        font-family: 'Comfortaa';
+      }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="flex flex-col min-h-screen text-textPrimary">
+<!-- TopAppBar -->
+<header class="bg-[#FBF7FF] dark:bg-slate-900 flex justify-between items-center px-4 py-3 w-full fixed top-0 z-50">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full border-2 border-white shadow-soft overflow-hidden bg-secondary">
+<img class="w-full h-full object-cover" data-alt="A cute 3D-style cartoon avatar of a happy young Vietnamese child with rosy cheeks and a friendly smile. The character is wearing a small purple cap and a bright yellow shirt, set against a soft lavender background with sparkles. The art style is clean, modern, and child-friendly, similar to high-end mobile game characters." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDAN_Y9OWzE44GaR4_q5mfXL8gWatMcikR28ebK0wECcyiVfDjNQrrtjz_c4VnkgwzfNe--AlGpiBb39WZ_gv1cPQCzXgpFZZyG5k-x-wolAkTNFYYRmLj7SJ-it7hk68B5rVvV-iOa0RndJbDrZHMDocIFN6lrThGXpWWZsplpCu2SnfO9gsYv5FkE3LJxSgieEETIEO5PvgKJsdo4YW8vm7cpyLQ4dAyxOerINjcv9nSGiZ5JBwqvojQJT1wLCJI7yb7CoMva9A4"/>
+</div>
+<h1 class="font-display font-bold text-lg text-[#7C5CFC] dark:text-[#FF8FA3]">Nhiệm vụ của con</h1>
+</div>
+<div class="bg-white px-3 py-1.5 rounded-full shadow-soft flex items-center gap-1.5">
+<span class="text-base">⭐</span>
+<span class="font-headline font-black text-[#7C5CFC] dark:text-[#FF8FA3] text-sm">150</span>
+</div>
+</header>
+<!-- Main Content (Empty State Canvas) -->
+<main class="flex-grow flex flex-col items-center justify-center px-6 pt-20 pb-24 relative overflow-hidden">
+<!-- Atmospheric Background Elements -->
+<div class="absolute inset-0 bg-dots pointer-events-none"></div>
+<div class="absolute top-1/4 -left-10 w-32 h-32 bg-secondary opacity-5 blur-3xl rounded-full"></div>
+<div class="absolute bottom-1/4 -right-10 w-40 h-40 bg-primary opacity-5 blur-3xl rounded-full"></div>
+<!-- Empty State Illustration Container -->
+<div class="relative w-full max-w-xs aspect-square flex items-center justify-center animate-float">
+<!-- Floating "Z"s for sleeping effect -->
+<span class="floating-z animate-z-cloud" style="top: 20%; right: 25%; font-size: 24px; animation-delay: 0s;">Z</span>
+<span class="floating-z animate-z-cloud" style="top: 15%; right: 15%; font-size: 18px; animation-delay: 1.5s;">Z</span>
+<span class="floating-z animate-z-cloud" style="top: 25%; right: 10%; font-size: 14px; animation-delay: 0.8s;">Z</span>
+<!-- Character Illustration -->
+<div class="relative w-64 h-64">
+<img class="w-full h-full object-contain drop-shadow-xl" data-alt="A very cute, pastel-colored illustration of a small round bear sleeping peacefully on a fluffy white cloud. The bear is light lavender and blue, curled up with a tiny smile. The cloud is floating in a soft cream-colored space with tiny golden stars and a crescent moon. The style is soft-shaded, rounded 2D cartoon, perfect for a children's app interface." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDa67nL6kP5xXlGrkfKx0IuAZT1jcoyoepVO4see6K9cli-SrBehCmh8AwJrs1GYhYtbsL_sz30Np0hTuxAJOJ1TNa-Y0iLE320OarQ4Ni9jLSQjNJAStDd1563OBzVVXJXbWGn5G4lE2GugPN-Nc1bTkFUytREJa08ri8y9h1wRoqVEbwrV7bfZMm5oZ4NC4BEFD28ckToCb2pE0Om8H0wLOxGNvnLxSnAcOg01XEeYEqt4qVvWqQ93UnG6nsnC8sDECbSmE6_pbc"/>
+</div>
+</div>
+<!-- Typography Cluster -->
+<div class="text-center mt-8 z-10">
+<h2 class="text-2xl font-display font-bold text-textPrimary mb-2">Chưa có nhiệm vụ nào</h2>
+<p class="text-textSecondary text-base font-body max-w-[240px] mx-auto leading-relaxed">
+                Đợi bố mẹ giao nhiệm vụ mới nhé!
+            </p>
+</div>
+<!-- Secondary Action (Subtle) -->
+<button class="mt-8 px-6 py-3 bg-white border-2 border-primary/10 rounded-full text-primary font-bold text-sm shadow-soft hover:bg-primary/5 transition-colors active:scale-95">
+            Nhắc bố mẹ ngay ✨
+        </button>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-2 py-3 bg-white shadow-nav rounded-t-[24px]">
+<!-- Tab: Nhiệm vụ (Active) -->
+<a class="flex flex-col items-center justify-center bg-[#7C5CFC] text-white rounded-xl px-4 py-2 animate-bounce-short transition-transform active:scale-90" href="#">
+<span class="material-symbols-outlined mb-0.5" style="font-variation-settings: 'FILL' 1;">task_alt</span>
+<span class="font-label font-bold text-xs">Nhiệm vụ</span>
+</a>
+<!-- Tab: Phần thưởng -->
+<a class="flex flex-col items-center justify-center text-[#8E8AA8] p-2 hover:bg-[#FBF7FF] transition-all active:scale-90" href="#">
+<span class="material-symbols-outlined mb-0.5">redeem</span>
+<span class="font-label font-bold text-xs">Phần thưởng</span>
+</a>
+<!-- Tab: Của con -->
+<a class="flex flex-col items-center justify-center text-[#8E8AA8] p-2 hover:bg-[#FBF7FF] transition-all active:scale-90" href="#">
+<span class="material-symbols-outlined mb-0.5">face</span>
+<span class="font-label font-bold text-xs">Của con</span>
+</a>
+</nav>
+<!-- Micro-interaction Script -->
+<script>
+        // Simple sparkle effect on mouse move or touch
+        document.addEventListener('mousedown', (e) => {
+            createSparkle(e.clientX, e.clientY);
+        });
+
+        function createSparkle(x, y) {
+            const sparkle = document.createElement('div');
+            sparkle.innerHTML = '✨';
+            sparkle.style.position = 'fixed';
+            sparkle.style.left = x + 'px';
+            sparkle.style.top = y + 'px';
+            sparkle.style.pointerEvents = 'none';
+            sparkle.style.fontSize = '20px';
+            sparkle.style.zIndex = '9999';
+            sparkle.style.transition = 'all 0.8s ease-out';
+            sparkle.style.transform = 'translate(-50%, -50%)';
+            document.body.appendChild(sparkle);
+
+            setTimeout(() => {
+                sparkle.style.transform = `translate(-50%, -100px) rotate(${Math.random() * 360}deg) scale(0)`;
+                sparkle.style.opacity = '0';
+            }, 50);
+
+            setTimeout(() => {
+                document.body.removeChild(sparkle);
+            }, 1000);
+        }
+    </script>
+</body></html>

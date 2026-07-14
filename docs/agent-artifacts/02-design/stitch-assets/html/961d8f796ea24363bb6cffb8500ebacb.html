@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+
+<html lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Bé Ngoan - Tạo nhiệm vụ</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;700&amp;family=Nunito+Sans:wght@400;600;700;900&amp;family=Public+Sans:wght@400;700;900&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#7C5CFC",
+                        secondary: "#FF8FA3",
+                        accent: "#FFC531",
+                        background: "#FBF7FF",
+                        success: "#3DD598",
+                        error: "#FF5C5C",
+                        locked: "#C7C2E0",
+                        'text-primary': "#2D2A45",
+                        'text-secondary': "#8E8AA8",
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "2xl": "2rem",
+                        "full": "9999px"
+                    },
+                    fontFamily: {
+                        "headline": ["Comfortaa", "Public Sans", "sans-serif"],
+                        "display": ["Public Sans", "sans-serif"],
+                        "body": ["Nunito Sans", "sans-serif"],
+                        "label": ["Public Sans", "sans-serif"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .bento-card {
+            background: white;
+            box-shadow: 0 6px 16px rgba(124,92,252,0.12);
+            transition: transform 0.2s ease;
+        }
+        .bento-card:active {
+            transform: scale(0.98);
+        }
+        body {
+            background-color: #FBF7FF;
+            font-family: 'Nunito Sans', sans-serif;
+            color: #2D2A45;
+        }
+        .error-shake {
+            animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+        }
+        @keyframes shake {
+            10%, 90% { transform: translate3d(-1px, 0, 0); }
+            20%, 80% { transform: translate3d(2px, 0, 0); }
+            30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+            40%, 60% { transform: translate3d(4px, 0, 0); }
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="flex flex-col min-h-screen">
+<!-- TopAppBar -->
+<header class="bg-[#FBF7FF] dark:bg-gray-900 sticky top-0 z-50">
+<div class="flex justify-between items-center px-4 py-3 w-full">
+<div class="flex items-center gap-3">
+<button class="active:scale-95 duration-150 text-[#7C5CFC]">
+<span class="material-symbols-outlined text-2xl">arrow_back</span>
+</button>
+<h1 class="font-headline text-xl font-bold tracking-tight text-[#7C5CFC]">Tạo nhiệm vụ</h1>
+</div>
+<div class="w-10 h-10 rounded-full overflow-hidden border-2 border-white shadow-sm">
+<img class="w-full h-full object-cover" data-alt="A cute 3D cartoon avatar of a happy young Vietnamese boy with big eyes and a friendly smile. The character is rendered in a soft, bright Pixar-style 3D art style, wearing a vibrant purple and white t-shirt. The background is a clean, solid soft lilac color with professional studio lighting that highlights the playful and friendly personality of the 'Bé Ngoan' app." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCPFgF1tKTFeL7dKK526NqHYN1Phf7RKdoz-x0bq0Rf03VUKwXVHnUaehRrm8dcSTB4X8KreTneZsMNHwjL6QmVIURa0yz_tInLVqeFxS2JHfv1t8Dt_wflBOpoMwuh8DLJmXBFncvLoHgc45IfPTtKC3nv5eUTWQKDRN50o11Ao5zC2eSOK6tl2uo8VudGdvzF1vXUoG-YH12PIxGRr478hnhbxhHdC5I6-eiH6IYj4jFV-aM2ivGwB6HWPmoW-ndGHgN1zXrQKUU"/>
+</div>
+</div>
+</header>
+<main class="flex-1 px-4 py-6 space-y-6 pb-32">
+<!-- Illustration Section -->
+<div class="relative w-full aspect-video rounded-3xl overflow-hidden bento-card border-4 border-white flex items-center justify-center bg-gradient-to-br from-[#7C5CFC]/10 to-[#FF8FA3]/10">
+<div class="text-center p-6">
+<div class="w-24 h-24 mx-auto mb-3 bg-white rounded-full flex items-center justify-center shadow-inner">
+<span class="material-symbols-outlined text-5xl text-accent" style="font-variation-settings: 'FILL' 1;">edit_calendar</span>
+</div>
+<p class="text-[#8E8AA8] text-sm font-medium">Bố mẹ ơi, hãy cùng bé xây dựng thói quen tốt mỗi ngày nhé!</p>
+</div>
+</div>
+<!-- Task Form -->
+<div class="space-y-6">
+<!-- Field: Tên nhiệm vụ (ERROR STATE) -->
+<div class="space-y-2 error-shake">
+<label class="block text-sm font-bold text-[#2D2A45] ml-1">Tên nhiệm vụ</label>
+<div class="relative">
+<input class="w-full px-4 py-4 rounded-2xl bg-white border-2 border-[#FF5C5C] text-[#2D2A45] focus:outline-none focus:ring-4 focus:ring-[#FF5C5C]/10 placeholder-[#C7C2E0] transition-all" placeholder="Ví dụ: Đánh răng, Dọn đồ chơi..." type="text"/>
+<span class="absolute right-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-[#FF5C5C]">error</span>
+</div>
+<p class="text-[12px] font-bold text-[#FF5C5C] ml-1">Vui lòng nhập tên nhiệm vụ</p>
+</div>
+<!-- Field: Chọn phần thưởng -->
+<div class="space-y-3">
+<label class="block text-sm font-bold text-[#2D2A45] ml-1">Phần thưởng (Số sao)</label>
+<div class="grid grid-cols-4 gap-3">
+<button class="bento-card py-4 rounded-2xl flex flex-col items-center gap-1 border-2 border-transparent active:border-primary">
+<span class="material-symbols-outlined text-[#FFC531]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-bold text-xs">5</span>
+</button>
+<button class="bento-card py-4 rounded-2xl flex flex-col items-center gap-1 border-2 border-primary bg-primary/5">
+<span class="material-symbols-outlined text-[#FFC531]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-bold text-xs text-primary">10</span>
+</button>
+<button class="bento-card py-4 rounded-2xl flex flex-col items-center gap-1 border-2 border-transparent">
+<span class="material-symbols-outlined text-[#FFC531]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-bold text-xs">20</span>
+</button>
+<button class="bento-card py-4 rounded-2xl flex flex-col items-center gap-1 border-2 border-transparent bg-white/50 border-dashed border-[#C7C2E0]">
+<span class="material-symbols-outlined text-[#8E8AA8]">add</span>
+<span class="font-bold text-xs text-[#8E8AA8]">Khác</span>
+</button>
+</div>
+</div>
+<!-- Field: Lịch thực hiện -->
+<div class="space-y-3">
+<label class="block text-sm font-bold text-[#2D2A45] ml-1">Ngày thực hiện</label>
+<div class="flex flex-wrap gap-2">
+<span class="px-4 py-2 rounded-full bg-primary text-white text-xs font-bold shadow-md shadow-primary/20">Thứ 2</span>
+<span class="px-4 py-2 rounded-full bg-primary text-white text-xs font-bold shadow-md shadow-primary/20">Thứ 3</span>
+<span class="px-4 py-2 rounded-full bg-primary text-white text-xs font-bold shadow-md shadow-primary/20">Thứ 4</span>
+<span class="px-4 py-2 rounded-full bg-white text-text-secondary border border-[#E5E0FF] text-xs font-bold">Thứ 5</span>
+<span class="px-4 py-2 rounded-full bg-primary text-white text-xs font-bold shadow-md shadow-primary/20">Thứ 6</span>
+<span class="px-4 py-2 rounded-full bg-white text-text-secondary border border-[#E5E0FF] text-xs font-bold">Thứ 7</span>
+<span class="px-4 py-2 rounded-full bg-secondary text-white text-xs font-bold shadow-md shadow-secondary/20">CN</span>
+</div>
+</div>
+<!-- Additional Options -->
+<div class="bento-card p-4 rounded-2xl flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-xl bg-[#FF8FA3]/10 flex items-center justify-center text-[#FF8FA3]">
+<span class="material-symbols-outlined">alarm</span>
+</div>
+<div>
+<p class="font-bold text-sm">Nhắc nhở bé</p>
+<p class="text-xs text-[#8E8AA8]">Thông báo vào lúc 07:00 sáng</p>
+</div>
+</div>
+<div class="w-12 h-6 bg-primary rounded-full relative p-1 transition-colors cursor-pointer">
+<div class="w-4 h-4 bg-white rounded-full absolute right-1"></div>
+</div>
+</div>
+</div>
+</main>
+<!-- Sticky Bottom Button Area -->
+<div class="fixed bottom-0 left-0 w-full p-4 bg-gradient-to-t from-[#FBF7FF] via-[#FBF7FF] to-transparent">
+<div class="max-w-md mx-auto space-y-3">
+<button class="w-full py-4 bg-primary text-white rounded-2xl font-bold text-lg shadow-[0_8px_0_#5A3EB4] active:shadow-none active:translate-y-[8px] transition-all flex items-center justify-center gap-2">
+<span>Lưu nhiệm vụ</span>
+<span class="material-symbols-outlined">check_circle</span>
+</button>
+<div class="h-4"></div> <!-- Safe area spacing -->
+</div>
+</div>
+<!-- BottomNavBar (Optional suppressed as it is a task screen but requested "Same layout as Default", showing for context) -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center h-16 px-2 pb-safe bg-white dark:bg-gray-800 rounded-t-[24px] shadow-[0_-6px_16px_rgba(124,92,252,0.12)] md:hidden">
+<div class="flex flex-col items-center justify-center text-[#7C5CFC] bg-[#7C5CFC]/10 rounded-xl px-4 py-2">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">task_alt</span>
+<span class="font-label text-xs font-semibold">Nhiệm vụ</span>
+</div>
+<div class="flex flex-col items-center justify-center text-[#8E8AA8] px-4 py-2 hover:text-[#FF8FA3] transition-colors active:scale-90 duration-200">
+<span class="material-symbols-outlined">redeem</span>
+<span class="font-label text-xs font-semibold">Phần thưởng</span>
+</div>
+<div class="flex flex-col items-center justify-center text-[#8E8AA8] px-4 py-2 hover:text-[#FF8FA3] transition-colors active:scale-90 duration-200">
+<span class="material-symbols-outlined">insights</span>
+<span class="font-label text-xs font-semibold">Theo dõi con</span>
+</div>
+</nav>
+<script>
+        // Simple micro-interaction for buttons
+        document.querySelectorAll('button').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const audio = new Audio('https://www.soundjay.com/buttons/sounds/button-37a.mp3');
+                audio.volume = 0.1;
+                // audio.play(); // Disabled for silence but logic exists
+            });
+        });
+    </script>
+</body></html>

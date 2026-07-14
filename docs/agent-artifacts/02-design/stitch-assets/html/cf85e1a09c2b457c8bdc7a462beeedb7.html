@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+
+<html lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<title>Bé Ngoan - Đăng nhập</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;500;700&amp;family=Nunito+Sans:wght@400;600;700;800&amp;family=Public+Sans:wght@400;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#7C5CFC",
+                        secondary: "#FF8FA3",
+                        accent: "#FFC531",
+                        background: "#FBF7FF",
+                        card: "#FFFFFF",
+                        success: "#3DD598",
+                        error: "#FF5C5C",
+                        locked: "#C7C2E0",
+                        textPrimary: "#2D2A45",
+                        textSecondary: "#8E8AA8",
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "2xl": "1.5rem",
+                        "3xl": "2rem",
+                        "full": "9999px"
+                    },
+                    fontFamily: {
+                        headline: ["Comfortaa", "Public Sans", "sans-serif"],
+                        display: ["Comfortaa", "Public Sans", "sans-serif"],
+                        body: ["Nunito Sans", "sans-serif"],
+                        label: ["Public Sans", "sans-serif"]
+                    },
+                    boxShadow: {
+                        'soft': '0 6px 16px rgba(124, 92, 252, 0.12)',
+                        'inner-soft': 'inset 0 2px 4px rgba(0,0,0,0.05)',
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Nunito Sans', sans-serif;
+            background-color: #FBF7FF;
+            color: #2D2A45;
+            overflow-x: hidden;
+        }
+        .font-display { font-family: 'Comfortaa', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .spinner {
+            animation: rotate 1.5s linear infinite;
+        }
+        @keyframes rotate {
+            100% { transform: rotate(360deg); }
+        }
+        .loading-overlay {
+            background: rgba(251, 247, 255, 0.4);
+            backdrop-filter: blur(2px);
+        }
+        .floating-stars {
+            pointer-events: none;
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+        .star {
+            position: absolute;
+            color: #FFC531;
+            animation: pulse 2s infinite ease-in-out;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 0.3; transform: scale(0.8); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center relative bg-gradient-to-b from-[#FBF7FF] to-[#F3EBFF]">
+<!-- Decorative Animated Background Elements -->
+<div class="floating-stars">
+<span class="star material-symbols-outlined top-10 left-10 text-xl" style="animation-delay: 0s;">grade</span>
+<span class="star material-symbols-outlined top-20 right-12 text-2xl" style="animation-delay: 0.5s;">grade</span>
+<span class="star material-symbols-outlined bottom-40 left-8 text-lg" style="animation-delay: 1.2s;">grade</span>
+<span class="star material-symbols-outlined bottom-20 right-20 text-3xl" style="animation-delay: 0.8s;">grade</span>
+</div>
+<!-- Header Branding -->
+<header class="w-full fixed top-0 px-6 py-8 flex flex-col items-center z-10">
+<div class="flex items-center gap-2 mb-1">
+<span class="material-symbols-outlined text-primary text-4xl" style="font-variation-settings: 'FILL' 1;">face_6</span>
+<h1 class="text-primary font-display text-3xl font-black tracking-tight">Bé Ngoan</h1>
+</div>
+<p class="text-textSecondary text-sm font-medium">Học vui, chơi ngoan mỗi ngày!</p>
+</header>
+<main class="w-full max-w-[390px] px-6 pt-24 pb-12 z-10 flex flex-col items-center">
+<!-- Illustration Section -->
+<div class="relative w-full aspect-square mb-6 flex items-center justify-center">
+<div class="absolute inset-0 bg-primary/5 rounded-full blur-3xl"></div>
+<img alt="Minh họa gia đình hạnh phúc" class="w-full h-full object-contain relative z-10" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBAjjVT9X3pCQFpH_zXvHu6II0VVHwCTxL4HOEZaFsmwWPM-KZCyKI3XTYosOGteglOdJTBs2o__6a1ORNOvOBYOxvCgglr03ISPUriszHjisHn8astFfRCh_oil4UQ0-v2rdRMKX09J-oCU3S4Vfe5oxHW0qaYGqrjAbEGHSe1jXlec7ExLacR49lKCajqEUMG8fWekpGHxalJL9CLz_U9lP9jkWKO8KEh44iMOTTIyTkU2_51xzkx4G_CT_9qm_W_TRvh4pC9tDI"/>
+</div>
+<!-- Selection Card -->
+<div class="w-full bg-card rounded-3xl shadow-soft p-8 relative overflow-hidden">
+<!-- Global Loading Overlay for the form content -->
+<div class="loading-overlay absolute inset-0 z-20 flex flex-col items-center justify-center opacity-100 transition-opacity duration-300">
+<!-- Inner spinner shown only on button but here we use a subtle overlay for fields -->
+</div>
+<div class="relative z-10 opacity-70">
+<h2 class="text-textPrimary font-display text-xl font-bold text-center mb-6">Chào mừng gia đình mình!</h2>
+<!-- Role Selection -->
+<div class="grid grid-cols-2 gap-4 mb-8">
+<button class="flex flex-col items-center justify-center p-4 rounded-2xl bg-primary text-white border-2 border-primary shadow-lg scale-95 transition-all">
+<span class="material-symbols-outlined text-3xl mb-1" style="font-variation-settings: 'FILL' 1;">family_history</span>
+<span class="text-sm font-bold">Phụ huynh</span>
+</button>
+<button class="flex flex-col items-center justify-center p-4 rounded-2xl bg-white text-textSecondary border-2 border-locked transition-all">
+<span class="material-symbols-outlined text-3xl mb-1">child_care</span>
+<span class="text-sm font-bold">Bé yêu</span>
+</button>
+</div>
+<!-- Input Fields (Disabled Appearance) -->
+<div class="space-y-4 mb-8 pointer-events-none">
+<div class="space-y-1">
+<label class="text-xs font-bold text-textSecondary px-1">Email của ba mẹ</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-textSecondary text-xl">mail</span>
+<input class="w-full pl-11 pr-4 py-3.5 bg-gray-50 border-locked border-2 rounded-2xl text-textPrimary placeholder:text-locked focus:ring-0" disabled="" placeholder="ba-me@vidu.com" type="email" value="parent@example.com"/>
+</div>
+</div>
+<div class="space-y-1">
+<label class="text-xs font-bold text-textSecondary px-1">Mật khẩu</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-textSecondary text-xl">lock</span>
+<input class="w-full pl-11 pr-12 py-3.5 bg-gray-50 border-locked border-2 rounded-2xl text-textPrimary focus:ring-0" disabled="" type="password" value="••••••••"/>
+<span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-textSecondary text-xl cursor-not-allowed">visibility_off</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Login Button (Active Loading State) -->
+<button class="w-full relative py-4 bg-primary text-white rounded-2xl font-bold text-lg shadow-lg flex items-center justify-center gap-3 transition-all opacity-90 cursor-not-allowed group" disabled="">
+<span class="spinner material-symbols-outlined text-2xl">autorenew</span>
+<span>Đăng nhập...</span>
+<!-- Splash decoration -->
+<div class="absolute -top-1 -right-1 w-4 h-4 bg-accent rounded-full animate-ping opacity-75"></div>
+</button>
+<!-- Forgot Password (Disabled appearance) -->
+<div class="mt-4 text-center">
+<a class="text-sm font-bold text-locked pointer-events-none" href="#">Quên mật khẩu?</a>
+</div>
+</div>
+<!-- Secondary Action -->
+<div class="mt-8 text-center opacity-60">
+<span class="text-textSecondary text-sm font-medium">Gia đình mình chưa có tài khoản?</span>
+<a class="block mt-2 text-primary font-bold hover:underline" href="#">Đăng ký ngay tại đây</a>
+</div>
+</main>
+<!-- Success Confetti/Glitter Layer (hidden, but structure ready) -->
+<div class="fixed inset-0 pointer-events-none z-50" id="loading-particles"></div>
+<script>
+        // Simple micro-interaction for the loading state visualization
+        const particleContainer = document.getElementById('loading-particles');
+        
+        function createGlitter() {
+            if (Math.random() > 0.3) return; // Only sometimes
+            const glitter = document.createElement('div');
+            const size = Math.random() * 4 + 2;
+            const x = Math.random() * window.innerWidth;
+            const y = Math.random() * window.innerHeight;
+            
+            glitter.style.position = 'absolute';
+            glitter.style.left = x + 'px';
+            glitter.style.top = y + 'px';
+            glitter.style.width = size + 'px';
+            glitter.style.height = size + 'px';
+            glitter.style.backgroundColor = ['#7C5CFC', '#FF8FA3', '#FFC531'][Math.floor(Math.random() * 3)];
+            glitter.style.borderRadius = '50%';
+            glitter.style.opacity = '0';
+            glitter.style.transition = 'all 1s ease-out';
+            
+            particleContainer.appendChild(glitter);
+            
+            setTimeout(() => {
+                glitter.style.opacity = '0.6';
+                glitter.style.transform = `translateY(-20px) scale(0)`;
+            }, 100);
+            
+            setTimeout(() => {
+                glitter.remove();
+            }, 1100);
+        }
+
+        // Slow interval for "loading" atmospheric glitter
+        setInterval(createGlitter, 200);
+    </script>
+</body></html>

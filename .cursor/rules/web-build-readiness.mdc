@@ -1,0 +1,18 @@
+---
+description: Require approved flow/architecture artifacts before build
+alwaysApply: true
+---
+
+# Build Readiness First Rule
+
+Before implementing build stage:
+
+- Read and honor:
+  - `docs/agent-artifacts/00-intake/request.md`
+  - `docs/agent-artifacts/01-product/prd.md`
+  - `docs/agent-artifacts/03-architecture/architecture.md`
+  - `docs/agent-artifacts/04-data/schema.md`
+  - `docs/agent-artifacts/05-build/build-ready.md`
+
+- Build is blocked until required artifacts are present and consistent.
+- Do not invent substitute business flow that conflicts with approved PRD and technical flow.

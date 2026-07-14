@@ -1,0 +1,160 @@
+const API_BASE = '/api/v1';
+
+export interface ApiError {
+  error_code: string;
+  message: string;
+}
+
+export class ApiClientError extends Error {
+  constructor(
+    public code: string,
+    message: string,
+    public status: number,
+  ) {
+    super(message);
+  }
+}
+
+export function getToken(): string | null {
+  return localStorage.getItem('token');
+}
+
+export function setToken(token: string | null) {
+  if (token) localStorage.setItem('token', token);
+  else localStorage.removeItem('token');
+}
+
+export function getStoredRole(): string | null {
+  return localStorage.getItem('role');
+}
+
+export function setStoredRole(role: string | null) {
+  if (role) localStorage.setItem('role', role);
+  else localStorage.removeItem('role');
+}
+
+async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
+  const token = getToken();
+  const headers: Record<string, string> = {
+  ...(options.headers as Record<string, string>),
+  };
+  if (token) headers.Authorization = `Bearer ${token}`;
+  if (!(options.body instanceof FormData)) {
+    headers['Content-Type'] = 'application/json';
+  }
+
+  const res = await fetch(`${API_BASE}${path}`, { ...options, headers });
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({ message: res.statusText }));
+    const detail = body.detail ?? body;
+    throw new ApiClientError(
+      detail.error_code ?? 'UNKNOWN',
+      detail.message ?? detail ?? 'Lỗi không xác định',
+      res.status,
+    );
+  }
+  if (res.status === 204) return undefined as T;
+  return res.json();
+}
+
+export const api = {
+  get: <T>(path: string) => request<T>(path),
+  post: <T>(path: string, body?: unknown) =>
+    request<T>(path, { method: 'POST', body: body ? JSON.stringify(body) : undefined }),
+  put: <T>(path: string, body?: unknown) =>
+    request<T>(path, { method: 'PUT', body: body ? JSON.stringify(body) : undefined }),
+  patch: <T>(path: string, body?: unknown) =>
+    request<T>(path, { method: 'PATCH', body: body ? JSON.stringify(body) : undefined }),
+  delete: <T>(path: string) => request<T>(path, { method: 'DELETE' }),
+  upload: async (file: File, kind: string) => {
+    const form = new FormData();
+    form.append('file', file);
+    form.append('kind', kind);
+    return request<{ media_id: string }>('/media', { method: 'POST', body: form, headers: {} });
+  },
+};
+
+// Types
+export interface Me {
+  id: string;
+  role: 'parent' | 'child';
+  display_name: string;
+  family_id: string;
+  family_code?: string;
+  child_id?: string;
+  balance?: number;
+}
+
+export interface Task {
+  id: string;
+  title: string;
+  description?: string;
+  points: number;
+  require_proof: boolean;
+  is_active: boolean;
+  assignment_status?: string;
+  assignment_id?: string;
+}
+
+export interface Assignment {
+  id: string;
+  task_id: string;
+  child_id: string;
+  status: string;
+  task_title?: string;
+  task_points?: number;
+  child_name?: string;
+  proof_media_id?: string;
+  reject_reason?: string;
+  submitted_at?: string;
+}
+
+export interface Reward {
+  id: string;
+  title: string;
+  description?: string;
+  required_points: number;
+  stock?: number | null;
+  is_active: boolean;
+  is_unlocked?: boolean;
+  missing_points?: number;
+  is_out_of_stock: boolean;
+}
+
+export interface Redemption {
+  id: string;
+  reward_id: string;
+  child_id: string;
+  status: string;
+  points_spent?: number;
+  reward_title?: string;
+  child_name?: string;
+  reject_reason?: string;
+  requested_at: string;
+}
+
+export interface LedgerEntry {
+  id: string;
+  delta: number;
+  kind: string;
+  reason?: string;
+  created_at: string;
+}
+
+export interface ChildProfile {
+  id: string;
+  display_name: string;
+}
+
+export interface Child {
+  id: string;
+  display_name: string;
+  is_active: boolean;
+  balance: number;
+}
+
+export interface Family {
+  id: string;
+  name: string;
+  family_code: string;
+}

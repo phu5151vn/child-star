@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+
+<html lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Bé Ngoan - Đăng Nhập</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;700&amp;family=Nunito+Sans:wght@400;600;700&amp;family=Public+Sans:wght@400;700;900&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              'primary': '#7C5CFC',
+              'secondary': '#FF8FA3',
+              'accent': '#FFC531',
+              'background': '#FBF7FF',
+              'success': '#3DD598',
+              'error': '#FF5C5C',
+              'locked': '#C7C2E0',
+              'text-p': '#2D2A45',
+              'text-s': '#8E8AA8',
+              'error-bg': '#FFECEC'
+            },
+            borderRadius: {
+              'DEFAULT': '0.5rem',
+              'lg': '1rem',
+              'xl': '1.5rem',
+              '2xl': '24px',
+              'full': '9999px'
+            },
+            fontFamily: {
+              'headline': ['Comfortaa', 'cursive'],
+              'display': ['Public Sans', 'sans-serif'],
+              'body': ['Nunito Sans', 'sans-serif'],
+              'label': ['Public Sans', 'sans-serif']
+            }
+          },
+        },
+      }
+    </script>
+<style>
+      body {
+        font-family: 'Nunito Sans', sans-serif;
+        background: linear-gradient(180deg, #FBF7FF 0%, #F0E9FF 100%);
+        min-height: 100vh;
+        overflow-x: hidden;
+      }
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+      .role-card.active {
+        border: 3px solid #7C5CFC;
+        background-color: #F3F0FF;
+      }
+      .shake-anim {
+        animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+      }
+      @keyframes shake {
+        10%, 90% { transform: translate3d(-1px, 0, 0); }
+        20%, 80% { transform: translate3d(2px, 0, 0); }
+        30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+        40%, 60% { transform: translate3d(4px, 0, 0); }
+      }
+      .sparkle {
+        position: absolute;
+        pointer-events: none;
+        background: #FFC531;
+        border-radius: 50%;
+        opacity: 0;
+      }
+    </style>
+</head>
+<body class="flex flex-col items-center justify-center p-4">
+<!-- Top App Bar (Simplified for Login) -->
+<header class="w-full top-0 sticky flex items-center justify-center px-4 py-6 z-10">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[#7C5CFC] text-3xl" style="font-variation-settings: 'FILL' 1;">face_6</span>
+<h1 class="text-[#7C5CFC] font-display text-2xl font-black tracking-tight">Bé Ngoan</h1>
+</div>
+</header>
+<main class="w-full max-w-md flex flex-col items-center gap-6 mt-4 mb-12">
+<!-- Illustration -->
+<div class="relative w-64 h-64 flex items-center justify-center mb-2">
+<div class="absolute inset-0 bg-[#7C5CFC]/5 rounded-full blur-3xl scale-125"></div>
+<img alt="Illustration of a happy family with stars" class="relative z-0 w-full h-full object-contain drop-shadow-xl" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBAjjVT9X3pCQFpH_zXvHu6II0VVHwCTxL4HOEZaFsmwWPM-KZCyKI3XTYosOGteglOdJTBs2o__6a1ORNOvOBYOxvCgglr03ISPUriszHjisHn8astFfRCh_oil4UQ0-v2rdRMKX09J-oCU3S4Vfe5oxHW0qaYGqrjAbEGHSe1jXlec7ExLacR49lKCajqEUMG8fWekpGHxalJL9CLz_U9lP9jkWKO8KEh44iMOTTIyTkU2_51xzkx4G_CT_9qm_W_TRvh4pC9tDI"/>
+</div>
+<!-- Role Selection -->
+<div class="w-full flex flex-col gap-4">
+<h2 class="font-headline text-xl text-text-p font-bold text-center">Bé hay Ba Mẹ nè?</h2>
+<div class="grid grid-cols-2 gap-4">
+<!-- Role: Kid (Active by Default in this screen logic) -->
+<button class="role-card flex flex-col items-center p-4 bg-white rounded-2xl shadow-[0_6px_16px_rgba(124,92,252,0.12)] border-2 border-transparent transition-all active:scale-95" onclick="selectRole('kid')">
+<div class="w-14 h-14 bg-[#FBF7FF] rounded-full flex items-center justify-center mb-2">
+<span class="material-symbols-outlined text-primary text-3xl">extension</span>
+</div>
+<span class="font-label text-sm font-bold text-text-p">Bé Con</span>
+</button>
+<!-- Role: Parent -->
+<button class="role-card flex flex-col items-center p-4 bg-white rounded-2xl shadow-[0_6px_16px_rgba(124,92,252,0.12)] border-2 border-transparent transition-all active:scale-95" onclick="selectRole('parent')">
+<div class="w-14 h-14 bg-[#FBF7FF] rounded-full flex items-center justify-center mb-2">
+<span class="material-symbols-outlined text-text-s text-3xl">family_history</span>
+</div>
+<span class="font-label text-sm font-bold text-text-s">Ba Mẹ</span>
+</button>
+</div>
+</div>
+<!-- Login Form -->
+<section class="w-full bg-white rounded-2xl p-6 shadow-[0_6px_16px_rgba(124,92,252,0.12)] flex flex-col gap-4">
+<!-- Alert Box (Error State) -->
+<div class="shake-anim flex items-center gap-3 p-4 bg-[#FFECEC] rounded-xl border border-[#FF5C5C]/20">
+<span class="material-symbols-outlined text-[#FF5C5C] font-bold">error</span>
+<p class="text-[#8B0000] text-sm font-medium leading-tight">Sai tài khoản hoặc mật khẩu. Thử lại nhé!</p>
+</div>
+<div class="space-y-4">
+<div class="space-y-1">
+<label class="block text-xs font-bold text-text-s ml-1">Tên tài khoản</label>
+<div class="relative">
+<span class="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-text-s text-lg">person</span>
+<input class="w-full pl-11 pr-4 py-3 bg-[#FBF7FF] border-2 border-[#E8E4F5] rounded-xl focus:border-primary focus:ring-0 text-text-p font-medium transition-colors" type="text" value="BeNgoan123"/>
+</div>
+</div>
+<div class="space-y-1">
+<label class="block text-xs font-bold text-text-s ml-1">Mật khẩu</label>
+<div class="relative">
+<span class="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-text-s text-lg">lock</span>
+<input class="w-full pl-11 pr-4 py-3 bg-[#FBF7FF] border-2 border-[#E8E4F5] rounded-xl focus:border-primary focus:ring-0 text-text-p font-medium transition-colors" type="password" value="********"/>
+<button class="absolute right-4 top-1/2 -translate-y-1/2 text-text-s">
+<span class="material-symbols-outlined text-lg">visibility_off</span>
+</button>
+</div>
+</div>
+</div>
+<div class="flex justify-end">
+<a class="text-xs font-bold text-primary hover:underline" href="#">Quên mật khẩu?</a>
+</div>
+<button class="w-full py-4 bg-primary text-white font-bold rounded-xl shadow-lg shadow-primary/30 active:scale-95 transition-transform mt-2">
+                Đăng nhập
+            </button>
+</section>
+<!-- Social & Signup -->
+<div class="w-full flex flex-col items-center gap-6">
+<div class="flex items-center w-full gap-4">
+<div class="h-[1px] bg-[#E8E4F5] flex-grow"></div>
+<span class="text-xs font-bold text-text-s">Hoặc tiếp tục với</span>
+<div class="h-[1px] bg-[#E8E4F5] flex-grow"></div>
+</div>
+<div class="flex gap-4">
+<button class="w-14 h-14 bg-white rounded-full flex items-center justify-center shadow-md active:scale-90 transition-transform">
+<img alt="Google Logo" class="w-6 h-6" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC8d8BQzFC1lWdUc4Y5LbIO9Ch4xwa8Ki5RGfDXSZJShmALbE_8EOG8EmWoDXImv6Kl3OoS-xh9YS4-yJCwX3RjE0S0BfwtJaKhbCgP4GhdQFRPzXWGgR-5ClfIVOkeLtdvId3ZEOHoQ12njDWN8FJVjbn59c_hza-4m3vXjKuoFFElojzP0DtnwZ9fRe7Uc5WdA5tOY3fDWcCNgLSmdP6hQbTLO3sd_p3854xdRz762ZivZkaAw3Fw5JnpDgMdnB2niZ-in1P5lyw"/>
+</button>
+<button class="w-14 h-14 bg-[#1877F2] rounded-full flex items-center justify-center shadow-md active:scale-90 transition-transform">
+<svg class="w-7 h-7 text-white fill-current" viewbox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"></path></svg>
+</button>
+</div>
+<p class="text-sm font-medium text-text-p">
+                Chưa có tài khoản? <a class="text-primary font-bold hover:underline" href="#">Đăng ký ngay!</a>
+</p>
+</div>
+</main>
+<!-- Decoration Background Elements -->
+<div class="fixed top-20 -left-10 w-32 h-32 bg-secondary/10 rounded-full blur-2xl -z-10"></div>
+<div class="fixed bottom-20 -right-10 w-40 h-40 bg-accent/10 rounded-full blur-2xl -z-10"></div>
+<script>
+        function selectRole(role) {
+            const cards = document.querySelectorAll('.role-card');
+            cards.forEach(card => {
+                card.classList.remove('active', 'border-primary', 'bg-[#F3F0FF]');
+                const icon = card.querySelector('.material-symbols-outlined');
+                const label = card.querySelector('.font-label');
+                icon.classList.replace('text-primary', 'text-text-s');
+                label.classList.replace('text-primary', 'text-text-s');
+            });
+
+            const selectedCard = event.currentTarget;
+            selectedCard.classList.add('active', 'border-primary', 'bg-[#F3F0FF]');
+            const icon = selectedCard.querySelector('.material-symbols-outlined');
+            const label = selectedCard.querySelector('.font-label');
+            icon.classList.replace('text-text-s', 'text-primary');
+            label.classList.replace('text-text-s', 'text-primary');
+
+            createSparkleBurst(selectedCard);
+        }
+
+        function createSparkleBurst(element) {
+            const rect = element.getBoundingClientRect();
+            for (let i = 0; i < 6; i++) {
+                const sparkle = document.createElement('div');
+                sparkle.className = 'sparkle';
+                const size = Math.random() * 6 + 4;
+                sparkle.style.width = `${size}px`;
+                sparkle.style.height = `${size}px`;
+                
+                const startX = rect.left + rect.width / 2;
+                const startY = rect.top + rect.height / 2;
+                
+                document.body.appendChild(sparkle);
+                
+                const angle = (Math.PI * 2 / 6) * i;
+                const dist = 50 + Math.random() * 30;
+                const destX = startX + Math.cos(angle) * dist;
+                const destY = startY + Math.sin(angle) * dist;
+
+                sparkle.style.left = `${startX}px`;
+                sparkle.style.top = `${startY}px`;
+
+                sparkle.animate([
+                    { transform: 'translate(0, 0) scale(0)', opacity: 0 },
+                    { transform: `translate(${Math.cos(angle) * dist}px, ${Math.sin(angle) * dist}px) scale(1)`, opacity: 1, offset: 0.5 },
+                    { transform: `translate(${Math.cos(angle) * (dist + 20)}px, ${Math.sin(angle) * (dist + 20)}px) scale(0)`, opacity: 0 }
+                ], {
+                    duration: 600,
+                    easing: 'ease-out'
+                }).onfinish = () => sparkle.remove();
+            }
+        }
+
+        // Auto-select kid role on load for the visual
+        document.addEventListener('DOMContentLoaded', () => {
+            const kidBtn = document.querySelector('.role-card');
+            if(kidBtn) selectRole('kid');
+        });
+    </script>
+</body></html>

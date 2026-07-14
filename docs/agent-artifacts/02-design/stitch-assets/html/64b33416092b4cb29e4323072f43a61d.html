@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+
+<html class="light" lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Hồ sơ của con - Bé Ngoan</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;700&amp;family=Nunito+Sans:wght@400;600;700;800&amp;family=Public+Sans:wght@400;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#7C5CFC",
+                        secondary: "#FF8FA3",
+                        accent: "#FFC531",
+                        background: "#FBF7FF",
+                        card: "#FFFFFF",
+                        success: "#3DD598",
+                        error: "#FF5C5C",
+                        locked: "#C7C2E0",
+                        textPrimary: "#2D2A45",
+                        textSecondary: "#8E8AA8"
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "2xl": "2rem",
+                        "full": "9999px"
+                    },
+                    fontFamily: {
+                        headline: ["Public Sans", "sans-serif"],
+                        display: ["Comfortaa", "cursive"],
+                        body: ["Nunito Sans", "sans-serif"],
+                        label: ["Public Sans", "sans-serif"]
+                    },
+                    boxShadow: {
+                        'soft': '0 6px 16px rgba(124, 92, 252, 0.12)',
+                        'float': '0 10px 25px -5px rgba(124, 92, 252, 0.2)'
+                    },
+                    animation: {
+                        'bounce-short': 'bounce 1s ease-in-out 2',
+                        'float': 'floating 3s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        floating: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        }
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            background-color: #FBF7FF;
+            font-family: 'Nunito Sans', sans-serif;
+            color: #2D2A45;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+    </style>
+</head>
+<body class="pb-24">
+<!-- TopAppBar -->
+<header class="fixed top-0 left-0 right-0 z-50 bg-[#FBF7FF] dark:bg-slate-900 flex justify-between items-center px-4 py-3 w-full transition-all duration-300">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full border-2 border-primary overflow-hidden bg-white shadow-sm">
+<img class="w-full h-full object-cover" data-alt="A cute hand-drawn illustration of a happy cartoon child with rosy cheeks and sparkling eyes, set against a soft purple background. The style is whimsical and friendly, typical of high-quality children's educational apps, featuring soft rounded lines and a vibrant primary purple border." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBvurUTHbobKnJSkhlh9JlSxskfk6D4ARzjp-WJWKI4ULsGvnLySLXUUHmsmfPebChMfxd5eVt1tjPDZx_qFwEhxK7MFm7Ko2etInjak4FdYBWsXXztMnWIZvgpJFfNqwu42EztQQBzaze8cgw2kWZxTyLqhpk9i4x1YRhRxvYvbejnhu0elQdiYS4qzV4OxhUBxPtT0uIZdQRqlOLV81P7szFtHuV4CVm-jbaNCc0RerB80DdO0ZxF_KFvScUhWWbfz1wcxM-0L-s"/>
+</div>
+<h1 class="font-display font-bold text-lg text-[#7C5CFC] dark:text-[#FF8FA3]">Nhiệm vụ của con</h1>
+</div>
+<div class="flex items-center gap-2 bg-white dark:bg-slate-800 px-3 py-1.5 rounded-full shadow-soft transition-transform scale-95 active:scale-90">
+<span class="text-lg">⭐</span>
+<span class="font-headline font-black text-[#7C5CFC] dark:text-[#FF8FA3]">150</span>
+</div>
+</header>
+<main class="mt-20 px-4 space-y-6">
+<!-- User Stats Bento Grid -->
+<section class="grid grid-cols-2 gap-4">
+<div class="col-span-2 bg-white rounded-2xl p-5 shadow-soft border-b-4 border-primary/10 flex items-center justify-between">
+<div>
+<h2 class="text-textSecondary text-sm font-bold uppercase tracking-wider">Cấp độ hiện tại</h2>
+<p class="text-2xl font-black text-primary">Dũng sĩ Nhí</p>
+</div>
+<div class="relative w-16 h-16 flex items-center justify-center">
+<svg class="w-full h-full transform -rotate-90">
+<circle class="text-gray-100" cx="32" cy="32" fill="transparent" r="28" stroke="currentColor" stroke-width="6"></circle>
+<circle class="text-primary" cx="32" cy="32" fill="transparent" r="28" stroke="currentColor" stroke-dasharray="175.9" stroke-dashoffset="44" stroke-width="6"></circle>
+</svg>
+<span class="absolute font-black text-primary">Lv.5</span>
+</div>
+</div>
+<div class="bg-secondary/10 rounded-2xl p-4 shadow-soft border-b-4 border-secondary/20">
+<div class="flex items-center gap-2 mb-2">
+<span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;">favorite</span>
+<span class="text-xs font-bold text-secondary uppercase">Nỗ lực</span>
+</div>
+<p class="text-xl font-black text-textPrimary">24</p>
+<p class="text-[10px] text-textSecondary">Chuỗi ngày liên tiếp</p>
+</div>
+<div class="bg-accent/10 rounded-2xl p-4 shadow-soft border-b-4 border-accent/20">
+<div class="flex items-center gap-2 mb-2">
+<span class="material-symbols-outlined text-accent" style="font-variation-settings: 'FILL' 1;">emoji_events</span>
+<span class="text-xs font-bold text-accent uppercase">Huy hiệu</span>
+</div>
+<p class="text-xl font-black text-textPrimary">12</p>
+<p class="text-[10px] text-textSecondary">Đã thu thập</p>
+</div>
+</section>
+<!-- Badges Section -->
+<section>
+<div class="flex justify-between items-center mb-4">
+<h3 class="font-display font-bold text-textPrimary">Huy hiệu đạt được</h3>
+<button class="text-primary text-xs font-bold flex items-center gap-1">
+                    Xem tất cả <span class="material-symbols-outlined text-sm">chevron_right</span>
+</button>
+</div>
+<div class="flex gap-4 overflow-x-auto pb-4 no-scrollbar">
+<div class="flex-shrink-0 w-20 h-24 bg-white rounded-xl shadow-soft flex flex-col items-center justify-center p-2 border-b-2 border-primary/5">
+<div class="w-12 h-12 mb-2 animate-float">
+<img class="w-full h-full object-contain" data-alt="A vibrant golden 3D medal badge for children, featuring a smiling sun character in the center. The art style is rounded, polished, and friendly, reflecting a primary yellow and purple theme. High-quality digital render with soft shadows and glowing highlights on a clean white background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBTKu1oHWyDXKUF2-JTKP8y8kysiItjPM-AvPx_6GuPP1Ewrv5buRaC4nAE2kf_1A5RC4N5yMqDF-mWsoEMdgRUW0-Th8xpyZSkd-lvTEf130l_xUfWuxenIvxkvj4r2DnUPM3QbZw-so8pyyg9Er9eEoAYB8aNWpGdOr0_bUSqo1_4ecv6My77LO8RrdZjn9zzPHIn-8tioyysuialL2OZdJu53osQQQs9ZFKiKvHbMEfY5xdQhH5YhcjsyKh73gPL3zGfJDIrFzQ"/>
+</div>
+<span class="text-[10px] font-bold text-center leading-tight">Dậy sớm</span>
+</div>
+<div class="flex-shrink-0 w-20 h-24 bg-white rounded-xl shadow-soft flex flex-col items-center justify-center p-2 border-b-2 border-primary/5">
+<div class="w-12 h-12 mb-2">
+<img class="w-full h-full object-contain" data-alt="A cute green broccoli character badge wearing a superhero cape, representing healthy eating achievements. The illustration is designed for kids with a soft cartoon style, bright mint green colors, and a glossy finish. Isolated on a white background with a subtle drop shadow." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAL-iwk2eWSnHMO33VNz8qvEPtsqXr9A03Mv-4SoLPnstOIijr2tUF8bHetVuicbnvJy_bGV4st7k9m1hjbXmucRm-yH-sEaDQ1EkQXovhIsAMTU_EysI0MRjYBcrAigODQlnTgJJFZ-t3isP1lRYZEXycb_vr635Ywk6VHVcvcHfGXMHGks81P5t_JfdQcF96OnLFwb8KrQH4Ur4G3y0qbbmwXkNTE3eYDLE0FKwyEu5gTSdF5UAjYv72HmhQDHrOKgYFzxN2kPg0"/>
+</div>
+<span class="text-[10px] font-bold text-center leading-tight">Ăn rau xanh</span>
+</div>
+<div class="flex-shrink-0 w-20 h-24 bg-white rounded-xl shadow-soft flex flex-col items-center justify-center p-2 border-b-2 border-primary/5">
+<div class="w-12 h-12 mb-2 opacity-40 grayscale">
+<img class="w-full h-full object-contain" data-alt="A locked badge icon featuring a treasure chest with a large padlock. The design is rendered in soft purple and grey tones to indicate it hasn't been unlocked yet. Cute cartoon style suitable for a children's gamified app, featuring thick lines and rounded corners." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCdHvSbkt3Q6Y5-BIQXWN9ys_i31c8KSAImeJzJeHm4nZU9sOqoi65mRPM2IEnP4MIHvuNrqcImhuBlANyPDo57DirUIf1D0PPZwquv7oCzXCU2-DYDmIlVAYQ3D68PVMwaqNqmmVO_QZJUJt3KsaykXN9wYhf-ct97KvybWnecBGexgakBEIkl0GMPD9VDb2YqgebyD4LeOhWjWGmRJxOUMrT-YdKl-r3l5rQ0hxCXM7PWBPVIWZ5Y0q2dm5yNDno0FJDcqYfZkTw"/>
+</div>
+<span class="text-[10px] font-bold text-locked text-center leading-tight">Giúp đỡ</span>
+</div>
+<div class="flex-shrink-0 w-20 h-24 bg-white rounded-xl shadow-soft flex flex-col items-center justify-center p-2 border-b-2 border-primary/5">
+<div class="w-12 h-12 mb-2 opacity-40 grayscale">
+<img class="w-full h-full object-contain" data-alt="A locked badge icon of a book with wings, symbolizing reading achievements. Soft pastel colors, cartoonish and friendly style for kids. The image is slightly faded to represent a locked state within a reward system UI." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAih0pa6eKGaiteyTSWgqrm3ZkF6_S5P-ll1TYqad307LmoKsFFx9CzQ8y3Og0tXmRXtDgf47VtdRlHoX4pOF6o0PjUhxhOgE05K91fBVxWpDt9s6-KSsgGmqXvYf3EWhxq4ZsI7AVTrNAt-dzrIJWNKxsnHR8WNFFiIMPiM0v3g86VJqaka9Zj6kjuHQhwAdlq5EdiQfvrtwAIRJPO5CVrAZ_mcQ9TTaczXB7FQ_kHI06G7dEq3pi-JsTfbQHgHD1SepS8MNRCnDQ"/>
+</div>
+<span class="text-[10px] font-bold text-locked text-center leading-tight">Đọc sách</span>
+</div>
+</div>
+</section>
+<!-- Point History - EMPTY STATE -->
+<section class="space-y-4">
+<h3 class="font-display font-bold text-textPrimary">Lịch sử điểm</h3>
+<div class="bg-white rounded-3xl p-8 shadow-soft border-2 border-dashed border-primary/20 flex flex-col items-center justify-center text-center space-y-4 min-h-[300px]">
+<div class="w-48 h-48 relative">
+<img alt="Empty state illustration" class="w-full h-full object-contain" src="https://lh3.googleusercontent.com/aida/AP1WRLsj4sol-5d9taUdad3wQx9jCfRACqla8LynM0_Vgd09LcMaEsEytluab9NBmetNxH4QxZqs2PAohAw2l9gZ_Esg6vx1-U0e8F5KZXwYK9Y36URDBIk0vg9YbVGDIf0prjOOeuE1DzOx8cer4XdaeXppZ6NJKH57tEGNSWd8Q492tz07Bx4D_Ige3YchY3aQ0XSx9EjMlkGmo5BKpEtXFR2xj8h_AVVNGJDtOInD5PmIhNTlETqXlbdUJQ"/>
+</div>
+<div class="space-y-1">
+<h4 class="font-display font-bold text-lg text-textPrimary">Chưa có hoạt động nào</h4>
+<p class="text-textSecondary text-sm max-w-[200px] mx-auto">Con hãy hoàn thành nhiệm vụ để nhận những ngôi sao đầu tiên nhé!</p>
+</div>
+<button class="bg-primary text-white font-bold px-6 py-3 rounded-2xl shadow-float hover:opacity-90 active:scale-95 transition-all flex items-center gap-2">
+<span class="material-symbols-outlined">task_alt</span>
+                    Làm nhiệm vụ ngay
+                </button>
+</div>
+</section>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-2 py-3 bg-white rounded-t-2xl shadow-[0_-6px_16px_rgba(124,92,252,0.12)]">
+<a class="flex flex-col items-center justify-center text-[#8E8AA8] p-2 hover:bg-[#FBF7FF] transition-colors rounded-xl" href="#">
+<span class="material-symbols-outlined mb-1">task_alt</span>
+<span class="font-label font-bold text-[10px] uppercase">Nhiệm vụ</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#8E8AA8] p-2 hover:bg-[#FBF7FF] transition-colors rounded-xl" href="#">
+<span class="material-symbols-outlined mb-1">redeem</span>
+<span class="font-label font-bold text-[10px] uppercase">Phần thưởng</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-[#7C5CFC] text-white rounded-xl px-4 py-2 animate-bounce-short" href="#">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 1;">face</span>
+<span class="font-label font-bold text-[10px] uppercase">Của con</span>
+</a>
+</nav>
+<script>
+        // Micro-interactions and subtle effects
+        document.querySelectorAll('a, button').forEach(el => {
+            el.addEventListener('click', () => {
+                if (window.navigator.vibrate) {
+                    window.navigator.vibrate(10);
+                }
+            });
+        });
+
+        // Simple scroll header effect
+        window.addEventListener('scroll', () => {
+            const header = document.querySelector('header');
+            if (window.scrollY > 20) {
+                header.classList.add('shadow-soft', 'bg-white');
+                header.classList.remove('bg-transparent');
+            } else {
+                header.classList.remove('shadow-soft');
+                header.classList.add('bg-[#FBF7FF]');
+            }
+        });
+    </script>
+</body></html>

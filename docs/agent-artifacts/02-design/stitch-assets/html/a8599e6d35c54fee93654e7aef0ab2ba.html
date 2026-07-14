@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+
+<html lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Bé Ngoan - Theo dõi con (Loading)</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&amp;family=Public+Sans:ital,wght@0,100..900;1,100..900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#7C5CFC",
+                        secondary: "#FF8FA3",
+                        accent: "#FFC531",
+                        background: "#FBF7FF",
+                        card: "#FFFFFF",
+                        success: "#3DD598",
+                        error: "#FF5C5C",
+                        locked: "#C7C2E0",
+                        textPrimary: "#2D2A45",
+                        textSecondary: "#8E8AA8",
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "2xl": "24px",
+                        "full": "9999px"
+                    },
+                    fontFamily: {
+                        headline: ["Public Sans", "sans-serif"],
+                        display: ["Public Sans", "sans-serif"],
+                        body: ["Nunito Sans", "sans-serif"],
+                        label: ["Public Sans", "sans-serif"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+        .skeleton {
+            background: linear-gradient(90deg, #F3F1FF 25%, #E9E5FF 50%, #F3F1FF 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite linear;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            background-color: #FBF7FF;
+            font-family: 'Nunito Sans', sans-serif;
+            color: #2D2A45;
+        }
+        .bento-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="min-h-screen pb-24">
+<!-- TopAppBar -->
+<header class="bg-[#FBF7FF] dark:bg-gray-900 w-full top-0 z-50 sticky">
+<div class="flex justify-between items-center px-4 py-3 w-full">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full border-2 border-[#7C5CFC] overflow-hidden bg-white">
+<img class="w-full h-full object-cover" data-alt="A cute 3D cartoon avatar of a young child with soft features, wearing a tiny crown and a purple shirt, rendered in a high-quality animation style with soft lighting. The background is a gentle lavender gradient, matching the Bé Ngoan primary color palette. The image conveys joy and progress in a modern, kid-friendly app interface." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBNrfxxoSFr-mr2zKosFRotGmYQUqouH7mcvHj3YbEPcuhNHLRQI9RPBG9L1ZY9qiJ7OMCFKELGeGkHxIbKwASBEEVUlrP4EGcjYRr348bcBPjVoWvLEo2NfZhI85GzRIfx5SukGpk4zFfg9_rRsAmGJfa3_Fx1aq4ktRM5QwOnfOPF4eZP4-rjOs2U5Y3VhsuiKagYQdf6XLQVIRXi3DIeubS-GhPPx1Yi3RyMuzf2c6yl5BY7uLf2hYjTbP1Hv1fvZKLlnHJl6Jw"/>
+</div>
+<h1 class="font-headline text-2xl font-black text-[#7C5CFC]">Bé Ngoan</h1>
+</div>
+<button class="text-[#7C5CFC] hover:opacity-80 transition-opacity active:scale-95 duration-150">
+<span class="material-symbols-outlined text-2xl" style="font-variation-settings: 'FILL' 0;">notifications</span>
+</button>
+</div>
+</header>
+<main class="px-4 py-4 max-w-md mx-auto">
+<!-- Child Selector Skeleton -->
+<div class="flex gap-4 mb-8 overflow-x-hidden">
+<div class="flex flex-col items-center gap-2 min-w-[72px]">
+<div class="w-16 h-16 rounded-full skeleton"></div>
+<div class="w-12 h-3 rounded-full skeleton"></div>
+</div>
+<div class="flex flex-col items-center gap-2 min-w-[72px]">
+<div class="w-16 h-16 rounded-full skeleton opacity-60"></div>
+<div class="w-10 h-3 rounded-full skeleton opacity-60"></div>
+</div>
+<div class="flex flex-col items-center gap-2 min-w-[72px]">
+<div class="w-16 h-16 rounded-full skeleton opacity-40"></div>
+<div class="w-12 h-3 rounded-full skeleton opacity-40"></div>
+</div>
+<div class="flex flex-col items-center justify-center min-w-[72px]">
+<div class="w-16 h-16 rounded-full border-2 border-dashed border-[#C7C2E0] flex items-center justify-center text-[#C7C2E0]">
+<span class="material-symbols-outlined text-3xl">add</span>
+</div>
+</div>
+</div>
+<!-- Overview Dashboard Card Skeleton -->
+<div class="bg-white rounded-2xl p-6 shadow-[0_6px_16px_rgba(124,92,252,0.12)] mb-8">
+<div class="flex justify-between items-start mb-6">
+<div class="space-y-2">
+<div class="w-32 h-6 rounded-full skeleton"></div>
+<div class="w-48 h-4 rounded-full skeleton"></div>
+</div>
+<div class="w-12 h-12 rounded-xl skeleton"></div>
+</div>
+<div class="h-40 w-full rounded-2xl skeleton mb-6"></div>
+<div class="grid grid-cols-3 gap-4">
+<div class="flex flex-col items-center gap-2">
+<div class="w-8 h-8 rounded-full skeleton"></div>
+<div class="w-12 h-3 rounded-full skeleton"></div>
+</div>
+<div class="flex flex-col items-center gap-2 border-x border-[#F3F1FF]">
+<div class="w-8 h-8 rounded-full skeleton"></div>
+<div class="w-12 h-3 rounded-full skeleton"></div>
+</div>
+<div class="flex flex-col items-center gap-2">
+<div class="w-8 h-8 rounded-full skeleton"></div>
+<div class="w-12 h-3 rounded-full skeleton"></div>
+</div>
+</div>
+</div>
+<!-- Section Title Skeleton -->
+<div class="flex justify-between items-center mb-4">
+<div class="w-36 h-6 rounded-full skeleton"></div>
+<div class="w-20 h-4 rounded-full skeleton"></div>
+</div>
+<!-- Task Bento Grid Skeleton -->
+<div class="bento-grid mb-8">
+<!-- Large Card -->
+<div class="col-span-2 bg-white rounded-2xl p-5 shadow-[0_6px_16px_rgba(124,92,252,0.12)]">
+<div class="flex items-center gap-4 mb-4">
+<div class="w-12 h-12 rounded-xl skeleton"></div>
+<div class="space-y-2 flex-1">
+<div class="w-3/4 h-4 rounded-full skeleton"></div>
+<div class="w-1/2 h-3 rounded-full skeleton"></div>
+</div>
+</div>
+<div class="w-full h-2 bg-[#F3F1FF] rounded-full overflow-hidden">
+<div class="skeleton h-full w-2/3"></div>
+</div>
+</div>
+<!-- Small Card 1 -->
+<div class="bg-white rounded-2xl p-5 shadow-[0_6px_16px_rgba(124,92,252,0.12)] flex flex-col gap-3">
+<div class="w-10 h-10 rounded-xl skeleton"></div>
+<div class="w-full h-4 rounded-full skeleton"></div>
+<div class="w-2/3 h-3 rounded-full skeleton"></div>
+</div>
+<!-- Small Card 2 -->
+<div class="bg-white rounded-2xl p-5 shadow-[0_6px_16px_rgba(124,92,252,0.12)] flex flex-col gap-3">
+<div class="w-10 h-10 rounded-xl skeleton"></div>
+<div class="w-full h-4 rounded-full skeleton"></div>
+<div class="w-2/3 h-3 rounded-full skeleton"></div>
+</div>
+</div>
+<!-- History Preview Skeleton -->
+<div class="bg-white rounded-2xl p-5 shadow-[0_6px_16px_rgba(124,92,252,0.12)]">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full skeleton"></div>
+<div class="flex-1 space-y-2">
+<div class="w-1/2 h-4 rounded-full skeleton"></div>
+<div class="w-1/3 h-3 rounded-full skeleton"></div>
+</div>
+<div class="w-16 h-8 rounded-full skeleton"></div>
+</div>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center h-16 px-2 pb-safe bg-white dark:bg-gray-800 rounded-t-[24px] shadow-[0_-6px_16px_rgba(124,92,252,0.12)]">
+<a class="flex flex-col items-center justify-center text-[#8E8AA8] px-4 py-2 hover:text-[#FF8FA3] transition-colors active:scale-90 duration-200" href="#">
+<span class="material-symbols-outlined text-2xl">task_alt</span>
+<span class="font-label text-xs font-semibold mt-0.5">Nhiệm vụ</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#8E8AA8] px-4 py-2 hover:text-[#FF8FA3] transition-colors active:scale-90 duration-200" href="#">
+<span class="material-symbols-outlined text-2xl">redeem</span>
+<span class="font-label text-xs font-semibold mt-0.5">Phần thưởng</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#7C5CFC] bg-[#7C5CFC]/10 rounded-xl px-4 py-2 hover:text-[#FF8FA3] transition-colors active:scale-90 duration-200" href="#">
+<span class="material-symbols-outlined text-2xl" style="font-variation-settings: 'FILL' 1;">insights</span>
+<span class="font-label text-xs font-semibold mt-0.5">Theo dõi con</span>
+</a>
+</nav>
+</body></html>

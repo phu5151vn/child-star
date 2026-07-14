@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+
+<html lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Bé Ngoan - Tạo phần thưởng</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;500;700&amp;family=Nunito+Sans:wght@400;600;700;800&amp;family=Public+Sans:wght@400;600;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              primary: "#7C5CFC",
+              secondary: "#FF8FA3",
+              accent: "#FFC531",
+              background: "#FBF7FF",
+              "success-mint": "#3DD598",
+              "error-coral": "#FF5C5C",
+              "locked-grey": "#C7C2E0",
+              "text-primary": "#2D2A45",
+              "text-secondary": "#8E8AA8",
+            },
+            borderRadius: {
+              "DEFAULT": "0.5rem",
+              "lg": "1rem",
+              "xl": "1.5rem",
+              "2xl": "20px",
+              "3xl": "24px",
+              "full": "9999px"
+            },
+            fontFamily: {
+              headline: ["Comfortaa", "Public Sans", "sans-serif"],
+              display: ["Comfortaa", "sans-serif"],
+              body: ["Nunito Sans", "sans-serif"],
+              label: ["Public Sans", "sans-serif"]
+            },
+            boxShadow: {
+              'soft': '0 6px 16px rgba(124,92,252,0.12)',
+              'card': '0 4px 20px rgba(0,0,0,0.04)',
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            background-color: #FBF7FF;
+            font-family: 'Nunito Sans', sans-serif;
+            color: #2D2A45;
+            overflow-x: hidden;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .font-rounded { font-family: 'Comfortaa', cursive; }
+        
+        /* Floating background elements */
+        .floating-star {
+            position: absolute;
+            z-index: 0;
+            pointer-events: none;
+            animation: float 4s ease-in-out infinite;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(10deg); }
+        }
+        .sparkle-1 { top: 10%; right: 5%; color: #FFC531; font-size: 24px; animation-delay: 0s; }
+        .sparkle-2 { top: 40%; left: 2%; color: #FF8FA3; font-size: 18px; animation-delay: 1.5s; }
+        .sparkle-3 { top: 75%; right: 8%; color: #7C5CFC; font-size: 20px; animation-delay: 2.2s; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="min-h-screen flex flex-col items-center justify-start bg-background">
+<!-- Playful Background Decorations -->
+<span class="material-symbols-outlined floating-star sparkle-1" style="font-variation-settings: 'FILL' 1;">stars</span>
+<span class="material-symbols-outlined floating-star sparkle-2" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+<span class="material-symbols-outlined floating-star sparkle-3" style="font-variation-settings: 'FILL' 1;">favorite</span>
+<!-- Top Navigation Bar -->
+<header class="sticky top-0 z-50 w-full max-w-[390px] h-16 bg-background flex items-center justify-between px-4">
+<button class="w-10 h-10 flex items-center justify-center rounded-full bg-white shadow-soft text-primary active:scale-95 transition-transform duration-200">
+<span class="material-symbols-outlined">arrow_back_ios_new</span>
+</button>
+<h1 class="text-[17px] font-bold font-headline text-text-primary">Tạo phần thưởng</h1>
+<div class="w-10"></div> <!-- Placeholder for balance -->
+</header>
+<!-- Main Content -->
+<main class="w-full max-w-[390px] flex-1 px-4 py-4 overflow-y-auto pb-32">
+<form class="space-y-6 relative z-10">
+<!-- Field 1: Reward Name (With Error State) -->
+<div class="space-y-2">
+<label class="block text-sm font-bold text-text-primary ml-1">Tên phần thưởng *</label>
+<div class="relative">
+<input class="w-full h-14 bg-white border-2 border-error-coral rounded-xl px-4 text-text-primary placeholder:text-text-secondary/50 focus:outline-none shadow-card" placeholder="VD: Vé xem phim" type="text"/>
+</div>
+<p class="text-[12px] text-error-coral font-bold ml-1 flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">error</span>
+                    Vui lòng nhập tên phần thưởng
+                </p>
+</div>
+<!-- Field 2: Reward Image -->
+<div class="space-y-2">
+<label class="block text-sm font-bold text-text-primary ml-1">Ảnh phần thưởng</label>
+<div class="w-full h-40 bg-white border-2 border-dashed border-locked-grey rounded-2xl flex flex-col items-center justify-center gap-2 group hover:border-primary transition-colors cursor-pointer shadow-card overflow-hidden">
+<div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined">photo_camera</span>
+</div>
+<span class="text-sm font-bold text-text-secondary">Chọn ảnh mẫu dễ thương</span>
+</div>
+</div>
+<!-- Field 3 & 4: Points and Quantity -->
+<div class="grid grid-cols-2 gap-4">
+<div class="space-y-2">
+<label class="block text-sm font-bold text-text-primary ml-1">Mốc điểm *</label>
+<div class="relative flex items-center">
+<input class="w-full h-14 bg-white border-none rounded-xl pl-4 pr-10 text-text-primary font-bold shadow-card focus:ring-2 focus:ring-primary/20" type="number" value="100"/>
+<span class="absolute right-4 text-accent material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">stars</span>
+</div>
+</div>
+<div class="space-y-2">
+<label class="block text-sm font-bold text-text-primary ml-1">Giới hạn đổi</label>
+<input class="w-full h-14 bg-white border-none rounded-xl px-4 text-text-primary placeholder:text-text-secondary/50 shadow-card focus:ring-2 focus:ring-primary/20" placeholder="Không giới hạn" type="text"/>
+</div>
+</div>
+<!-- Field 5: Recipients (Avatar Chips) -->
+<div class="space-y-3">
+<label class="block text-sm font-bold text-text-primary ml-1">Dành cho</label>
+<div class="flex gap-4">
+<!-- Child 1: Bin -->
+<label class="flex items-center gap-3 bg-white p-2 pr-5 rounded-full shadow-soft cursor-pointer border-2 border-transparent has-[:checked]:border-primary transition-all">
+<input checked="" class="hidden peer" type="checkbox"/>
+<div class="w-10 h-10 rounded-full overflow-hidden border-2 border-white shadow-sm">
+<img class="w-full h-full object-cover" data-alt="A cute, chubby-cheeked 3D cartoon boy character with short brown hair, wearing a playful blue striped t-shirt. High-quality Pixar-style rendering with soft volumetric lighting and a friendly smiling expression, set against a clean pastel background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCSv4JFRWpCY3_G2T6e1Bmzr6y42EoZij-0NYee__1_f8VrYXjgsHV9I3FcVjEqY3azJs86DMXle1eqYaHMUY6LUAkWD3guDoWnJwG8tn5-0rniAy4uMdNFaLk9MWvYP_ZBrsFPgfKrKwMPyVaRca0iaPEPMYmuSmAOAtiLkTcqUhEVPPETO6R-EmkkD0QSHEL1diA8NX8XP7PIzFIo1qjf5KKLJ5CGtojghA4JvfGMblWsQ32TaV2Sx9GErVpEGTpbsEQ8yIbe5Kk"/>
+</div>
+<span class="font-bold text-text-primary">Bin</span>
+</label>
+<!-- Child 2: Miu -->
+<label class="flex items-center gap-3 bg-white p-2 pr-5 rounded-full shadow-soft cursor-pointer border-2 border-transparent has-[:checked]:border-primary transition-all">
+<input class="hidden peer" type="checkbox"/>
+<div class="w-10 h-10 rounded-full overflow-hidden border-2 border-white shadow-sm">
+<img class="w-full h-full object-cover" data-alt="A cute 3D cartoon girl character with pigtails and a pink bow, wearing a yellow dress with small flower patterns. High-quality cinematic character design with large expressive eyes and a joyful laugh, soft focus background, pastel color palette." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAjlW6dMn4gLdEUBL_juVFAL1oFbVE0TmkFrJmvHPyAIZ10IBd5tLB7WeIDMGasBijuQ3WkHeVBoKprPuh2VdqZGFBZE60DGY3R4KuKkVjAgfUoRQkODJgWEccxSafC0ilqhl6sdcbn5rps4vipURNMr1fouGeh85BD2im4Y34-AsaPRWO2YecGdyUsPnw9T_X6aQ-e4eh7NW_RSEesMCAF90rg7UMQeIEgKaKiw1E6MJqXGbaDZo1GFSH7sBOi0K-OitmscPGST6I"/>
+</div>
+<span class="font-bold text-text-primary">Miu</span>
+</label>
+<!-- Add New Child -->
+<button class="w-14 h-14 flex items-center justify-center rounded-full bg-white border-2 border-dashed border-locked-grey text-locked-grey hover:border-primary hover:text-primary transition-all shadow-soft" type="button">
+<span class="material-symbols-outlined">add</span>
+</button>
+</div>
+</div>
+<!-- Field 6: Description -->
+<div class="space-y-2">
+<label class="block text-sm font-bold text-text-primary ml-1">Mô tả</label>
+<textarea class="w-full bg-white border-none rounded-2xl p-4 text-text-primary placeholder:text-text-secondary/50 shadow-card focus:ring-2 focus:ring-primary/20 resize-none" placeholder="Mô tả phần thưởng để con háo hức hơn" rows="3"></textarea>
+</div>
+<!-- Visual Perk -->
+<div class="bg-primary/5 rounded-2xl p-4 flex items-center gap-4">
+<div class="w-12 h-12 bg-white rounded-xl shadow-soft flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-primary text-3xl">redeem</span>
+</div>
+<div>
+<h4 class="font-bold text-primary text-sm">Gợi ý từ Bé Ngoan</h4>
+<p class="text-xs text-text-secondary">Phần thưởng trải nghiệm (như đi công viên) giúp gắn kết gia đình hơn quà vật chất!</p>
+</div>
+</div>
+</form>
+</main>
+<!-- Sticky Bottom Button -->
+<div class="fixed bottom-0 w-full max-w-[390px] p-4 bg-gradient-to-t from-background via-background to-transparent pt-10 z-50">
+<button class="w-full h-[52px] bg-primary hover:bg-primary/90 text-white font-bold text-lg rounded-xl shadow-lg shadow-primary/30 flex items-center justify-center gap-2 active:scale-95 transition-all duration-150">
+<span>Lưu phần thưởng</span>
+<span class="material-symbols-outlined text-[20px]">check_circle</span>
+</button>
+</div>
+<!-- Interaction Script -->
+<script>
+        document.querySelectorAll('input, textarea').forEach(el => {
+            el.addEventListener('focus', () => {
+                // Subtle interaction logic
+                console.log('Field focused');
+            });
+        });
+
+        // Simple star follow effect or interaction
+        document.addEventListener('mousemove', (e) => {
+            const star = document.querySelector('.sparkle-1');
+            if (star) {
+                const moveX = (e.clientX - window.innerWidth / 2) / 100;
+                const moveY = (e.clientY - window.innerHeight / 2) / 100;
+                star.style.transform = `translate(${moveX}px, ${moveY}px)`;
+            }
+        });
+    </script>
+</body></html>

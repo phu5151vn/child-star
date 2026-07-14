@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+
+<html lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Bé Ngoan - Theo dõi con</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;600;700;800;900&amp;family=Public+Sans:wght@400;600;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              primary: "#7C5CFC",
+              secondary: "#FF8FA3",
+              accent: "#FFC531",
+              background: "#FBF7FF",
+              success: "#3DD598",
+              error: "#FF5C5C",
+              locked: "#C7C2E0",
+              "text-primary": "#2D2A45",
+              "text-secondary": "#8E8AA8",
+            },
+            borderRadius: {
+              "DEFAULT": "0.5rem",
+              "lg": "1rem",
+              "xl": "1.5rem",
+              "2xl": "24px",
+              "full": "9999px"
+            },
+            fontFamily: {
+              headline: ["Public Sans", "sans-serif"],
+              display: ["Public Sans", "sans-serif"],
+              body: ["Nunito Sans", "sans-serif"],
+              label: ["Public Sans", "sans-serif"]
+            },
+            boxShadow: {
+              'soft': '0 6px 16px rgba(124, 92, 252, 0.12)',
+              'nav': '0 -6px 16px rgba(124, 92, 252, 0.12)'
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .font-rounded { font-family: 'Nunito Sans', sans-serif; }
+        
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+        .animate-float { animation: float 3s ease-in-out infinite; }
+
+        .confetti-piece {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+    </style>
+</head>
+<body class="bg-[#FBF7FF] text-[#2D2A45] font-body min-h-screen flex flex-col">
+<!-- TopAppBar -->
+<header class="bg-[#FBF7FF] dark:bg-gray-900 w-full top-0 sticky z-40">
+<div class="flex justify-between items-center px-4 py-3 w-full">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full border-2 border-[#7C5CFC] overflow-hidden bg-white">
+<img class="w-full h-full object-cover" data-alt="A cute kid profile avatar for a children's app, featuring a smiling cartoon boy with soft brown hair, wearing a vibrant purple hoodie. The background is a soft pastel yellow with subtle sparkle effects, rendered in a high-quality 3D clay-style animation aesthetic. Lighting is warm and friendly, emphasizing the playful and safe environment of the Bé Ngoan brand." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAfARf0kiZj1qvubhjGNYzZC9qB-W6UKkS-uHzlCxjBcrRlvZ-TyXAv7nmBz0xTHibRhdiv2T2k58kzRAWhGnjSnpp7O6khwHBpW6wFx_wkIfi6s8Tpex4LKBZ1_mBSPB4oJfjqlY_zzs0U-mVkEdZPUfHtK1y3pBD2QGVewjlv6gWFr2wYLO_Cz9aS8onQALEn1evg0xmEQRu55h_h8l4rVWMgP5Ce1_n5Azsqun-Vm9AtCSc8eu3lPcoIf1hWgrzpQK_0XEgf6Ss"/>
+</div>
+<h1 class="font-headline text-2xl font-black text-[#7C5CFC]">Bé Ngoan</h1>
+</div>
+<button class="text-[#7C5CFC] hover:opacity-80 transition-opacity active:scale-95 duration-150">
+<span class="material-symbols-outlined text-2xl">notifications</span>
+</button>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-1 px-4 pt-4 pb-24 overflow-y-auto">
+<!-- Empty State Section -->
+<section class="flex flex-col items-center justify-center py-12 text-center">
+<div class="relative w-64 h-64 mb-6">
+<!-- Decorative background elements -->
+<div class="absolute inset-0 bg-[#7C5CFC]/5 rounded-full blur-3xl"></div>
+<!-- Main Illustration -->
+<div class="relative z-10 w-full h-full animate-float">
+<img alt="Empty state" class="w-full h-full object-contain drop-shadow-xl" src="https://lh3.googleusercontent.com/aida/AP1WRLsj4sol-5d9taUdad3wQx9jCfRACqla8LynM0_Vgd09LcMaEsEytluab9NBmetNxH4QxZqs2PAohAw2l9gZ_Esg6vx1-U0e8F5KZXwYK9Y36URDBIk0vg9YbVGDIf0prjOOeuE1DzOx8cer4XdaeXppZ6NJKH57tEGNSWd8Q492tz07Bx4D_Ige3YchY3aQ0XSx9EjMlkGmo5BKpEtXFR2xj8h_AVVNGJDtOInD5PmIhNTlETqXlbdUJQ"/>
+</div>
+<!-- Confetti/Sparkle micro-interactions -->
+<div class="absolute -top-4 -left-4 text-[#FFC531] opacity-60">
+<span class="material-symbols-outlined text-4xl" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+</div>
+<div class="absolute -bottom-2 -right-6 text-[#FF8FA3] opacity-60">
+<span class="material-symbols-outlined text-3xl" style="font-variation-settings: 'FILL' 1;">favorite</span>
+</div>
+</div>
+<h2 class="font-headline text-xl font-bold text-[#2D2A45] mb-2">Chưa có nhiệm vụ chờ duyệt 🎉</h2>
+<p class="text-[#8E8AA8] max-w-[280px] text-sm leading-relaxed">
+                Thật tuyệt vời! Con đã hoàn thành tất cả nhiệm vụ hiện tại rồi.
+            </p>
+</section>
+<!-- Bento Grid: Hoạt động gần đây -->
+<section class="mt-8">
+<div class="flex items-center justify-between mb-4">
+<h3 class="font-headline text-lg font-bold text-[#2D2A45]">Hoạt động gần đây</h3>
+<button class="text-sm font-bold text-[#7C5CFC]">Xem tất cả</button>
+</div>
+<div class="grid grid-cols-1 gap-4">
+<!-- Activity Card 1 -->
+<div class="bg-white p-4 rounded-2xl shadow-[0_6px_16px_rgba(124,92,252,0.12)] border border-[#7C5CFC]/5 flex items-center gap-4 transition-transform active:scale-[0.98]">
+<div class="w-12 h-12 rounded-xl bg-[#3DD598]/10 flex items-center justify-center text-[#3DD598]">
+<span class="material-symbols-outlined text-2xl" style="font-variation-settings: 'FILL' 1;">task_alt</span>
+</div>
+<div class="flex-1">
+<p class="text-sm font-bold text-[#2D2A45]">Đã duyệt: Đánh răng</p>
+<p class="text-xs text-[#8E8AA8]">15 phút trước • <span class="text-[#FFC531] font-bold">+10 ⭐</span></p>
+</div>
+<span class="material-symbols-outlined text-[#C7C2E0]">chevron_right</span>
+</div>
+<!-- Activity Card 2 -->
+<div class="bg-white p-4 rounded-2xl shadow-[0_6px_16px_rgba(124,92,252,0.12)] border border-[#7C5CFC]/5 flex items-center gap-4 transition-transform active:scale-[0.98]">
+<div class="w-12 h-12 rounded-xl bg-[#FF8FA3]/10 flex items-center justify-center text-[#FF8FA3]">
+<span class="material-symbols-outlined text-2xl" style="font-variation-settings: 'FILL' 1;">redeem</span>
+</div>
+<div class="flex-1">
+<p class="text-sm font-bold text-[#2D2A45]">Con đã đổi quà: Đọc truyện</p>
+<p class="text-xs text-[#8E8AA8]">2 giờ trước • <span class="text-[#FF8FA3] font-bold">-50 ⭐</span></p>
+</div>
+<span class="material-symbols-outlined text-[#C7C2E0]">chevron_right</span>
+</div>
+<!-- Activity Card 3 -->
+<div class="bg-white p-4 rounded-2xl shadow-[0_6px_16px_rgba(124,92,252,0.12)] border border-[#7C5CFC]/5 flex items-center gap-4 transition-transform active:scale-[0.98]">
+<div class="w-12 h-12 rounded-xl bg-[#FFC531]/10 flex items-center justify-center text-[#FFC531]">
+<span class="material-symbols-outlined text-2xl" style="font-variation-settings: 'FILL' 1;">workspace_premium</span>
+</div>
+<div class="flex-1">
+<p class="text-sm font-bold text-[#2D2A45]">Đạt huy hiệu: Bé Chăm Chỉ</p>
+<p class="text-xs text-[#8E8AA8]">Hôm qua • <span class="text-primary font-bold">Mới!</span></p>
+</div>
+<span class="material-symbols-outlined text-[#C7C2E0]">chevron_right</span>
+</div>
+</div>
+</section>
+<!-- Stats Shortcut / Micro Bento -->
+<div class="grid grid-cols-2 gap-4 mt-6">
+<div class="bg-[#7C5CFC] p-4 rounded-2xl text-white shadow-lg overflow-hidden relative">
+<div class="relative z-10">
+<p class="text-xs opacity-80 mb-1">Tuần này</p>
+<p class="text-2xl font-black">8/10</p>
+<p class="text-[10px] font-bold uppercase tracking-wider">Nhiệm vụ xong</p>
+</div>
+<span class="material-symbols-outlined absolute -bottom-2 -right-2 text-6xl opacity-20 rotate-12">trending_up</span>
+</div>
+<div class="bg-[#FF8FA3] p-4 rounded-2xl text-white shadow-lg overflow-hidden relative">
+<div class="relative z-10">
+<p class="text-xs opacity-80 mb-1">Tổng điểm</p>
+<p class="text-2xl font-black">450</p>
+<p class="text-[10px] font-bold uppercase tracking-wider">Ngôi sao vàng</p>
+</div>
+<span class="material-symbols-outlined absolute -bottom-2 -right-2 text-6xl opacity-20 -rotate-12">stars</span>
+</div>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center h-16 px-2 pb-safe bg-white dark:bg-gray-800 rounded-t-[24px] shadow-[0_-6px_16px_rgba(124,92,252,0.12)]">
+<!-- Tab: Nhiệm vụ -->
+<a class="flex flex-col items-center justify-center text-[#8E8AA8] px-4 py-2 hover:text-[#FF8FA3] transition-colors active:scale-90 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined">task_alt</span>
+<span class="font-label text-xs font-semibold">Nhiệm vụ</span>
+</a>
+<!-- Tab: Phần thưởng -->
+<a class="flex flex-col items-center justify-center text-[#8E8AA8] px-4 py-2 hover:text-[#FF8FA3] transition-colors active:scale-90 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined">redeem</span>
+<span class="font-label text-xs font-semibold">Phần thưởng</span>
+</a>
+<!-- Tab: Theo dõi con (Active) -->
+<a class="flex flex-col items-center justify-center text-[#7C5CFC] bg-[#7C5CFC]/10 rounded-xl px-4 py-2 hover:text-[#FF8FA3] transition-colors active:scale-90 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">insights</span>
+<span class="font-label text-xs font-semibold">Theo dõi con</span>
+</a>
+</nav>
+<!-- Subtle Particle Script -->
+<script>
+        const colors = ['#7C5CFC', '#FF8FA3', '#FFC531', '#3DD598'];
+        const body = document.querySelector('main');
+        
+        function createConfetti() {
+            const emptyState = document.querySelector('section');
+            for(let i=0; i<12; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti-piece opacity-40';
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.left = Math.random() * 100 + '%';
+                confetti.style.top = Math.random() * 100 + '%';
+                confetti.style.transform = `scale(${Math.random()})`;
+                
+                emptyState.appendChild(confetti);
+            }
+        }
+        
+        window.addEventListener('load', createConfetti);
+    </script>
+</body></html>

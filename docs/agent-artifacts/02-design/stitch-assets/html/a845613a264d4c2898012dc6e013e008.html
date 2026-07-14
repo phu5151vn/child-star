@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+
+<html class="light" lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;700;900&amp;family=Nunito+Sans:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#7C5CFC",
+                        secondary: "#FF8FA3",
+                        accent: "#FFC531",
+                        background: "#FBF7FF",
+                        success: "#3DD598",
+                        error: "#FF5C5C",
+                        pending: "#FFA337",
+                        "text-main": "#2D2A45",
+                        "text-sub": "#8E8AA8",
+                        "card-shadow": "rgba(124, 92, 252, 0.12)"
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "2xl": "20px",
+                        "full": "9999px"
+                    },
+                    fontFamily: {
+                        headline: ["Public Sans", "sans-serif"],
+                        display: ["Public Sans", "sans-serif"],
+                        body: ["Nunito Sans", "sans-serif"],
+                        label: ["Public Sans", "sans-serif"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .task-card-shadow {
+            box-shadow: 0 6px 16px rgba(124, 92, 252, 0.12);
+        }
+        .animate-bounce-short {
+            animation: bounce-short 0.5s ease-in-out;
+        }
+        @keyframes bounce-short {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-4px); }
+        }
+        .progress-bar-glow {
+            box-shadow: 0 0 12px rgba(255, 255, 255, 0.4);
+        }
+    </style>
+</head>
+<body class="bg-[#FBF7FF] font-body text-text-main min-h-screen pb-24">
+<!-- TopAppBar -->
+<header class="flex justify-between items-center px-4 py-4 w-full sticky top-0 bg-[#FBF7FF] z-40">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full border-2 border-primary overflow-hidden bg-white">
+<img class="w-full h-full object-cover" data-alt="A cute 3D cartoon avatar of a little boy named Bin with a friendly smile, wearing a yellow t-shirt. The style is soft, rounded, and high-quality 3D render, matching a playful kids app aesthetic with a clean white background. Soft studio lighting highlights his joyful expression." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBmuaB9NS3kcRscGLucx8hr6Dd4GUj3VpajdoFbvxzDhQQtgG5zDxnQttWGCOtwG4UbLtGXQiOdYcTqk3bMfQT_I9SK7lItGmsuFBySE-6VzuwYS23orVsx05LE-YqOq_bG9WANbcpZtjny3xIucm97Pc3TQakbT-U-4Gg4D_ErqYxsS59KjWQJhR12cYDQv9raKhrX50HsLtRXnxpAYw_uZR9gacNjTRu01ITfcYo6UrEdH03q9ulazHQjgbksI8uJ69uZclHR0jI"/>
+</div>
+<h1 class="font-display font-bold text-lg text-text-main">Chào Bin! 👋</h1>
+</div>
+<div class="bg-accent px-3 py-1.5 rounded-full flex items-center gap-1.5 transition-transform active:scale-90 shadow-sm">
+<span class="material-symbols-outlined text-white text-lg" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-display font-black text-white text-sm">320 ⭐</span>
+</div>
+</header>
+<main class="px-4 space-y-6">
+<!-- Banner Section -->
+<section class="relative overflow-hidden rounded-2xl p-5 bg-gradient-to-br from-primary to-secondary text-white shadow-lg">
+<div class="relative z-10 flex flex-col gap-3 w-2/3">
+<h2 class="font-headline font-bold text-lg leading-tight">Làm thêm 80 sao để mở khoá quà mới!</h2>
+<div class="w-full h-3 bg-white/30 rounded-full overflow-hidden">
+<div class="h-full bg-accent progress-bar-glow transition-all duration-1000" style="width: 75%;"></div>
+</div>
+<p class="text-xs font-bold opacity-90">Sắp tới đích rồi, cố lên Bin ơi!</p>
+</div>
+<div class="absolute right-[-10px] bottom-[-10px] w-40 h-40 opacity-90">
+<img class="w-full h-full object-contain" src="https://lh3.googleusercontent.com/aida/AP1WRLs5DrUGG8GJsfcXBh6GYox31IQHHv_LAQewqP1Fb18YKXvAZghSSzxgv06gf4GaW-X3PO2eBpZqTzUtFiP1jXIMeJ1eYzs-NuQTgolQ9wIPerD2Dwz3H1S3sIito4gFMhqTJGTj6MSPd46VZqafaWYFbJaKqy98Ew015we1yI83r_yxbmqqsVUHBRwRVN9R4fzTGAAWvEiyrnnIfOl2kmVc4Sa44Psul9WqWwwXU1EWb--eAS4avqIh--g"/>
+</div>
+</section>
+<!-- Category Chips -->
+<section class="flex gap-2 overflow-x-auto pb-2 no-scrollbar">
+<button class="shrink-0 px-5 py-2.5 rounded-full font-bold text-sm bg-primary text-white shadow-md transition-transform active:scale-95">Tất cả</button>
+<button class="shrink-0 px-5 py-2.5 rounded-full font-bold text-sm bg-primary/10 text-primary hover:bg-primary/20 transition-colors">Học tập</button>
+<button class="shrink-0 px-5 py-2.5 rounded-full font-bold text-sm bg-primary/10 text-primary hover:bg-primary/20 transition-colors">Việc nhà</button>
+<button class="shrink-0 px-5 py-2.5 rounded-full font-bold text-sm bg-primary/10 text-primary hover:bg-primary/20 transition-colors">Thể thao</button>
+<button class="shrink-0 px-5 py-2.5 rounded-full font-bold text-sm bg-primary/10 text-primary hover:bg-primary/20 transition-colors">Ngoan ngoãn</button>
+</section>
+<!-- Tasks Section -->
+<section class="space-y-4">
+<div class="flex justify-between items-center">
+<h3 class="font-headline font-black text-xl text-text-main">Nhiệm vụ hôm nay</h3>
+<a class="text-primary font-bold text-sm hover:underline" href="#">Tất cả</a>
+</div>
+<div class="grid gap-4">
+<!-- Task 1: Đang chờ duyệt -->
+<div class="bg-white rounded-2xl p-4 flex items-center gap-4 task-card-shadow border-l-[6px] border-pending transition-all hover:translate-x-1">
+<div class="w-12 h-12 rounded-xl bg-pending/10 flex items-center justify-center text-2xl">
+                        📚
+                    </div>
+<div class="flex-1">
+<h4 class="font-bold text-text-main">Đọc sách 20 phút</h4>
+<div class="flex items-center gap-2 mt-1">
+<span class="text-accent font-black text-xs">+30 ⭐</span>
+<span class="text-[10px] font-bold text-pending px-2 py-0.5 rounded-full bg-pending/10">Đang chờ duyệt</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-text-sub">chevron_right</span>
+</div>
+<!-- Task 2: Đã hoàn thành -->
+<div class="bg-white rounded-2xl p-4 flex items-center gap-4 task-card-shadow border-l-[6px] border-success transition-all hover:translate-x-1">
+<div class="w-12 h-12 rounded-xl bg-success/10 flex items-center justify-center text-2xl">
+                        🧹
+                    </div>
+<div class="flex-1">
+<h4 class="font-bold text-text-main">Quét nhà giúp mẹ</h4>
+<div class="flex items-center gap-2 mt-1">
+<span class="text-accent font-black text-xs">+20 ⭐</span>
+<span class="text-[10px] font-bold text-success px-2 py-0.5 rounded-full bg-success/10">Đã hoàn thành</span>
+</div>
+</div>
+<div class="w-6 h-6 rounded-full bg-success flex items-center justify-center">
+<span class="material-symbols-outlined text-white text-xs font-bold">check</span>
+</div>
+</div>
+<!-- Task 3: Chưa làm -->
+<div class="bg-white rounded-2xl p-4 flex items-center gap-4 task-card-shadow border-l-[6px] border-primary transition-all hover:translate-x-1">
+<div class="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-2xl">
+                        ⚽
+                    </div>
+<div class="flex-1">
+<h4 class="font-bold text-text-main">Đá bóng 30 phút</h4>
+<div class="flex items-center gap-2 mt-1">
+<span class="text-accent font-black text-xs">+50 ⭐</span>
+</div>
+</div>
+<button class="bg-primary text-white text-[10px] font-black px-4 py-2 rounded-xl shadow-md active:scale-90 transition-transform">BẮT ĐẦU</button>
+</div>
+</div>
+</section>
+<!-- Extra motivation section -->
+<section class="bg-secondary/10 rounded-2xl p-4 border border-dashed border-secondary flex items-center gap-4">
+<span class="material-symbols-outlined text-secondary text-3xl">emoji_events</span>
+<div>
+<p class="text-sm font-bold text-text-main">Chuỗi hoàn thành: <span class="text-secondary">5 ngày</span></p>
+<p class="text-xs text-text-sub">Duy trì thêm 2 ngày để nhận rương bạc!</p>
+</div>
+</section>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-2 py-3 bg-white shadow-[0_-6px_16px_rgba(124,92,252,0.12)] rounded-t-2xl">
+<a class="flex flex-col items-center justify-center bg-primary text-white rounded-xl px-4 py-2 animate-bounce-short" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">task_alt</span>
+<span class="font-label font-bold text-xs mt-0.5">Nhiệm vụ</span>
+</a>
+<a class="flex flex-col items-center justify-center text-text-sub p-2 hover:bg-background rounded-xl transition-colors" href="#">
+<span class="material-symbols-outlined">redeem</span>
+<span class="font-label font-bold text-xs mt-0.5">Phần thưởng</span>
+</a>
+<a class="flex flex-col items-center justify-center text-text-sub p-2 hover:bg-background rounded-xl transition-colors" href="#">
+<span class="material-symbols-outlined">face</span>
+<span class="font-label font-bold text-xs mt-0.5">Của con</span>
+</a>
+</nav>
+<script>
+        // Simple micro-interactions for better feel
+        document.querySelectorAll('button, a').forEach(elem => {
+            elem.addEventListener('click', () => {
+                window.navigator.vibrate && window.navigator.vibrate(10);
+            });
+        });
+    </script>
+</body></html>

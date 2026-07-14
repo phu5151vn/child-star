@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+
+<html lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Bé Ngoan - Cửa hàng phần thưởng</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;700&amp;family=Nunito+Sans:wght@400;600;700;900&amp;family=Public+Sans:wght@400;700;900&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#7C5CFC",
+                        secondary: "#FF8FA3",
+                        accent: "#FFC531",
+                        background: "#FBF7FF",
+                        "text-primary": "#2D2A45",
+                        "secondary-text": "#8E8AA8",
+                        success: "#3DD598",
+                        error: "#FF5C5C",
+                        locked: "#C7C2E0"
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "2xl": "1.25rem",
+                        "3xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                    fontFamily: {
+                        headline: ["Comfortaa", "Public Sans", "sans-serif"],
+                        display: ["Comfortaa", "Public Sans", "sans-serif"],
+                        body: ["Nunito Sans", "sans-serif"],
+                        label: ["Public Sans", "sans-serif"]
+                    },
+                    boxShadow: {
+                        card: "0 6px 16px rgba(124,92,252,0.12)",
+                        "button-primary": "0 4px 0px #5D3FD3",
+                        "button-active": "0 0px 0px #5D3FD3"
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        body {
+            background-color: #FBF7FF;
+            font-family: 'Nunito Sans', sans-serif;
+            color: #2D2A45;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .bento-bg {
+            background-image: radial-gradient(#7C5CFC10 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+        .wiggle:hover {
+            animation: wiggle 0.5s ease-in-out infinite;
+        }
+        @keyframes wiggle {
+            0%, 100% { transform: rotate(-3deg); }
+            50% { transform: rotate(3deg); }
+        }
+        .float {
+            animation: float 3s ease-in-out infinite;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen bento-bg overflow-hidden">
+<!-- TopAppBar Section -->
+<header class="bg-surface dark:bg-surface text-primary dark:text-primary font-headline font-bold text-headline-sm docked full-width top-0 rounded-b-xl shadow-sm shadow-primary/10 flex items-center justify-between px-4 h-16 w-full fixed top-0 left-0 z-50">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-accent" data-icon="stars" style="font-variation-settings: 'FILL' 1;">stars</span>
+<h1 class="font-headline font-black text-xl text-primary">Cửa hàng quà tặng</h1>
+</div>
+<button class="bg-primary/10 text-primary px-3 py-1.5 rounded-full font-bold flex items-center gap-1 hover:bg-primary/5 transition-colors active:scale-95 duration-200">
+<span>500</span>
+<span class="text-lg">⭐</span>
+</button>
+</header>
+<!-- Main Content: Empty State -->
+<main class="flex-grow flex flex-col items-center justify-center px-6 pt-16 pb-20">
+<div class="w-full max-w-md text-center space-y-8">
+<!-- Illustration Area -->
+<div class="relative flex justify-center items-center">
+<!-- Decorative background elements -->
+<div class="absolute w-64 h-64 bg-primary/5 rounded-full blur-3xl -z-10"></div>
+<div class="relative float">
+<img alt="Kệ quà trống" class="w-72 h-72 object-contain drop-shadow-xl" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAq-0bcm_fN1stFtmx9xjbOm7M08lUAyhfh0FvzIt4dYI2FdvTbwsfaDvyJPGQsX3s5a9cNpc1Q_k3CevP8QNZqE-zf1enfb78YOLofVEDMUWfSe5OwSWmA6jRhs5gkfiakXSF6xe2S2ezyKo1wvO--iN0I0Dtx3a8TEOK4jBDq6YI76SaGusF-mswHW1aTWmnYF6nI6V8dHEprIL0B49URXdaGXbAAAO9mNssTuaGUpSeK9TZem_KxdScfnIl277MS46wFyNoU71E"/>
+<!-- Floating sparkle icons for flair -->
+<span class="material-symbols-outlined absolute -top-4 -right-2 text-accent animate-pulse" data-icon="sparkles" style="font-variation-settings: 'FILL' 1;">spark</span>
+<span class="material-symbols-outlined absolute bottom-4 -left-4 text-secondary/40" data-icon="cloud" style="font-variation-settings: 'FILL' 1;">cloud</span>
+</div>
+</div>
+<!-- Text Content -->
+<div class="space-y-3">
+<h2 class="text-2xl font-black font-headline text-text-primary tracking-tight">
+                    Chưa có quà nào
+                </h2>
+<p class="text-secondary-text text-lg leading-relaxed px-4">
+                    Bố mẹ chưa thêm phần thưởng nào cho bé rồi!
+                </p>
+</div>
+<!-- Action Button -->
+<div class="pt-4">
+<button class="group relative w-full py-4 bg-primary text-white rounded-2xl font-bold text-lg shadow-button-primary transition-all active:shadow-button-active active:translate-y-1 hover:brightness-110 flex items-center justify-center gap-3" onclick="remindParents()">
+<span class="material-symbols-outlined group-hover:rotate-12 transition-transform" data-icon="notifications_active" style="font-variation-settings: 'FILL' 1;">notifications_active</span>
+<span>Nhắc bố mẹ ngay</span>
+</button>
+<p class="mt-4 text-secondary-text text-sm font-medium">
+                    Gửi thông báo đến điện thoại của bố mẹ
+                </p>
+</div>
+</div>
+</main>
+<!-- BottomNavBar Section -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center h-20 px-4 bg-white shadow-[0_-4px_12px_rgba(124,92,252,0.12)] rounded-t-xl">
+<a class="flex flex-col items-center justify-center text-secondary-text font-label font-bold text-label-sm hover:text-primary transition-all active:scale-90 duration-150" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="assignment">assignment</span>
+<span>Nhiệm vụ</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-primary/10 text-primary rounded-full px-4 py-1 font-label font-bold text-label-sm transition-all active:scale-90 duration-150" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="redeem" style="font-variation-settings: 'FILL' 1;">redeem</span>
+<span>Phần thưởng</span>
+</a>
+<a class="flex flex-col items-center justify-center text-secondary-text font-label font-bold text-label-sm hover:text-primary transition-all active:scale-90 duration-150" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="face">face</span>
+<span>Của con</span>
+</a>
+</nav>
+<!-- Interaction Script -->
+<script>
+        function remindParents() {
+            // Simple visual feedback
+            const btn = event.currentTarget;
+            const originalText = btn.innerHTML;
+            
+            btn.innerHTML = `
+                <span class="material-symbols-outlined animate-bounce" data-icon="check_circle" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+                <span>Đã gửi lời nhắc!</span>
+            `;
+            btn.classList.replace('bg-primary', 'bg-success');
+            btn.style.boxShadow = "0 4px 0px #2db883";
+
+            // Add confetti effect or sparkles
+            createConfetti();
+
+            setTimeout(() => {
+                btn.innerHTML = originalText;
+                btn.classList.replace('bg-success', 'bg-primary');
+                btn.style.boxShadow = "0 4px 0px #5D3FD3";
+            }, 3000);
+        }
+
+        function createConfetti() {
+            for(let i = 0; i < 20; i++) {
+                const confetti = document.createElement('div');
+                const colors = ['#7C5CFC', '#FF8FA3', '#FFC531', '#3DD598'];
+                confetti.style.position = 'fixed';
+                confetti.style.left = Math.random() * 100 + 'vw';
+                confetti.style.top = '-10px';
+                confetti.style.width = '10px';
+                confetti.style.height = '10px';
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.borderRadius = '2px';
+                confetti.style.zIndex = '100';
+                confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
+                
+                document.body.appendChild(confetti);
+
+                const animation = confetti.animate([
+                    { transform: `translateY(0) rotate(0)`, opacity: 1 },
+                    { transform: `translateY(100vh) rotate(${Math.random() * 720}deg)`, opacity: 0 }
+                ], {
+                    duration: 2000 + Math.random() * 1000,
+                    easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)'
+                });
+
+                animation.onfinish = () => confetti.remove();
+            }
+        }
+    </script>
+</body></html>

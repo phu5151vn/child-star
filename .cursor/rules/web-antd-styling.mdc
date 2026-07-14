@@ -1,0 +1,39 @@
+---
+description: Enforce Ant Design theme token-based styling in web frontend
+alwaysApply: true
+---
+
+# Ant Design Styling Rule
+
+When editing frontend UI, use Ant Design 5 theme tokens and component APIs instead of hard-coded values.
+
+- Use Vietnamese with full diacritics for Vietnamese copy in docs and user-facing text.
+- Keep UI aligned with `docs/agent-artifacts/02-design/ui-flow-spec.md`.
+- Use Ant Design theme token overrides via `ConfigProvider` for brand customization.
+- Use `theme.useToken()` hook or CSS variables when referencing tokens in custom styles.
+
+Do not introduce hard-coded style literals for:
+- Hex/RGBA colors (e.g. `#1B4F8A`, `rgba(...)`)
+- Spacing numbers in `style` props outside of Ant Design's built-in spacing props
+- Border radius values
+
+Allowed patterns:
+
+```tsx
+// ✅ Good — use Ant Design components and theme tokens
+import { theme } from 'antd';
+const { token } = theme.useToken();
+const cardStyle: React.CSSProperties = {
+  background: token.colorBgContainer,
+  borderRadius: token.borderRadius,
+  padding: token.paddingLG,
+};
+
+// ✅ Good — use AntD Space/Flex for layout
+<Space direction="vertical" size="large">...</Space>
+
+// ❌ Bad — hard-coded
+const cardStyle = { background: '#FFFFFF', borderRadius: 8, padding: 24 };
+```
+
+Stack reference: React 18 + Vite + TypeScript + Ant Design 5.

@@ -1,0 +1,36 @@
+---
+description: Standards for WO-style web and API project flow
+alwaysApply: true
+---
+
+# Commands
+
+- Verify build readiness: `bash ./scripts/verify-artifacts.sh build`
+- Verify review readiness: `bash ./scripts/verify-artifacts.sh review`
+
+# Architecture
+
+- Frontend and backend must follow explicit boundaries.
+- Enforce server-side role and workflow constraints in API/domain layer.
+- Keep data access in repository/data-access layer, not in UI components.
+- Keep API contracts aligned with `docs/agent-artifacts/01-product/prd.md`.
+- Keep audit trail for critical changes (status/config/rule updates).
+
+# Workflow
+
+- Do not create or update project artifacts under `.claude/`, `.agents/`, or `.claude/worktrees/**`.
+- If you are not the preferred agent for the current stage, stop and write a handoff note instead of continuing.
+- In automated CLI mode, trust `docs/agent-artifacts/05-build/build-ready.md` as the gate before build stage.
+- Read `docs/agent-artifacts/` before implementing.
+- Prefer vertical slices over broad incomplete scaffolding.
+- Always add loading, empty, and error states.
+- Keep changes small and verify after a group of edits.
+- Cursor is the preferred agent for build/remediation stages.
+- If the current next stage belongs to Claude, stop and write a handoff note instead of continuing.
+- Never build without `docs/agent-artifacts/05-build/build-ready.md`.
+
+# Data and Security
+
+- Never add secrets to client-side code.
+- Sensitive workflow actions must be validated server-side.
+- Keep data model and field dictionary consistent with artifacts from BRD/Excel normalization.

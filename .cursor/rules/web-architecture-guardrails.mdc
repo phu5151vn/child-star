@@ -1,0 +1,16 @@
+---
+description: Enforce web and API architecture guardrails
+alwaysApply: true
+---
+
+# Architecture Guardrails Rule
+
+When editing the project, follow the approved architecture and do not bypass intended boundaries between UI, API, domain services, and data access.
+
+- UI/pages must not contain privileged business logic or direct database writes.
+- Backend routers should delegate to service/domain layer before data-access layer.
+- Reusable async/query logic should be encapsulated and testable.
+- Keep screens/pages focused on composition, navigation, and view state rendering.
+- Every user-facing screen must support loading, empty/not-found, error, and success states when relevant.
+- Never place secrets in frontend code.
+- If a use case needs privileged actions, enforce in backend with role checks and audit logging.

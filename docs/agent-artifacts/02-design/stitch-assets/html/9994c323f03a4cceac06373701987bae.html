@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+
+<html class="light" lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;700&amp;family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&amp;family=Public+Sans:wght@400;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              primary: "#7C5CFC",
+              secondary: "#FF8FA3",
+              accent: "#FFC531",
+              background: "#FBF7FF",
+              card: "#FFFFFF",
+              success: "#3DD598",
+              error: "#FF5C5C",
+              locked: "#C7C2E0",
+              textPrimary: "#2D2A45",
+              textSecondary: "#8E8AA8"
+            },
+            borderRadius: {
+              "DEFAULT": "0.5rem",
+              "lg": "1rem",
+              "xl": "1.5rem",
+              "2xl": "1.5rem",
+              "3xl": "24px",
+              "full": "9999px"
+            },
+            fontFamily: {
+              headline: ["Comfortaa", "sans-serif"],
+              display: ["Public Sans", "sans-serif"],
+              body: ["Nunito Sans", "sans-serif"],
+              label: ["Public Sans", "sans-serif"]
+            },
+            boxShadow: {
+              soft: "0 6px 16px rgba(124,92,252,0.12)",
+              nav: "0 -6px 16px rgba(124,92,252,0.12)"
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Nunito Sans', sans-serif; background-color: #FBF7FF; }
+        .font-headline { font-family: 'Comfortaa', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .confetti {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: #FFC531;
+            border-radius: 50%;
+        }
+        @keyframes success-pop {
+            0% { transform: scale(0.9) translateY(-20px); opacity: 0; }
+            100% { transform: scale(1) translateY(0); opacity: 1; }
+        }
+        .animate-success { animation: success-pop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        
+        @keyframes spin-slow {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        .animate-spin-custom { animation: spin-slow 1s linear infinite; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-textPrimary antialiased selection:bg-primary/20">
+<!-- Top App Bar -->
+<header class="bg-[#FBF7FF] dark:bg-gray-900 fixed top-0 w-full z-40">
+<div class="flex justify-between items-center px-4 py-3 w-full">
+<div class="flex items-center gap-3">
+<button class="p-2 active:scale-95 duration-150 text-[#7C5CFC]">
+<span class="material-symbols-outlined">arrow_back_ios_new</span>
+</button>
+<h1 class="font-headline text-xl font-bold tracking-tight text-[#7C5CFC]">Tạo nhiệm vụ</h1>
+</div>
+<div class="w-10 h-10 rounded-full border-2 border-primary/20 overflow-hidden bg-white shadow-sm">
+<img class="w-full h-full object-cover" data-alt="A cute 3D rendered avatar of a smiling child with big eyes and a friendly expression, wearing a purple hat, against a soft pastel lavender background. The art style is high-quality 3D animation, similar to modern family movies, with soft cinematic lighting and vibrant colors that reflect the playful 'Bé Ngoan' app brand." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCtx0wygC1MDBi8FUYFeVMweMgJmerZu-0FNLfJhmOcpnLFHX_gWza0AFSTbENr7ciGeLMCa1ySoz60k7n6C372GAFHH6t_gGUA4cITCbXP5Y7mFys47HVC3hhb3BFsv6eBdiken4pBdhhNH_ZxpNubT7nRlVOT0RgMWKyp-1PQQeLJ6WOzFEl9pZMoy9v4-Xts0u-Uf9ze68K4V7RSMEOloKseTRE-g4G2jocELLBXO8rEVon7agK99Jpy0_a_2wA3s-PO6hTcdyM"/>
+</div>
+</div>
+</header>
+<main class="pt-20 pb-32 px-4 max-w-lg mx-auto space-y-6">
+<!-- Task Preview Card -->
+<div class="bg-white rounded-3xl p-6 shadow-soft relative overflow-hidden border border-primary/5">
+<div class="absolute top-0 right-0 w-24 h-24 bg-primary/5 rounded-bl-full -mr-8 -mt-8"></div>
+<div class="flex items-center gap-4 mb-4">
+<div class="w-14 h-14 rounded-2xl bg-secondary/10 flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined text-3xl" style="font-variation-settings: 'FILL' 1;">auto_stories</span>
+</div>
+<div>
+<h2 class="font-headline font-bold text-lg text-textPrimary">Đọc sách 15 phút</h2>
+<p class="text-textSecondary text-sm">Học tập &amp; Phát triển</p>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-3 mt-6">
+<div class="bg-background rounded-2xl p-3 border border-primary/5">
+<p class="text-[10px] uppercase tracking-wider font-bold text-textSecondary mb-1">PHẦN THƯỞNG</p>
+<div class="flex items-center gap-1 text-accent font-black text-lg">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">stars</span>
+<span>+50 sao</span>
+</div>
+</div>
+<div class="bg-background rounded-2xl p-3 border border-primary/5">
+<p class="text-[10px] uppercase tracking-wider font-bold text-textSecondary mb-1">LẶP LẠI</p>
+<div class="flex items-center gap-1 text-primary font-bold">
+<span class="material-symbols-outlined text-sm">event_repeat</span>
+<span>Mỗi ngày</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Form Elements (Disabled State) -->
+<div class="space-y-4 opacity-60 grayscale-[0.2]">
+<div class="space-y-2">
+<label class="font-headline font-bold text-sm text-textSecondary ml-2">Mô tả nhiệm vụ</label>
+<div class="w-full bg-white rounded-2xl p-4 shadow-soft text-textPrimary">
+                    Cùng con đọc ít nhất 1 câu chuyện cổ tích trước khi đi ngủ nhé!
+                </div>
+</div>
+<div class="space-y-2">
+<label class="font-headline font-bold text-sm text-textSecondary ml-2">Thời gian nhắc nhở</label>
+<div class="flex items-center justify-between w-full bg-white rounded-2xl p-4 shadow-soft text-textPrimary">
+<span>20:00 mỗi tối</span>
+<span class="material-symbols-outlined text-primary">notifications_active</span>
+</div>
+</div>
+</div>
+</main>
+<!-- Success Toast Overlay -->
+<div class="fixed inset-0 z-[100] flex items-center justify-center px-6 pointer-events-none" id="success-toast">
+<div class="bg-[#E8F5E9] border-2 border-[#3DD598]/30 px-6 py-4 rounded-[24px] shadow-xl flex items-center gap-4 animate-success pointer-events-auto max-w-sm">
+<div class="w-10 h-10 rounded-full bg-[#3DD598] flex items-center justify-center text-white">
+<span class="material-symbols-outlined font-bold">check</span>
+</div>
+<div>
+<p class="font-headline font-bold text-[#2E7D32]">Thành công!</p>
+<p class="text-sm text-[#43A047] leading-tight">Đã tạo nhiệm vụ thành công! ✨</p>
+</div>
+</div>
+</div>
+<!-- Sticky Bottom Button - Submitting State -->
+<div class="fixed bottom-0 left-0 w-full p-4 z-50 pointer-events-none">
+<div class="max-w-lg mx-auto w-full pointer-events-auto">
+<button class="w-full bg-primary text-white font-headline font-bold py-4 rounded-3xl shadow-[0_8px_20px_rgba(124,92,252,0.3)] active:scale-95 transition-all duration-200 flex items-center justify-center gap-3" id="main-button">
+<!-- Spinner State -->
+<div class="flex items-center gap-3" id="btn-spinner">
+<svg class="animate-spin-custom h-6 w-6 text-white" fill="none" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+<path class="opacity-75" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" fill="currentColor"></path>
+</svg>
+<span>Đang lưu...</span>
+</div>
+<!-- Text State (hidden initially for the prompt's focus) -->
+<span class="hidden" id="btn-text">Lưu nhiệm vụ</span>
+</button>
+</div>
+</div>
+<!-- Bottom Navigation Bar (Visual only, disabled) -->
+<nav class="fixed bottom-0 left-0 w-full z-30 flex justify-around items-center h-16 px-2 pb-safe bg-white rounded-t-[24px] shadow-[0_-6px_16px_rgba(124,92,252,0.12)]">
+<div class="flex flex-col items-center justify-center text-[#7C5CFC] bg-[#7C5CFC]/10 rounded-xl px-4 py-2">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">task_alt</span>
+<span class="font-label text-xs font-semibold">Nhiệm vụ</span>
+</div>
+<div class="flex flex-col items-center justify-center text-[#8E8AA8] px-4 py-2">
+<span class="material-symbols-outlined">redeem</span>
+<span class="font-label text-xs font-semibold">Phần thưởng</span>
+</div>
+<div class="flex flex-col items-center justify-center text-[#8E8AA8] px-4 py-2">
+<span class="material-symbols-outlined">insights</span>
+<span class="font-label text-xs font-semibold">Theo dõi con</span>
+</div>
+</nav>
+<script>
+        // Micro-interaction simulation
+        document.addEventListener('DOMContentLoaded', () => {
+            const toast = document.getElementById('success-toast');
+            const btnSpinner = document.getElementById('btn-spinner');
+            const btnText = document.getElementById('btn-text');
+            const mainBtn = document.getElementById('main-button');
+
+            // Initially hide toast to show the sequence or keep it if static representation is preferred
+            // Since the prompt asks for "two states combined or as a sequence", we'll simulate the transition
+            
+            setTimeout(() => {
+                // Transition from Submitting to Success
+                btnSpinner.classList.add('hidden');
+                btnText.classList.remove('hidden');
+                btnText.innerText = "Đã hoàn tất";
+                mainBtn.classList.remove('bg-primary');
+                mainBtn.classList.add('bg-success');
+                
+                // Show confetti effect conceptually or simple log
+                console.log("Task Created Successfully!");
+            }, 3000);
+
+            // Auto-hide toast after 5 seconds
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transition = 'opacity 0.5s ease';
+            }, 5000);
+        });
+
+        // Simple confetti generation
+        function createConfetti() {
+            const container = document.getElementById('success-toast');
+            for(let i = 0; i < 20; i++) {
+                const conf = document.createElement('div');
+                conf.className = 'confetti';
+                conf.style.left = Math.random() * 100 + '%';
+                conf.style.top = Math.random() * 100 + '%';
+                conf.style.backgroundColor = ['#7C5CFC', '#FF8FA3', '#FFC531', '#3DD598'][Math.floor(Math.random()*4)];
+                conf.style.transform = `rotate(${Math.random() * 360}deg)`;
+                container.appendChild(conf);
+            }
+        }
+    </script>
+</body></html>

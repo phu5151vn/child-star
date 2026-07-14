@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+
+<html lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Bé Ngoan - Tạo phần thưởng (Submitting)</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;700;900&amp;family=Nunito+Sans:wght@400;600;700;800&amp;family=Comfortaa:wght@400;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              primary: "#7C5CFC",
+              secondary: "#FF8FA3",
+              accent: "#FFC531",
+              background: "#FBF7FF",
+              success: "#3DD598",
+              error: "#FF5C5C",
+              locked: "#C7C2E0",
+              "text-primary": "#2D2A45",
+              "secondary-text": "#8E8AA8",
+              surface: "#FFFFFF"
+            },
+            borderRadius: {
+              "DEFAULT": "0.5rem",
+              "lg": "1rem",
+              "xl": "1.5rem",
+              "2xl": "24px",
+              "full": "9999px"
+            },
+            fontFamily: {
+              headline: ["Public Sans", "sans-serif"],
+              display: ["Comfortaa", "cursive"],
+              body: ["Nunito Sans", "sans-serif"],
+              label: ["Public Sans", "sans-serif"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+      body {
+        background-color: #FBF7FF;
+        font-family: 'Nunito Sans', sans-serif;
+        color: #2D2A45;
+      }
+      .font-headline { font-family: 'Public Sans', sans-serif; }
+      .font-display { font-family: 'Comfortaa', cursive; }
+      
+      @keyframes spin {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+      }
+      .spinner {
+        animation: spin 1s linear infinite;
+      }
+      
+      .bento-card {
+        background: white;
+        box-shadow: 0 6px 16px rgba(124,92,252,0.12);
+        border-radius: 24px;
+      }
+
+      .floating-stars {
+        pointer-events: none;
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+      }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="min-h-screen pb-32">
+<!-- Top AppBar -->
+<header class="bg-surface dark:bg-surface text-primary dark:text-primary font-headline font-bold text-headline-sm shadow-sm flex items-center justify-between px-4 h-16 w-full sticky top-0 z-50 rounded-b-xl">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">stars</span>
+<h1 class="font-headline font-black text-xl text-primary">Cửa hàng quà tặng</h1>
+</div>
+<div class="bg-primary/10 px-3 py-1 rounded-full flex items-center gap-1">
+<span class="text-primary font-bold">500</span>
+<span class="material-symbols-outlined text-accent" style="font-variation-settings: 'FILL' 1;">star</span>
+</div>
+</header>
+<main class="max-w-md mx-auto p-4 space-y-6">
+<!-- Header Section -->
+<section class="pt-2">
+<h2 class="text-2xl font-black font-headline text-text-primary">Tạo phần thưởng mới</h2>
+<p class="text-secondary-text">Khích lệ bé bằng những món quà ý nghĩa!</p>
+</section>
+<!-- Main Form Bento Grid -->
+<div class="grid grid-cols-1 gap-4">
+<!-- Image Selector -->
+<div class="bento-card p-4 flex flex-col items-center justify-center border-2 border-dashed border-primary/20 relative overflow-hidden aspect-video">
+<img class="absolute inset-0 w-full h-full object-cover opacity-60" data-alt="A cute, colorful 3D cartoon illustration of a treasure chest filled with glowing toys and candies, set against a soft purple pastel background. High quality digital art style for children's app, bright and joyful lighting, vibrant primary purple and secondary pink color palette." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB496z5M8G-DOzMwGdTYCpBmTlUcS9RPAiT4XMhBq1-AXVzfqiL27StBsY-Kvlrf1bPmeoik9nWtnBgB-yJ5kgQU1ieaowCsqmX7CJKCig9dk8kP8nANwBQjxaJUzsGllxuGPeFDupoLvGN6WcOHw-6TS5QaanRXg4vfDnN_4X9c7lrObN9QZjh_qsNCEwlFnw-NJZFMUQk6pQjYubwiWNIxZLO5ALOu8wuRmYs0hNMcfxl0yNCcnMeJOxhHSaePjBwmMDVo0zdMsE"/>
+<div class="relative z-10 flex flex-col items-center gap-2 bg-white/80 backdrop-blur-sm p-4 rounded-2xl">
+<span class="material-symbols-outlined text-primary text-4xl">add_a_photo</span>
+<span class="font-bold text-primary">Thay đổi hình ảnh</span>
+</div>
+</div>
+<!-- Form Inputs -->
+<div class="bento-card p-6 space-y-5">
+<!-- Name -->
+<div class="space-y-2">
+<label class="text-sm font-bold text-secondary-text px-1 uppercase tracking-wider">Tên phần thưởng</label>
+<input class="w-full bg-background border-none rounded-2xl p-4 focus:ring-2 focus:ring-primary text-text-primary font-bold" readonly="" type="text" value="Đi công viên nước"/>
+</div>
+<!-- Cost -->
+<div class="space-y-2">
+<label class="text-sm font-bold text-secondary-text px-1 uppercase tracking-wider">Giá trị (Sao)</label>
+<div class="relative">
+<input class="w-full bg-background border-none rounded-2xl p-4 focus:ring-2 focus:ring-primary text-text-primary font-black text-xl" readonly="" type="number" value="200"/>
+<span class="absolute right-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-accent" style="font-variation-settings: 'FILL' 1;">star</span>
+</div>
+</div>
+<!-- Description -->
+<div class="space-y-2">
+<label class="text-sm font-bold text-secondary-text px-1 uppercase tracking-wider">Mô tả chi tiết</label>
+<textarea class="w-full bg-background border-none rounded-2xl p-4 focus:ring-2 focus:ring-primary text-text-primary" readonly="" rows="3">Cả nhà mình sẽ cùng nhau đi công viên nước Đầm Sen vào cuối tuần này nhé!</textarea>
+</div>
+</div>
+<!-- Target Selection -->
+<div class="bento-card p-6">
+<label class="text-sm font-bold text-secondary-text px-1 uppercase tracking-wider block mb-4">Dành cho ai?</label>
+<div class="flex gap-4">
+<div class="flex-1 p-3 rounded-2xl border-2 border-primary bg-primary/5 flex flex-col items-center gap-2 opacity-60">
+<div class="w-12 h-12 rounded-full overflow-hidden border-2 border-primary">
+<img class="w-full h-full object-cover" data-alt="A cute 3D cartoon avatar of a little boy with brown hair and a bright smile, wearing a yellow t-shirt. The background is a simple soft blue. Flat illustration style, friendly and energetic atmosphere, consistent with kids app aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDGM3PCW52BeqGZurvf4q_wTO37P2zMdOaSdfRjnrMtseHtZui9GG_XlFWLMxrNGgXP4c35WAkIGcFutSIuDWjwApNalowbCjMhThFmNYpp0ltxlVjf-LNAXI-z1MbJU4pUgR13-14gZ3N2YDj2ogAlrxX3MH9pM0jlZS3xFRnEbF94bZ8gHu0sKDjEnhJd9_YHqj36v3r8VRqaXvxX2N55OvNvjf8EDO1Vu5a2CaD6kInZpq7R6uTfStMZwxSCP3CZhLqo1wiegEQ"/>
+</div>
+<span class="font-bold text-sm">Bé Bi</span>
+<span class="material-symbols-outlined text-primary text-sm" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<div class="flex-1 p-3 rounded-2xl border-2 border-transparent bg-background flex flex-col items-center gap-2 opacity-40">
+<div class="w-12 h-12 rounded-full overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A charming 3D cartoon avatar of a little girl with pigtails and a pink headband, smiling broadly. Soft pink background. Whimsical and clean design, cheerful character art for a mobile game or education platform." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDJ5RKgnGDb28_WhoItHUHkvTsA_tZ3RckUlqKtNNtobdX_i4JEyE4ziDgpEPNS1qAyxSCFwARH4q7CRf0rfqNYBeEKFrdz_PXjGg1k345uF0rLTWpzt05tFuVf-9fsqu3WG3rrSq5AIszP5lkTPuKNE04shoVwHcd4djINCMkGFUP_DP76yPMmymdX35a4vUxNqiKzVMBjCEo0WHRrq2ZdPcy7wftheTrsad0O2Bo2FRzlW6m5HpfqdeefuooF5I5clQOUO4ucK2M"/>
+</div>
+<span class="font-bold text-sm text-secondary-text">Bé Bo</span>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Fixed Footer Container for Submitting State -->
+<div class="fixed bottom-0 left-0 w-full p-4 z-50 bg-white/80 backdrop-blur-md">
+<div class="max-w-md mx-auto">
+<!-- Loading State Button -->
+<button class="w-full bg-primary/40 text-white font-headline font-black text-lg py-5 rounded-2xl flex items-center justify-center gap-3 shadow-lg cursor-not-allowed" disabled="">
+<svg class="spinner h-6 w-6 text-white" fill="none" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+<path class="opacity-75" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" fill="currentColor"></path>
+</svg>
+<span>Đang lưu phần thưởng...</span>
+</button>
+</div>
+</div>
+<!-- Bottom Navigation Bar (Hidden on this focused screen based on "Relevance Check") -->
+<!-- The logic: "sub-page featuring a 'Close' or 'Back' action" or transactional flow usually suppresses the shell. -->
+<script>
+        // Subtle background decoration
+        const createStar = () => {
+            const star = document.createElement('span');
+            star.className = 'material-symbols-outlined absolute text-accent/20 select-none pointer-events-none transition-all duration-[3000ms]';
+            star.textContent = 'star';
+            star.style.fontSize = Math.random() * 20 + 10 + 'px';
+            star.style.left = Math.random() * 100 + 'vw';
+            star.style.top = Math.random() * 100 + 'vh';
+            star.style.transform = `rotate(${Math.random() * 360}deg) scale(0.5)`;
+            star.style.opacity = '0';
+            
+            document.body.appendChild(star);
+            
+            setTimeout(() => {
+                star.style.opacity = '1';
+                star.style.transform = `rotate(${Math.random() * 360}deg) scale(1.2)`;
+            }, 100);
+
+            setTimeout(() => {
+                star.style.opacity = '0';
+                star.style.transform = `rotate(${Math.random() * 360}deg) scale(0.5)`;
+                setTimeout(() => star.remove(), 3000);
+            }, 4000);
+        };
+
+        setInterval(createStar, 1500);
+    </script>
+</body></html>
