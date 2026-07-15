@@ -5,14 +5,14 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from app.core.db import Base, SessionLocal, engine
-import app.models  # noqa: F401 — register PostgreSQL DDL
+from app.core.db import SessionLocal
+import app.models  # noqa: F401 — register models
 from app.core.security import hash_password, hash_pin
 from app.models import Family, Reward, Task, User, WeeklyGoal
 
 
 def seed():
-    Base.metadata.create_all(bind=engine)
+    # Schema do Alembic quản lý — chạy `alembic upgrade head` TRƯỚC khi seed.
     db = SessionLocal()
     try:
         existing = db.query(Family).first()

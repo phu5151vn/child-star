@@ -10,7 +10,8 @@ services:
     plan: free
     region: singapore            # gần Supabase Seoul nhất trong các option của Render
     buildCommand: pip install -r requirements.txt
-    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    # Chạy migration (alembic) trước khi khởi động API để schema luôn khớp code khi deploy.
+    startCommand: alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port $PORT
     healthCheckPath: /health
     envVars:
       - key: PYTHON_VERSION
