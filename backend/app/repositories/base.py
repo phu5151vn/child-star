@@ -25,10 +25,36 @@ def generate_family_code(length: int = 6) -> str:
 class PointsRepository:
     @staticmethod
     def get_balance(db: Session, child_id: UUID) -> int:
+        """Số dư thật theo sổ điểm (nguồn đúng — dùng khi trừ điểm thật lúc duyệt)."""
         result = db.scalar(
             select(func.coalesce(func.sum(PointsLedger.delta), 0)).where(PointsLedger.child_id == child_id)
         )
         return int(result or 0)
+
+    @staticmethod
+    def get_pending_hold(db: Session, child_id: UUID) -> int:
+        """Tổng điểm đang bị "giữ chỗ" bởi các yêu cầu đổi thưởng còn ở trạng thái 'requested'.
+
+        Đây là điểm con đã cam kết chi nhưng chưa được bố mẹ duyệt (chưa ghi sổ).
+        """
+        result = db.scalar(
+            select(func.coalesce(func.sum(Reward.required_points), 0))
+            .select_from(RewardRedemption)
+            .join(Reward, Reward.id == RewardRedemption.reward_id)
+            .where(
+                RewardRedemption.child_id == child_id,
+                RewardRedemption.status == "requested",
+            )
+        )
+        return int(result or 0)
+
+    @staticmethod
+    def get_available_balance(db: Session, child_id: UUID) -> int:
+        """Số sao con có thể tiêu = số dư thật − phần đang giữ chỗ (pending).
+
+        Dùng cho mọi bề mặt hiển thị/kiểm tra phía CON để con không đổi vượt điểm.
+        """
+        return PointsRepository.get_balance(db, child_id) - PointsRepository.get_pending_hold(db, child_id)
 
     @staticmethod
     def has_ledger_for_assignment(db: Session, assignment_id: UUID) -> bool:

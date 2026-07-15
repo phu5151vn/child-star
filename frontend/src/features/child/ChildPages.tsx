@@ -179,7 +179,8 @@ export function ChildRewardsPage() {
   const redeemMut = useMutation({
     mutationFn: (rewardId: string) => api.post(`/rewards/${rewardId}/redeem`),
     onSuccess: () => {
-      message.success('Đã gửi yêu cầu đổi thưởng!');
+      message.success('Đã gửi yêu cầu đổi thưởng! Sao được tạm giữ tới khi bố mẹ duyệt ✨');
+      // Số dư khả dụng đã giảm ngay -> làm mới số sao và kho thưởng để phản ánh.
       void qc.invalidateQueries({ queryKey: ['rewards'] });
       void refetchMe();
     },

@@ -72,6 +72,20 @@ export const api = {
     form.append('kind', kind);
     return request<{ media_id: string }>('/media', { method: 'POST', body: form, headers: {} });
   },
+  /**
+   * Tải ảnh media có kèm Bearer token và trả về Object URL để dùng cho <img>.
+   * (Endpoint /media yêu cầu Authorization header nên không thể gán trực tiếp vào src.)
+   * Nhớ gọi URL.revokeObjectURL(url) khi không dùng nữa.
+   */
+  fetchMediaObjectUrl: async (mediaId: string): Promise<string> => {
+    const token = getToken();
+    const res = await fetch(`${API_BASE}/media/${mediaId}`, {
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+    });
+    if (!res.ok) throw new ApiClientError('MEDIA_LOAD_FAILED', 'Không tải được ảnh', res.status);
+    const blob = await res.blob();
+    return URL.createObjectURL(blob);
+  },
 };
 
 // Types

@@ -90,10 +90,11 @@ child yêu cầu đổi ──► requested ──(bố mẹ duyệt)──► a
 ```
 
 - **BR-X1:** Chỉ đổi được phần thưởng đang **unlocked** (đủ điểm) và còn stock.
-- **BR-X2:** Đổi thưởng cần bố mẹ duyệt (Q3). `[ASSUMPTION]` Chỉ khi `approved` mới ghi ledger `-required_points`.
-- **BR-X3:** Kiểm tra số dư đủ điểm **tại thời điểm duyệt** (không chỉ lúc gửi yêu cầu), trong transaction, tránh đổi vượt điểm khi có nhiều yêu cầu song song.
+- **BR-X2:** Đổi thưởng cần bố mẹ duyệt (Q3). Chỉ khi `approved` mới ghi ledger `-required_points` (ledger là nguồn đúng, append-only).
+- **BR-X2b (mô hình giữ chỗ):** Ngay khi con gửi yêu cầu (`requested`), số `required_points` bị **giữ chỗ (hold)**: số sao **khả dụng** con nhìn thấy = số dư sổ điểm − tổng điểm của các yêu cầu đang `requested`. Nhờ vậy con **không thể gửi nhiều yêu cầu vượt quá số sao đang có**. Ledger chưa bị ghi ở bước này.
+- **BR-X3:** Kiểm tra số dư đủ điểm **tại thời điểm duyệt** (không chỉ lúc gửi yêu cầu), trong transaction, tránh đổi vượt điểm khi có nhiều yêu cầu song song. Kiểm tra ở bước gửi yêu cầu dùng số dư **khả dụng** (đã trừ hold).
 - **BR-X4:** Khi `approved` và có stock: giảm stock 1 đơn vị trong cùng transaction.
-- **BR-X5:** Từ chối/hủy không trừ điểm và không đổi stock.
+- **BR-X5:** Từ chối/hủy không ghi ledger; phần giữ chỗ tự được nhả ra nên số sao khả dụng của con **khôi phục lại ngay** (hiệu ứng "hoàn điểm"). Không đổi stock.
 
 ## 6. Trường bắt buộc
 

@@ -39,7 +39,8 @@ class RewardService:
         ).all()
         balance = 0
         if ctx.role == "child" and ctx.child_id:
-            balance = PointsRepository.get_balance(db, ctx.child_id)
+            # Unlock/thiếu điểm tính trên số dư KHẢ DỤNG để con không đổi vượt điểm.
+            balance = PointsRepository.get_available_balance(db, ctx.child_id)
         result = []
         for r in rewards:
             if ctx.role == "child" and not r.is_active:
@@ -69,7 +70,7 @@ class RewardService:
             raise NotFoundError()
         balance = 0
         if ctx.role == "child" and ctx.child_id:
-            balance = PointsRepository.get_balance(db, ctx.child_id)
+            balance = PointsRepository.get_available_balance(db, ctx.child_id)
         is_unlocked, missing, is_out_of_stock = RewardService._compute_unlock(balance, reward)
         return RewardResponse(
             id=reward.id,
@@ -179,7 +180,9 @@ class RedemptionService:
             raise NotFoundError()
         if not ctx.child_id:
             raise RewardLockedError()
-        balance = PointsRepository.get_balance(db, ctx.child_id)
+        # Kiểm tra trên số dư KHẢ DỤNG (đã trừ các yêu cầu đang chờ duyệt) để con
+        # không thể gửi nhiều yêu cầu vượt quá số sao đang có.
+        balance = PointsRepository.get_available_balance(db, ctx.child_id)
         is_unlocked, missing, is_out_of_stock = RewardService._compute_unlock(balance, reward)
         if is_out_of_stock:
             raise OutOfStockError()

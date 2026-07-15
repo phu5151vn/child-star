@@ -90,7 +90,8 @@ class AuthService:
         family = db.get(Family, ctx.family_id)
         balance = None
         if ctx.role == "child" and ctx.child_id:
-            balance = PointsRepository.get_balance(db, ctx.child_id)
+            # Con nhìn thấy số sao KHẢ DỤNG (đã trừ phần đang chờ duyệt đổi thưởng).
+            balance = PointsRepository.get_available_balance(db, ctx.child_id)
         return MeResponse(
             id=user.id,
             role=ctx.role,

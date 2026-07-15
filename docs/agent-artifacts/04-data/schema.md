@@ -159,10 +159,19 @@ Index `(family_id, created_at DESC)`.
 ## 3. Số dư điểm (derived) & khóa an toàn
 
 ```sql
--- Số dư điểm của một con (BR-P1)
+-- Số dư điểm của một con (BR-P1) — nguồn đúng, dùng khi trừ điểm thật lúc duyệt
 SELECT COALESCE(SUM(delta), 0) AS balance
 FROM points_ledger
 WHERE child_id = :child_id;
+
+-- Điểm đang "giữ chỗ" bởi các yêu cầu đổi thưởng chờ duyệt (BR-X2b)
+SELECT COALESCE(SUM(r.required_points), 0) AS pending_hold
+FROM reward_redemptions rr
+JOIN rewards r ON r.id = rr.reward_id
+WHERE rr.child_id = :child_id AND rr.status = 'requested';
+
+-- Số sao KHẢ DỤNG hiển thị cho con & dùng để chặn đổi vượt điểm
+-- available_balance = balance − pending_hold
 ```
 
 Trừ điểm an toàn (BR-P3, BR-X3) — trong transaction đổi thưởng approve / manual_adjust âm:

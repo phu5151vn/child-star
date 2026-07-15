@@ -4,6 +4,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { api, ApiClientError, type Assignment, type Redemption } from '@/api/client';
 import { celebratePoints } from '@/components/CelebrationFx';
 import { ChildAvatar, EmojiIcon } from '@/components/CuteBits';
+import { MediaImage } from '@/components/MediaImage';
 import { PageState } from '@/components/PageState';
 import { defaultRewardEmoji, defaultTaskEmoji } from '@/theme/cute';
 
@@ -18,6 +19,7 @@ interface ApprovalCardProps {
   subtitle?: React.ReactNode;
   points?: number;
   pointsPrefix?: string;
+  proofMediaId?: string;
   onApprove: () => void;
   onReject: () => void;
   approving?: boolean;
@@ -31,6 +33,7 @@ function ApprovalCard({
   subtitle,
   points,
   pointsPrefix = '+',
+  proofMediaId,
   onApprove,
   onReject,
   approving,
@@ -54,6 +57,14 @@ function ApprovalCard({
           </div>
           {subtitle && (
             <Text type="secondary" style={{ display: 'block', marginTop: 2 }}>{subtitle}</Text>
+          )}
+          {proofMediaId && (
+            <div style={{ marginTop: 10 }}>
+              <Text type="secondary" style={{ display: 'block', fontSize: 12, marginBottom: 4 }}>
+                📷 Ảnh minh chứng (bấm để xem lớn)
+              </Text>
+              <MediaImage mediaId={proofMediaId} size={84} />
+            </div>
           )}
           <Space style={{ marginTop: 12 }}>
             <Button type="primary" shape="round" icon={<CheckOutlined />} loading={approving} onClick={onApprove}>
@@ -82,8 +93,12 @@ export function ParentApprovalsPage() {
       const item = data?.find((a) => a.id === id);
       message.success(`Đã duyệt! +${item?.task_points ?? 0} sao ⭐`);
       celebratePoints();
-      // Duyệt nhiệm vụ cộng điểm cho con -> làm mới cả số dư, sổ điểm và mục tiêu tuần.
-      void qc.invalidateQueries({ queryKey: ['assignments'] });
+      // Xóa ngay khỏi hàng đợi tại cache (badge menu dùng chung key nên tự giảm),
+      // không gọi lại API danh sách.
+      qc.setQueryData<Assignment[]>(['assignments', 'submitted'], (old) =>
+        old?.filter((a) => a.id !== id) ?? [],
+      );
+      // Điểm con thay đổi -> đánh dấu cũ để tự làm mới khi mở các trang liên quan.
       void qc.invalidateQueries({ queryKey: ['me'] });
       void qc.invalidateQueries({ queryKey: ['children'] });
       void qc.invalidateQueries({ queryKey: ['ledger'] });
@@ -95,9 +110,11 @@ export function ParentApprovalsPage() {
 
   const rejectMut = useMutation({
     mutationFn: (id: string) => api.post(`/assignments/${id}/reject`, { reason: 'Cần làm lại nhé!' }),
-    onSuccess: () => {
+    onSuccess: (_d, id) => {
       message.info('Đã từ chối');
-      void qc.invalidateQueries({ queryKey: ['assignments'] });
+      qc.setQueryData<Assignment[]>(['assignments', 'submitted'], (old) =>
+        old?.filter((a) => a.id !== id) ?? [],
+      );
       void qc.invalidateQueries({ queryKey: ['tasks'] });
     },
   });
@@ -121,6 +138,7 @@ export function ParentApprovalsPage() {
               childGender={item.child_gender}
               title={item.task_title}
               points={item.task_points}
+              proofMediaId={item.proof_media_id}
               approving={approveMut.isPending && approveMut.variables === item.id}
               onApprove={() => approveMut.mutate(item.id)}
               onReject={() => rejectMut.mutate(item.id)}
@@ -141,11 +159,13 @@ export function ParentRedemptionsPage() {
 
   const approveMut = useMutation({
     mutationFn: (id: string) => api.post(`/redemptions/${id}/approve`),
-    onSuccess: () => {
+    onSuccess: (_d, id) => {
       message.success('Đã duyệt đổi thưởng 🎁');
       celebratePoints();
-      // Duyệt đổi thưởng trừ điểm của con -> làm mới số dư, sổ điểm và kho thưởng.
-      void qc.invalidateQueries({ queryKey: ['redemptions'] });
+      // Xóa khỏi hàng đợi tại cache; điểm đã "giữ chỗ" nay ghi sổ thật.
+      qc.setQueryData<Redemption[]>(['redemptions', 'requested'], (old) =>
+        old?.filter((r) => r.id !== id) ?? [],
+      );
       void qc.invalidateQueries({ queryKey: ['me'] });
       void qc.invalidateQueries({ queryKey: ['children'] });
       void qc.invalidateQueries({ queryKey: ['ledger'] });
@@ -159,9 +179,15 @@ export function ParentRedemptionsPage() {
 
   const rejectMut = useMutation({
     mutationFn: (id: string) => api.post(`/redemptions/${id}/reject`, {}),
-    onSuccess: () => {
-      message.info('Đã từ chối');
-      void qc.invalidateQueries({ queryKey: ['redemptions'] });
+    onSuccess: (_d, id) => {
+      message.info('Đã từ chối, sao được hoàn lại cho con');
+      // Từ chối -> phần giữ chỗ được nhả ra, số dư con tự khôi phục.
+      qc.setQueryData<Redemption[]>(['redemptions', 'requested'], (old) =>
+        old?.filter((r) => r.id !== id) ?? [],
+      );
+      void qc.invalidateQueries({ queryKey: ['me'] });
+      void qc.invalidateQueries({ queryKey: ['children'] });
+      void qc.invalidateQueries({ queryKey: ['rewards'] });
     },
   });
 
