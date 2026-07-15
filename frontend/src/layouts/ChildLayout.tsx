@@ -5,7 +5,7 @@ import {
   LogoutOutlined,
   StarOutlined,
 } from '@ant-design/icons';
-import { Layout, Tabs, theme, Typography } from 'antd';
+import { Layout, theme, Typography } from 'antd';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { ChildAvatar } from '@/components/CuteBits';
 import { PointsBadge } from '@/components/PointsBadge';
@@ -29,10 +29,10 @@ export function ChildLayout() {
         : 'home';
 
   const tabItems = [
-    { key: 'home', label: 'Trang chính', icon: <HomeOutlined /> },
-    { key: 'tasks', label: 'Nhiệm vụ', icon: <StarOutlined /> },
-    { key: 'rewards', label: 'Kho thưởng', icon: <GiftOutlined /> },
-    { key: 'history', label: 'Lịch sử', icon: <HistoryOutlined /> },
+    { key: 'home', label: 'Trang chính', icon: <HomeOutlined />, path: '/child' },
+    { key: 'tasks', label: 'Nhiệm vụ', icon: <StarOutlined />, path: '/child/tasks' },
+    { key: 'rewards', label: 'Kho thưởng', icon: <GiftOutlined />, path: '/child/rewards' },
+    { key: 'history', label: 'Lịch sử', icon: <HistoryOutlined />, path: '/child/history' },
   ];
 
   return (
@@ -77,41 +77,60 @@ export function ChildLayout() {
           <Outlet />
         </div>
       </Content>
-      <div
+      <nav
         style={{
           position: 'fixed',
           bottom: 0,
           left: 0,
           right: 0,
+          display: 'flex',
           background: token.colorBgContainer,
           borderTop: `1px solid ${token.colorBorderSecondary}`,
-          borderRadius: '20px 20px 0 0',
+          borderRadius: '22px 22px 0 0',
           boxShadow: '0 -6px 20px -10px rgba(124,92,252,0.4)',
+          paddingBottom: 'env(safe-area-inset-bottom)',
           zIndex: 100,
         }}
       >
-        <Tabs
-          activeKey={pathKey}
-          centered
-          items={tabItems.map((t) => ({
-            key: t.key,
-            label: (
-              <span>
-                {t.icon} {t.label}
+        {tabItems.map((t) => {
+          const active = pathKey === t.key;
+          return (
+            <button
+              key={t.key}
+              type="button"
+              onClick={() => navigate(t.path)}
+              aria-current={active ? 'page' : undefined}
+              style={{
+                flex: 1,
+                minWidth: 0,
+                border: 'none',
+                background: 'transparent',
+                cursor: 'pointer',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                gap: 4,
+                padding: '10px 4px 12px',
+                color: active ? token.colorPrimary : token.colorTextSecondary,
+              }}
+            >
+              <span
+                style={{
+                  fontSize: 22,
+                  lineHeight: 1,
+                  padding: '5px 18px',
+                  borderRadius: 999,
+                  background: active ? token.colorPrimaryBg : 'transparent',
+                  transition: 'background 0.2s ease',
+                }}
+              >
+                {t.icon}
               </span>
-            ),
-          }))}
-          onChange={(key) => {
-            const paths: Record<string, string> = {
-              home: '/child',
-              tasks: '/child/tasks',
-              rewards: '/child/rewards',
-              history: '/child/history',
-            };
-            navigate(paths[key]);
-          }}
-        />
-      </div>
+              <span style={{ fontSize: 12, fontWeight: active ? 700 : 500 }}>{t.label}</span>
+            </button>
+          );
+        })}
+      </nav>
     </Layout>
   );
 }

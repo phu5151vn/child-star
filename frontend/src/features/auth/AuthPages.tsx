@@ -268,7 +268,14 @@ export function ProfilesPage() {
             <Text strong style={{ display: 'block', marginBottom: 12 }}>
               Nhập mã PIN của {selectedChild.display_name} 🔒
             </Text>
-            <Input.OTP length={4} size="large" value={pin} onChange={setPin} />
+            <Input.OTP
+              length={4}
+              size="large"
+              value={pin}
+              onChange={setPin}
+              inputMode="numeric"
+              formatter={(str) => str.replace(/\D/g, '')}
+            />
             <Button
               type="primary"
               block

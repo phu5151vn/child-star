@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { api, getToken, setToken, setStoredRole, type Me } from '@/api/client';
 
 interface AuthContextValue {
@@ -14,6 +14,7 @@ interface AuthContextValue {
 const AuthContext = createContext<AuthContextValue | null>(null);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
+  const queryClient = useQueryClient();
   const [token, setTokenState] = useState(getToken());
 
   const { data: me, isLoading, refetch } = useQuery({
@@ -28,6 +29,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [token, me]);
 
   const login = (newToken: string, role: string) => {
+    // Xóa toàn bộ cache của phiên trước để không đọc nhầm trạng thái nhiệm vụ/phần thưởng cũ.
+    queryClient.clear();
     setToken(newToken);
     setStoredRole(role);
     setTokenState(newToken);
@@ -37,6 +40,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setToken(null);
     setStoredRole(null);
     setTokenState(null);
+    // Hủy request đang chạy và dọn cache để phiên sau luôn fetch dữ liệu mới.
+    void queryClient.cancelQueries();
+    queryClient.clear();
   };
 
   return (

@@ -70,6 +70,7 @@ export function ChildTasksPage() {
     mutationFn: (taskId: string) => api.post(`/tasks/${taskId}/claim`),
     onSuccess: () => {
       void qc.invalidateQueries({ queryKey: ['tasks'] });
+      void qc.invalidateQueries({ queryKey: ['task'] });
       message.success('Đã nhận nhiệm vụ!');
     },
     onError: (e: Error) => message.error(e.message),

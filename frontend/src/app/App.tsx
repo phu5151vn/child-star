@@ -7,7 +7,15 @@ import { appTheme } from '@/theme/tokens';
 
 const queryClient = new QueryClient({
   defaultOptions: {
-    queries: { staleTime: 30_000, retry: 1 },
+    queries: {
+      // Ưu tiên đồng bộ: luôn lấy dữ liệu mới khi mở lại trang, quay lại tab hoặc có mạng lại.
+      // Nhờ vậy trạng thái nhiệm vụ/đổi thưởng không bị "kẹt" ở giá trị cũ giữa các thiết bị.
+      staleTime: 0,
+      refetchOnMount: 'always',
+      refetchOnWindowFocus: true,
+      refetchOnReconnect: true,
+      retry: 1,
+    },
   },
 });
 

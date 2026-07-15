@@ -82,8 +82,13 @@ export function ParentApprovalsPage() {
       const item = data?.find((a) => a.id === id);
       message.success(`Đã duyệt! +${item?.task_points ?? 0} sao ⭐`);
       celebratePoints();
+      // Duyệt nhiệm vụ cộng điểm cho con -> làm mới cả số dư, sổ điểm và mục tiêu tuần.
       void qc.invalidateQueries({ queryKey: ['assignments'] });
       void qc.invalidateQueries({ queryKey: ['me'] });
+      void qc.invalidateQueries({ queryKey: ['children'] });
+      void qc.invalidateQueries({ queryKey: ['ledger'] });
+      void qc.invalidateQueries({ queryKey: ['weekly-progress'] });
+      void qc.invalidateQueries({ queryKey: ['tasks'] });
     },
     onError: (e: Error) => message.error(e.message),
   });
@@ -93,6 +98,7 @@ export function ParentApprovalsPage() {
     onSuccess: () => {
       message.info('Đã từ chối');
       void qc.invalidateQueries({ queryKey: ['assignments'] });
+      void qc.invalidateQueries({ queryKey: ['tasks'] });
     },
   });
 
@@ -138,8 +144,12 @@ export function ParentRedemptionsPage() {
     onSuccess: () => {
       message.success('Đã duyệt đổi thưởng 🎁');
       celebratePoints();
+      // Duyệt đổi thưởng trừ điểm của con -> làm mới số dư, sổ điểm và kho thưởng.
       void qc.invalidateQueries({ queryKey: ['redemptions'] });
       void qc.invalidateQueries({ queryKey: ['me'] });
+      void qc.invalidateQueries({ queryKey: ['children'] });
+      void qc.invalidateQueries({ queryKey: ['ledger'] });
+      void qc.invalidateQueries({ queryKey: ['rewards'] });
     },
     onError: (e: Error) => {
       const msg = e instanceof ApiClientError ? e.message : e.message;
