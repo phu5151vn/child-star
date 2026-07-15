@@ -188,3 +188,62 @@ export interface WeeklyProgress {
   bonus_earned: boolean;
   week_start?: string | null;
 }
+
+// Games (cờ caro & cờ vua)
+export type GameType = 'caro' | 'chess';
+export type GameStatus = 'waiting' | 'active' | 'finished' | 'abandoned';
+export type Side = 'x' | 'o' | 'white' | 'black';
+export type GameResult = 'host_win' | 'guest_win' | 'draw';
+
+export interface GamePlayer {
+  id: string;
+  display_name: string;
+  gender?: 'male' | 'female' | null;
+}
+
+export interface CaroState {
+  size: number;
+  block_two_ends: boolean;
+  board: (Side | null)[][];
+  moves: { r: number; c: number; by: Side }[];
+}
+
+export interface ChessState {
+  fen: string;
+  last_move: string | null;
+  history: string[];
+}
+
+export interface CaroWinLine {
+  cells: [number, number][];
+  dir: [number, number];
+}
+
+export interface GameMatch {
+  id: string;
+  game_type: GameType;
+  status: GameStatus;
+  host?: GamePlayer | null;
+  guest?: GamePlayer | null;
+  host_side: Side;
+  guest_side?: Side | null;
+  your_side?: Side | null;
+  turn_user_id?: string | null;
+  is_your_turn: boolean;
+  state: CaroState | ChessState;
+  result?: GameResult | null;
+  winner_id?: string | null;
+  win_line?: CaroWinLine | null;
+  version: number;
+  created_at: string;
+}
+
+export interface GameSummary {
+  id: string;
+  game_type: GameType;
+  status: GameStatus;
+  host_name?: string | null;
+  guest_name?: string | null;
+  is_yours: boolean;
+  created_at: string;
+}

@@ -5,6 +5,7 @@ import {
   HomeOutlined,
   LogoutOutlined,
   MenuOutlined,
+  PlayCircleOutlined,
   TeamOutlined,
   TrophyOutlined,
 } from '@ant-design/icons';
@@ -62,6 +63,7 @@ export function ParentLayout() {
       onClick: () => go('/parent/redemptions'),
     },
     { key: 'children', icon: <TeamOutlined />, label: 'Con & Sổ điểm', onClick: () => go('/parent/children') },
+    { key: 'games', icon: <PlayCircleOutlined />, label: 'Trò chơi', onClick: () => go('/parent/games') },
     { key: 'logout', icon: <LogoutOutlined />, label: 'Đăng xuất', onClick: logout },
   ];
 

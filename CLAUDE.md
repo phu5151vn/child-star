@@ -1,6 +1,6 @@
 # Project Overview
 
-Repo này điều phối agent theo flow docs-first để build hệ thống NPL dựa trên WO flow-engine pattern (reference `debtor-portrait-202603`).
+Repo này điều phối agent theo flow docs-first để build **Bé Ngoan** — ứng dụng web quản lý việc nhà & phần thưởng cho gia đình (web frontend + FastAPI backend + Postgres). Đây là dự án độc lập, không theo chuẩn hay reference bên ngoài nào.
 
 ## Working Agreements
 

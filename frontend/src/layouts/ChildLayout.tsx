@@ -3,6 +3,7 @@ import {
   HistoryOutlined,
   HomeOutlined,
   LogoutOutlined,
+  PlayCircleOutlined,
   StarOutlined,
 } from '@ant-design/icons';
 import { Layout, theme, Typography } from 'antd';
@@ -24,14 +25,17 @@ export function ChildLayout() {
     ? 'tasks'
     : location.pathname.startsWith('/child/rewards')
       ? 'rewards'
-      : location.pathname.startsWith('/child/history')
-        ? 'history'
-        : 'home';
+      : location.pathname.startsWith('/child/games')
+        ? 'games'
+        : location.pathname.startsWith('/child/history')
+          ? 'history'
+          : 'home';
 
   const tabItems = [
     { key: 'home', label: 'Trang chính', icon: <HomeOutlined />, path: '/child' },
     { key: 'tasks', label: 'Nhiệm vụ', icon: <StarOutlined />, path: '/child/tasks' },
     { key: 'rewards', label: 'Kho thưởng', icon: <GiftOutlined />, path: '/child/rewards' },
+    { key: 'games', label: 'Chơi game', icon: <PlayCircleOutlined />, path: '/child/games' },
     { key: 'history', label: 'Lịch sử', icon: <HistoryOutlined />, path: '/child/history' },
   ];
 

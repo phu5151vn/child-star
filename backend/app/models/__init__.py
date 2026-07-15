@@ -254,3 +254,58 @@ class WeeklyBonusAward(Base):
     week_start: Mapped[date] = mapped_column(Date, nullable=False)
     goal_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("weekly_goals.id"), nullable=False)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+
+class GameMatch(Base):
+    """Ván cờ gia đình (caro/chess) chơi online giữa 2 thành viên. Không gắn vào điểm/thưởng."""
+
+    __tablename__ = "game_matches"
+    __table_args__ = (
+        CheckConstraint("game_type IN ('caro','chess')", name="ck_game_type"),
+        CheckConstraint(
+            "status IN ('waiting','active','finished','abandoned')",
+            name="ck_game_status",
+        ),
+        CheckConstraint(
+            "result IS NULL OR result IN ('host_win','guest_win','draw')",
+            name="ck_game_result",
+        ),
+        Index("ix_games_family_status", "family_id", "status"),
+    )
+
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    family_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("families.id"), nullable=False)
+    game_type: Mapped[str] = mapped_column(String(10), nullable=False)
+    status: Mapped[str] = mapped_column(String(12), nullable=False, default="waiting", server_default="waiting")
+    host_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
+    guest_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=True)
+    host_side: Mapped[str] = mapped_column(String(6), nullable=False)
+    guest_side: Mapped[str | None] = mapped_column(String(6), nullable=True)
+    turn_user_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=True)
+    state: Mapped[dict] = mapped_column(JSON, nullable=False)
+    result: Mapped[str | None] = mapped_column(String(10), nullable=True)
+    winner_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=True)
+    win_line: Mapped[dict | None] = mapped_column(JSON, nullable=True)
+    version: Mapped[int] = mapped_column(Integer, nullable=False, default=1, server_default="1")
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
+    )
+    finished_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+
+
+class GameMove(Base):
+    """Lịch sử nước đi append-only cho audit + chống double-move (unique ply)."""
+
+    __tablename__ = "game_moves"
+    __table_args__ = (
+        UniqueConstraint("match_id", "ply", name="uq_gamemove_ply"),
+    )
+
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    match_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("game_matches.id"), nullable=False)
+    ply: Mapped[int] = mapped_column(Integer, nullable=False)
+    by_user_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
+    move: Mapped[str] = mapped_column(Text, nullable=False)
+    resulting_fen: Mapped[str | None] = mapped_column(Text, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())

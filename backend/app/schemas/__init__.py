@@ -305,3 +305,76 @@ class WeeklyProgressResponse(BaseModel):
     achieved: bool = False
     bonus_earned: bool = False
     week_start: datetime | None = None
+
+
+# Games (cờ caro & cờ vua) — chơi con ↔ bố mẹ
+_GAME_TYPES = ("caro", "chess")
+_SIDE_CHOICES = ("random", "x", "o", "white", "black")
+
+
+class GameCreateRequest(BaseModel):
+    game_type: str
+    side: str = "random"
+    caro_block_two_ends: bool = False
+
+    @field_validator("game_type")
+    @classmethod
+    def _v_type(cls, v: str) -> str:
+        if v not in _GAME_TYPES:
+            raise ValueError("game_type phải là 'caro' hoặc 'chess'")
+        return v
+
+    @field_validator("side")
+    @classmethod
+    def _v_side(cls, v: str) -> str:
+        if v not in _SIDE_CHOICES:
+            raise ValueError("side không hợp lệ")
+        return v
+
+
+class GameMoveRequest(BaseModel):
+    move: str = Field(min_length=1, max_length=16)
+    resulting_fen: str | None = Field(default=None, max_length=120)
+    result: str | None = None
+
+    @field_validator("result")
+    @classmethod
+    def _v_result(cls, v: str | None) -> str | None:
+        if v is not None and v not in ("host_win", "guest_win", "draw"):
+            raise ValueError("result không hợp lệ")
+        return v
+
+
+class GamePlayer(BaseModel):
+    id: UUID
+    display_name: str
+    gender: str | None = None
+
+
+class GameMatchResponse(BaseModel):
+    id: UUID
+    game_type: str
+    status: str
+    host: GamePlayer | None = None
+    guest: GamePlayer | None = None
+    host_side: str
+    guest_side: str | None = None
+    your_side: str | None = None
+    turn_user_id: UUID | None = None
+    is_your_turn: bool = False
+    state: dict
+    result: str | None = None
+    winner_id: UUID | None = None
+    win_line: dict | None = None
+    version: int
+    created_at: datetime
+
+
+class GameSummaryResponse(BaseModel):
+    id: UUID
+    game_type: str
+    status: str
+    host_name: str | None = None
+    guest_name: str | None = None
+    is_yours: bool = False
+    created_at: datetime

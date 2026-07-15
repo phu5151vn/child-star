@@ -17,6 +17,9 @@ import {
   ChildRewardsPage,
   ChildHistoryPage,
 } from '@/features/child/ChildPages';
+import { GameLobbyPage } from '@/features/game/GameLobbyPage';
+import { OnlineMatchPage } from '@/features/game/OnlineMatchPage';
+import { LocalMatchPage } from '@/features/game/LocalMatchPage';
 
 export function AppRouter() {
   return (
@@ -40,6 +43,9 @@ export function AppRouter() {
             <Route path="/parent/redemptions" element={<ParentRedemptionsPage />} />
             <Route path="/parent/children" element={<ParentChildrenPage />} />
             <Route path="/parent/children/:id" element={<ParentChildLedgerPage />} />
+            <Route path="/parent/games" element={<GameLobbyPage />} />
+            <Route path="/parent/games/local/:type" element={<LocalMatchPage />} />
+            <Route path="/parent/games/:id" element={<OnlineMatchPage />} />
           </Route>
         </Route>
 
@@ -50,6 +56,9 @@ export function AppRouter() {
             <Route path="/child/tasks/:id" element={<ChildTaskDetailPage />} />
             <Route path="/child/rewards" element={<ChildRewardsPage />} />
             <Route path="/child/history" element={<ChildHistoryPage />} />
+            <Route path="/child/games" element={<GameLobbyPage />} />
+            <Route path="/child/games/local/:type" element={<LocalMatchPage />} />
+            <Route path="/child/games/:id" element={<OnlineMatchPage />} />
           </Route>
         </Route>
 

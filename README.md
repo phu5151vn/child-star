@@ -1,10 +1,10 @@
-# WO/NPL Flow Engine Starter Repo
+# Bé Ngoan — App việc nhà & phần thưởng cho gia đình
 
-Repo này dùng workflow **manual handoff** giữa **Claude Code** và **Cursor** để triển khai flow engine theo chuẩn WO reference (`debtor-portrait-202603`), áp dụng cho nghiệp vụ NPL.
+Repo này dùng workflow **manual handoff** giữa **Claude Code** và **Cursor** theo hướng **docs-first** để xây dựng ứng dụng web. Đây là dự án độc lập, **không theo chuẩn hay reference bên ngoài nào**.
 
 ## Workflow chuẩn
 
-1. Claude chuẩn hóa `00-intake` từ BRD/Excel.
+1. Claude chuẩn hóa `00-intake` từ yêu cầu sản phẩm.
 2. Claude chuẩn hóa `01-product` với role/rule chi tiết.
 3. Claude chốt flow docs + architecture/data/api + build-ready.
 4. Cursor build theo vertical slices trong `implementation-plan`.
@@ -57,4 +57,4 @@ bash ./scripts/verify-artifacts.sh review
 
 - Không bypass flow docs-first.
 - Không build nếu thiếu `build-ready.md`.
-- Mọi thay đổi phải bám intake/PRD đã truy vết từ BRD/Excel.
+- Mọi thay đổi phải bám intake/PRD đã chốt.

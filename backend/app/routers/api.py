@@ -16,6 +16,10 @@ from app.schemas import (
     ChildResponse,
     ChildUpdate,
     FamilyResponse,
+    GameCreateRequest,
+    GameMatchResponse,
+    GameMoveRequest,
+    GameSummaryResponse,
     LedgerEntry,
     ManualAdjustRequest,
     MeResponse,
@@ -37,6 +41,7 @@ from app.schemas import (
     WeeklyProgressResponse,
 )
 from app.services.auth_service import AuthService, ChildrenService
+from app.services.game_service import GameService
 from app.services.media_service import MediaService
 from app.services.reward_service import RedemptionService, RewardService
 from app.services.task_service import AssignmentService, PointsService, TaskService
@@ -416,6 +421,77 @@ def cancel_redemption(
 ):
     try:
         return RedemptionService.cancel(db, ctx, redemption_id)
+    except DomainError as e:
+        _handle_domain(e)
+
+
+# Games (cờ caro & cờ vua) — cả 2 role đều chơi được
+@router.post("/games", response_model=GameMatchResponse)
+def create_game(
+    data: GameCreateRequest,
+    ctx: AuthContext = Depends(get_auth_context),
+    db: Session = Depends(get_db),
+):
+    try:
+        return GameService.create_match(db, ctx, data)
+    except DomainError as e:
+        _handle_domain(e)
+
+
+@router.get("/games", response_model=list[GameSummaryResponse])
+def list_games(
+    status: str | None = None,
+    ctx: AuthContext = Depends(get_auth_context),
+    db: Session = Depends(get_db),
+):
+    return GameService.list_matches(db, ctx, status)
+
+
+@router.get("/games/{match_id}", response_model=GameMatchResponse)
+def get_game(
+    match_id: UUID,
+    ctx: AuthContext = Depends(get_auth_context),
+    db: Session = Depends(get_db),
+):
+    try:
+        return GameService.get_match(db, ctx, match_id)
+    except DomainError as e:
+        _handle_domain(e)
+
+
+@router.post("/games/{match_id}/join", response_model=GameMatchResponse)
+def join_game(
+    match_id: UUID,
+    ctx: AuthContext = Depends(get_auth_context),
+    db: Session = Depends(get_db),
+):
+    try:
+        return GameService.join_match(db, ctx, match_id)
+    except DomainError as e:
+        _handle_domain(e)
+
+
+@router.post("/games/{match_id}/move", response_model=GameMatchResponse)
+def move_game(
+    match_id: UUID,
+    data: GameMoveRequest,
+    ctx: AuthContext = Depends(get_auth_context),
+    db: Session = Depends(get_db),
+):
+    try:
+        return GameService.make_move(db, ctx, match_id, data)
+    except DomainError as e:
+        _handle_domain(e)
+
+
+@router.post("/games/{match_id}/resign", response_model=GameMatchResponse)
+def resign_game(
+    match_id: UUID,
+    ctx: AuthContext = Depends(get_auth_context),
+    db: Session = Depends(get_db),
+):
+    try:
+        return GameService.resign(db, ctx, match_id)
     except DomainError as e:
         _handle_domain(e)
 

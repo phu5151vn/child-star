@@ -13,11 +13,16 @@ html,
 body,
 #root {
   height: 100%;
+  /* Chặn kéo-xuống-để-tải-lại (pull-to-refresh) và hiệu ứng nảy overscroll trên mobile
+     — tránh reload cả trang khiến bàn cờ giật lên đầu khi đang chơi. */
+  overscroll-behavior: none;
 }
 
 body {
   margin: 0;
   background: #fbf7ff;
+  /* Bỏ độ trễ 300ms & double-tap zoom khi chạm liên tục (đặt/di chuyển quân) cho mượt. */
+  touch-action: manipulation;
 }
 
 /* Cuộn mềm mại, thanh cuộn dễ thương */
@@ -63,6 +68,19 @@ body {
 @keyframes bn-spin-slow {
   to { transform: rotate(360deg); }
 }
+@keyframes bn-draw {
+  to { stroke-dashoffset: 0; }
+}
+@keyframes bn-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(124, 92, 252, 0.5); }
+  50% { box-shadow: 0 0 0 6px rgba(124, 92, 252, 0); }
+}
+/* Quân cờ trượt từ ô nguồn (--dx,--dy tính theo số ô) về ô đích */
+@keyframes bn-slide {
+  from { transform: translate(calc(var(--dx, 0) * 100%), calc(var(--dy, 0) * 100%)); }
+  60% { transform: translate(0, 0) scale(1.06); }
+  to { transform: translate(0, 0) scale(1); }
+}
 
 /* ===== Tiện ích ===== */
 .bn-float { animation: bn-float 3s ease-in-out infinite; }
@@ -103,6 +121,29 @@ body {
 .bn-card-hover:hover .bn-emoji-badge {
   animation: bn-wiggle 0.5s ease;
 }
+
+/* Nét vẽ X/O trong cờ caro */
+.bn-draw { animation: bn-draw 0.32s ease forwards; }
+
+/* Ô/ quân cờ vừa đặt nảy lên */
+.bn-place { animation: bn-pop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
+
+/* Quân cờ vua: bọc lấp đầy ô để căn giữa + neo animation trượt */
+.bn-chess-piece {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+.bn-chess-slide { animation: bn-slide 0.26s cubic-bezier(0.22, 0.61, 0.36, 1) both; }
+@media (prefers-reduced-motion: reduce) {
+  .bn-chess-slide { animation: none; }
+}
+
+/* Ô đang tới lượt / được chọn nhấp nháy nhẹ */
+.bn-pulse { animation: bn-pulse 1.4s ease-in-out infinite; }
 
 /* Header gradient */
 .bn-gradient-header {

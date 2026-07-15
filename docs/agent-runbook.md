@@ -3,8 +3,8 @@
 ## Nguyên tắc chung
 
 - Đây là repo `manual handoff`: Claude chuẩn hóa tài liệu trước, Cursor implement sau, Claude review cuối.
-- Không dùng flow Stitch cho UI generation; source of truth nghiệp vụ là BRD/Excel + artifacts đã chuẩn hóa.
-- Flow/engine tham chiếu theo mô hình WO của `debtor-portrait-202603`, nhưng ngữ cảnh business giữ theo NPL.
+- Source of truth là yêu cầu sản phẩm + artifacts đã chuẩn hóa. Stitch có thể dùng để khám phá/thiết kế UI.
+- Dự án độc lập, không theo chuẩn hay reference bên ngoài nào.
 - Luồng triển khai chuẩn: `Intake -> Product -> User flow/Technical flow -> Architecture/Data/API -> Build -> Review -> Resolve`.
 
 ## Stage ownership
@@ -18,14 +18,14 @@ Thủ công:
 
 ### Stage 1 - Intake normalization
 Claude:
-- đọc BRD + Excel nguồn;
+- đọc yêu cầu sản phẩm nguồn;
 - chuẩn hóa `docs/agent-artifacts/00-intake/request.md`;
 - ghi rõ open questions và assumption.
 
 ### Stage 2 - Product specification
 Claude:
 - chuẩn hóa `docs/agent-artifacts/01-product/prd.md`;
-- chi tiết vai trò/quyền/use case/rule/acceptance criteria theo Excel.
+- chi tiết vai trò/quyền/use case/rule/acceptance criteria theo yêu cầu sản phẩm.
 
 ### Stage 3 - Flow and architecture readiness
 Claude:
