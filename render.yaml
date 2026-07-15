@@ -24,6 +24,13 @@ services:
         sync: false
       - key: CORS_ORIGINS        # URL frontend, vd https://bengoan-web.onrender.com
         sync: false
+      # ---- Lưu ảnh: Supabase Storage (private bucket) ----
+      - key: SUPABASE_URL         # vd https://xxxx.supabase.co (Project Settings > API)
+        sync: false
+      - key: SUPABASE_SERVICE_KEY # service_role key (BÍ MẬT — chỉ backend giữ)
+        sync: false
+      - key: SUPABASE_STORAGE_BUCKET
+        value: media              # tạo bucket PRIVATE tên "media" trong Supabase Storage
 
   # ---------- Frontend: Vite static site ----------
   - type: web

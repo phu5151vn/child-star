@@ -55,6 +55,27 @@ alembic upgrade head
   được `include_object` bỏ qua khi autogenerate (không sinh lệnh drop nhầm).
 - Deploy Render tự chạy `alembic upgrade head` trước khi start API (xem `render.yaml`).
 
+## Lưu ảnh — Supabase Storage (bắt buộc)
+
+Ảnh (minh chứng nhiệm vụ, icon, avatar) lưu trên **Supabase Storage** để không mất khi API
+restart/deploy. Không còn lưu ở đĩa cục bộ của instance.
+
+Thiết lập 1 lần:
+1. Supabase Dashboard → **Storage** → **New bucket** → tên `media`, để **Private** (không bật public).
+2. Lấy khóa ở **Project Settings → API**: `Project URL` và `service_role` key.
+3. Đặt biến môi trường cho backend (local `.env` hoặc Render dashboard):
+
+```bash
+SUPABASE_URL=https://xxxx.supabase.co
+SUPABASE_SERVICE_KEY=<service_role key — BÍ MẬT, chỉ backend giữ>
+SUPABASE_STORAGE_BUCKET=media
+```
+
+- Bucket **private** + backend proxy tải ảnh (kèm kiểm tra quyền theo gia đình) ⇒ ảnh trẻ em
+  không bao giờ công khai; client không thấy URL Supabase.
+- Ảnh minh chứng **tự động bị xóa** sau khi bố mẹ duyệt/từ chối (không cần xem lại → tiết kiệm dung lượng).
+- Chưa cấu hình 2 biến trên thì API upload/xem ảnh sẽ báo lỗi cấu hình (cố ý — không lưu tạm rồi mất).
+
 ## Tests
 ```bash
 cd backend && pytest -v

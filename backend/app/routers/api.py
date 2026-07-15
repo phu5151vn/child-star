@@ -1,5 +1,4 @@
-from fastapi import APIRouter, Depends, File, Form, Query, Request, UploadFile
-from fastapi.responses import FileResponse
+from fastapi import APIRouter, Depends, File, Form, Query, Request, Response, UploadFile
 from sqlalchemy.orm import Session
 from uuid import UUID
 
@@ -532,8 +531,9 @@ async def upload_media(
     ctx: AuthContext = Depends(get_auth_context),
     db: Session = Depends(get_db),
 ):
+    content = await file.read()
     try:
-        media_id = await MediaService.upload(db, ctx, file, kind)
+        media_id = MediaService.upload(db, ctx, content, file.content_type, kind)
         return {"media_id": media_id}
     except ValueError as e:
         from fastapi import HTTPException
@@ -548,7 +548,8 @@ def get_media(
     db: Session = Depends(get_db),
 ):
     try:
-        path, mime = MediaService.get_media_path(db, ctx, media_id)
-        return FileResponse(path, media_type=mime)
+        content, mime = MediaService.read_media(db, ctx, media_id)
+        # Ảnh riêng tư của gia đình -> cho cache riêng ở trình duyệt, không cache chung.
+        return Response(content=content, media_type=mime, headers={"Cache-Control": "private, max-age=3600"})
     except DomainError as e:
         _handle_domain(e)

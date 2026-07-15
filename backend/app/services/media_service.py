@@ -1,20 +1,81 @@
 import imghdr
-import os
 import uuid
-from pathlib import Path
 from uuid import UUID
 
-from fastapi import UploadFile
+import httpx
 from sqlalchemy.orm import Session
 
 from app.core.config import settings
+from app.core.exceptions import NotFoundError
 from app.core.deps import AuthContext
-from app.core.exceptions import ForbiddenRoleError, NotFoundError
 from app.models import Media
-from app.repositories.base import get_user_in_family
 
 ALLOWED_MIME = {"image/png", "image/jpeg", "image/webp"}
 MAX_SIZE = 5 * 1024 * 1024
+_EXT = {"image/png": ".png", "image/jpeg": ".jpg", "image/webp": ".webp"}
+_TIMEOUT = httpx.Timeout(20.0)
+
+
+class StorageNotConfiguredError(RuntimeError):
+    """Thiếu cấu hình Supabase Storage — coi như lỗi vận hành, không im lặng lưu tạm."""
+
+
+def _cfg() -> tuple[str, str, str]:
+    url = settings.SUPABASE_URL.rstrip("/")
+    key = settings.SUPABASE_SERVICE_KEY
+    bucket = settings.SUPABASE_STORAGE_BUCKET
+    if not url or not key:
+        raise StorageNotConfiguredError(
+            "Chưa cấu hình lưu trữ ảnh: cần SUPABASE_URL và SUPABASE_SERVICE_KEY."
+        )
+    return url, key, bucket
+
+
+def _object_url(base: str, bucket: str, path: str) -> str:
+    return f"{base}/storage/v1/object/{bucket}/{path}"
+
+
+def _storage_upload(path: str, content: bytes, mime: str) -> None:
+    base, key, bucket = _cfg()
+    headers = {
+        "Authorization": f"Bearer {key}",
+        "apikey": key,
+        "Content-Type": mime,
+        "x-upsert": "true",
+    }
+    resp = httpx.post(_object_url(base, bucket, path), content=content, headers=headers, timeout=_TIMEOUT)
+    if resp.status_code >= 300:
+        detail = resp.text[:300]
+        if "Bucket not found" in detail:
+            raise ValueError(
+                f"Bucket '{bucket}' chưa tồn tại trên Supabase Storage. "
+                "Hãy tạo bucket private tên này trong Supabase."
+            )
+        raise ValueError(f"Tải ảnh lên Supabase thất bại ({resp.status_code}): {detail}")
+
+
+def _storage_download(path: str) -> bytes:
+    base, key, bucket = _cfg()
+    headers = {"Authorization": f"Bearer {key}", "apikey": key}
+    resp = httpx.get(_object_url(base, bucket, path), headers=headers, timeout=_TIMEOUT)
+    if resp.status_code >= 300:
+        raise NotFoundError("Không tìm thấy ảnh")
+    return resp.content
+
+
+def _storage_delete(path: str) -> None:
+    """Xóa object khỏi bucket (best-effort — không chặn nghiệp vụ nếu lỗi)."""
+    try:
+        base, key, bucket = _cfg()
+    except StorageNotConfiguredError:
+        return
+    headers = {"Authorization": f"Bearer {key}", "apikey": key}
+    try:
+        httpx.request(
+            "DELETE", _object_url(base, bucket, path), headers=headers, timeout=_TIMEOUT
+        )
+    except httpx.HTTPError:
+        pass
 
 
 class MediaService:
@@ -32,24 +93,19 @@ class MediaService:
         return detected
 
     @staticmethod
-    async def upload(db: Session, ctx: AuthContext, file: UploadFile, kind: str) -> UUID:
+    def upload(db: Session, ctx: AuthContext, content: bytes, content_type: str | None, kind: str) -> UUID:
         if kind not in ("task_icon", "reward_image", "proof", "avatar"):
             raise ValueError("Loại media không hợp lệ")
-        content = await file.read()
-        mime = MediaService._validate_file(content, file.content_type)
+        mime = MediaService._validate_file(content, content_type)
         media_id = uuid.uuid4()
-        ext = {"image/png": ".png", "image/jpeg": ".jpg", "image/webp": ".webp"}[mime]
-        root = Path(settings.MEDIA_ROOT)
-        root.mkdir(parents=True, exist_ok=True)
-        rel_path = f"{ctx.family_id}/{media_id}{ext}"
-        full_path = root / rel_path
-        full_path.parent.mkdir(parents=True, exist_ok=True)
-        full_path.write_bytes(content)
+        object_path = f"{ctx.family_id}/{media_id}{_EXT[mime]}"
+        # Upload lên Supabase TRƯỚC; chỉ ghi DB khi lưu trữ thành công.
+        _storage_upload(object_path, content, mime)
         media = Media(
             id=media_id,
             family_id=ctx.family_id,
             kind=kind,
-            storage_path=rel_path,
+            storage_path=object_path,
             mime_type=mime,
             size_bytes=len(content),
             uploaded_by=ctx.user_id,
@@ -59,14 +115,29 @@ class MediaService:
         return media_id
 
     @staticmethod
-    def get_media_path(db: Session, ctx: AuthContext, media_id: UUID) -> tuple[str, str]:
+    def read_media(db: Session, ctx: AuthContext, media_id: UUID) -> tuple[bytes, str]:
         media = db.get(Media, media_id)
         if not media or media.family_id != ctx.family_id:
             raise NotFoundError()
-        full_path = Path(settings.MEDIA_ROOT) / media.storage_path
-        if media.kind == "proof":
-            if ctx.role == "child" and media.uploaded_by != ctx.user_id:
-                raise NotFoundError()
-        if not full_path.exists():
+        # Ảnh minh chứng: con chỉ xem được ảnh của chính mình; bố mẹ xem được để duyệt.
+        if media.kind == "proof" and ctx.role == "child" and media.uploaded_by != ctx.user_id:
             raise NotFoundError()
-        return str(full_path), media.mime_type
+        content = _storage_download(media.storage_path)
+        return content, media.mime_type
+
+    @staticmethod
+    def delete_media(db: Session, media_id: UUID | None) -> None:
+        """Xóa hẳn 1 media (object trên Supabase + dòng DB). Dùng khi ảnh hết giá trị.
+
+        An toàn khi gọi lặp lại / media không tồn tại. KHÔNG raise để không chặn nghiệp vụ.
+        Lưu ý: caller phải gỡ mọi tham chiếu FK (vd assignment.proof_media_id) trước khi gọi.
+        """
+        if media_id is None:
+            return
+        media = db.get(Media, media_id)
+        if not media:
+            return
+        path = media.storage_path
+        db.delete(media)
+        db.commit()
+        _storage_delete(path)

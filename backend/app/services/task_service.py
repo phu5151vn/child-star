@@ -23,7 +23,21 @@ from app.repositories.base import (
     get_task_in_family,
 )
 from app.schemas import AssignmentResponse, LedgerEntry, SubmitAssignmentRequest, TaskResponse
+from app.services.media_service import MediaService
 from app.services.weekly_service import WeeklyService
+
+
+def _discard_proof(db: Session, assignment: TaskAssignment) -> None:
+    """Xóa ảnh minh chứng sau khi đã quyết định (approve/reject) — không còn giá trị xem lại.
+
+    Gỡ tham chiếu FK trước rồi xóa object + dòng media (best-effort, không chặn nghiệp vụ).
+    """
+    proof_id = assignment.proof_media_id
+    if not proof_id:
+        return
+    assignment.proof_media_id = None
+    db.commit()
+    MediaService.delete_media(db, proof_id)
 
 
 def _child_assignment_state(task: Task, assignment: "TaskAssignment | None") -> tuple[str, "UUID | None"]:
@@ -346,6 +360,9 @@ class AssignmentService:
         # Sau khi cộng điểm nhiệm vụ, kiểm tra mục tiêu tuần để trao bonus nếu đạt.
         WeeklyService.maybe_award_bonus(db, ctx.family_id, ctx.user_id, assignment.child_id)
 
+        # Ảnh minh chứng đã dùng xong để duyệt -> xóa để tiết kiệm lưu trữ.
+        _discard_proof(db, assignment)
+
         return AssignmentService._to_response(db, assignment)
 
     @staticmethod
@@ -379,6 +396,8 @@ class AssignmentService:
         )
         db.add(new_assignment)
         db.commit()
+        # Ảnh minh chứng của lần bị từ chối không cần giữ (con sẽ gửi ảnh mới khi làm lại).
+        _discard_proof(db, assignment)
         return AssignmentService._to_response(db, assignment)
 
     @staticmethod

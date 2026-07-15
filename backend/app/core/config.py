@@ -12,6 +12,11 @@ class Settings(BaseSettings):
     JWT_ALGORITHM: str = "HS256"
     JWT_EXPIRE_MINUTES: int = 60 * 24 * 7
     MEDIA_ROOT: str = "./media"
+    # Lưu ảnh lên Supabase Storage (private bucket) để không mất khi API restart/deploy.
+    # Nếu để trống -> fallback về đĩa cục bộ MEDIA_ROOT (chỉ dùng cho dev).
+    SUPABASE_URL: str = ""          # vd https://xxxx.supabase.co
+    SUPABASE_SERVICE_KEY: str = ""  # service_role key (BÍ MẬT, chỉ dùng ở backend)
+    SUPABASE_STORAGE_BUCKET: str = "media"
     CORS_ORIGINS: str = "http://localhost:5173,http://127.0.0.1:5173"
     LOGIN_RATE_LIMIT: int = 10
     LOGIN_RATE_WINDOW_SECONDS: int = 60
