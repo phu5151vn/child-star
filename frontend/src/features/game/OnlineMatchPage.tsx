@@ -37,8 +37,10 @@ export function OnlineMatchPage() {
       if (!m) return 1500;
       if (m.status === 'finished' || m.status === 'abandoned') return false;
       if (m.status === 'waiting') return 2000;
-      // active: chỉ poll khi đang chờ đối thủ đi.
-      return m.is_your_turn ? false : 1200;
+      // active: poll nhanh khi chờ đối thủ đi hoặc có lời mời đang chờ; vẫn poll chậm khi
+      // tới lượt mình để kịp nhận lời mời cầu hòa/xin đi lại từ đối thủ.
+      if (m.pending_offer) return 1000;
+      return m.is_your_turn ? 2500 : 1200;
     },
   });
 
@@ -54,6 +56,18 @@ export function OnlineMatchPage() {
 
   const resignMut = useMutation({
     mutationFn: () => api.post<GameMatch>(`/games/${id}/resign`),
+    onSuccess: (m) => qc.setQueryData(['game', id], m),
+    onError: (e: Error) => message.error(e.message),
+  });
+
+  const offerMut = useMutation({
+    mutationFn: (kind: 'draw' | 'takeback') => api.post<GameMatch>(`/games/${id}/offer`, { kind }),
+    onSuccess: (m) => qc.setQueryData(['game', id], m),
+    onError: (e: Error) => message.error(e instanceof ApiClientError ? e.message : 'Không gửi được lời mời'),
+  });
+
+  const respondMut = useMutation({
+    mutationFn: (accept: boolean) => api.post<GameMatch>(`/games/${id}/offer/respond`, { accept }),
     onSuccess: (m) => qc.setQueryData(['game', id], m),
     onError: (e: Error) => message.error(e.message),
   });
@@ -106,6 +120,22 @@ export function OnlineMatchPage() {
 
           <StatusBanner match={match} youWaiting={!match.is_your_turn} />
 
+          {match.pending_offer && match.pending_by !== me?.id && (
+            <OfferBanner
+              text={`Đối thủ ${match.pending_offer === 'draw' ? 'xin cầu hòa 🤝' : 'xin đi lại nước vừa rồi ↩️'}`}
+              onAccept={() => respondMut.mutate(true)}
+              onDecline={() => respondMut.mutate(false)}
+              loading={respondMut.isPending}
+            />
+          )}
+          {match.pending_offer && match.pending_by === me?.id && (
+            <OfferBanner
+              text={`Đang chờ đối thủ trả lời lời ${match.pending_offer === 'draw' ? 'cầu hòa' : 'xin đi lại'}…`}
+              onCancel={() => respondMut.mutate(false)}
+              loading={respondMut.isPending}
+            />
+          )}
+
           {match.game_type === 'caro' ? (
             <CaroBoard
               board={(match.state as CaroState).board}
@@ -124,11 +154,29 @@ export function OnlineMatchPage() {
             />
           )}
 
-          <div style={{ display: 'flex', gap: 10, justifyContent: 'center' }}>
+          <div style={{ display: 'flex', gap: 8, justifyContent: 'center', flexWrap: 'wrap' }}>
             {match.status === 'active' && (match.host?.id === me?.id || match.guest?.id === me?.id) && (
-              <Button danger loading={resignMut.isPending} onClick={() => resignMut.mutate()}>
-                Đầu hàng 🏳️
-              </Button>
+              <>
+                <Button
+                  disabled={!!match.pending_offer}
+                  loading={offerMut.isPending && offerMut.variables === 'draw'}
+                  onClick={() => offerMut.mutate('draw')}
+                >
+                  Cầu hòa 🤝
+                </Button>
+                {!match.is_your_turn && (
+                  <Button
+                    disabled={!!match.pending_offer}
+                    loading={offerMut.isPending && offerMut.variables === 'takeback'}
+                    onClick={() => offerMut.mutate('takeback')}
+                  >
+                    Xin đi lại ↩️
+                  </Button>
+                )}
+                <Button danger disabled={!!match.pending_offer} loading={resignMut.isPending} onClick={() => resignMut.mutate()}>
+                  Đầu hàng 🏳️
+                </Button>
+              </>
             )}
             <Button onClick={() => navigate(base)}>Về sảnh</Button>
           </div>
@@ -149,6 +197,58 @@ export function OnlineMatchPage() {
 function lastCaroMove(state: CaroState) {
   const m = state.moves?.[state.moves.length - 1];
   return m ? { r: m.r, c: m.c } : null;
+}
+
+function OfferBanner({
+  text,
+  onAccept,
+  onDecline,
+  onCancel,
+  loading,
+}: {
+  text: string;
+  onAccept?: () => void;
+  onDecline?: () => void;
+  onCancel?: () => void;
+  loading?: boolean;
+}) {
+  return (
+    <div
+      className="bn-pop"
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: 10,
+        flexWrap: 'wrap',
+        justifyContent: 'center',
+        background: 'linear-gradient(135deg,#fff7e0,#ffe9f2)',
+        border: '2px solid #ffd76a',
+        borderRadius: 16,
+        padding: '10px 14px',
+      }}
+    >
+      <Text strong style={{ fontSize: 14 }}>
+        {text}
+      </Text>
+      <Space>
+        {onAccept && (
+          <Button type="primary" size="small" loading={loading} onClick={onAccept}>
+            Đồng ý
+          </Button>
+        )}
+        {onDecline && (
+          <Button size="small" disabled={loading} onClick={onDecline}>
+            Từ chối
+          </Button>
+        )}
+        {onCancel && (
+          <Button size="small" loading={loading} onClick={onCancel}>
+            Hủy lời mời
+          </Button>
+        )}
+      </Space>
+    </div>
+  );
 }
 
 function PlayerBadge({

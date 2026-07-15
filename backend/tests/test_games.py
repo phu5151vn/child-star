@@ -272,6 +272,97 @@ def test_chess_move_recording_and_resign(client):
     assert fin["winner_id"] == match["host"]["id"]
 
 
+# ---- integration: cầu hòa & xin đi lại ----
+
+def test_draw_offer_accept(client):
+    ph, ch, _, _ = _two_players(client)
+    match = _create_caro(client, ph, side="x")
+    mid = match["id"]
+    client.post(f"/api/v1/games/{mid}/join", headers=ch)
+    client.post(f"/api/v1/games/{mid}/move", headers=ph, json={"move": "7,7"})
+
+    off = client.post(f"/api/v1/games/{mid}/offer", headers=ch, json={"kind": "draw"})
+    assert off.status_code == 200, off.text
+    assert off.json()["pending_offer"] == "draw"
+
+    res = client.post(f"/api/v1/games/{mid}/offer/respond", headers=ph, json={"accept": True})
+    assert res.status_code == 200, res.text
+    body = res.json()
+    assert body["status"] == "finished"
+    assert body["result"] == "draw"
+    assert body["pending_offer"] is None
+
+
+def test_draw_offer_decline(client):
+    ph, ch, _, _ = _two_players(client)
+    match = _create_caro(client, ph, side="x")
+    mid = match["id"]
+    client.post(f"/api/v1/games/{mid}/join", headers=ch)
+
+    client.post(f"/api/v1/games/{mid}/offer", headers=ph, json={"kind": "draw"})
+    res = client.post(f"/api/v1/games/{mid}/offer/respond", headers=ch, json={"accept": False})
+    assert res.status_code == 200
+    body = res.json()
+    assert body["status"] == "active"
+    assert body["pending_offer"] is None
+
+
+def test_offerer_can_cancel(client):
+    ph, ch, _, _ = _two_players(client)
+    match = _create_caro(client, ph, side="x")
+    mid = match["id"]
+    client.post(f"/api/v1/games/{mid}/join", headers=ch)
+    client.post(f"/api/v1/games/{mid}/offer", headers=ph, json={"kind": "draw"})
+    # Chính người mời gọi respond -> hủy lời mời.
+    res = client.post(f"/api/v1/games/{mid}/offer/respond", headers=ph, json={"accept": True})
+    assert res.status_code == 200
+    assert res.json()["pending_offer"] is None
+    assert res.json()["status"] == "active"
+
+
+def test_takeback_accept_reverts_caro(client):
+    ph, ch, _, _ = _two_players(client)
+    match = _create_caro(client, ph, side="x")
+    mid = match["id"]
+    host_id = match["host"]["id"]
+    client.post(f"/api/v1/games/{mid}/join", headers=ch)
+    client.post(f"/api/v1/games/{mid}/move", headers=ph, json={"move": "7,7"})
+
+    # Host vừa đi -> host xin đi lại, guest đồng ý.
+    off = client.post(f"/api/v1/games/{mid}/offer", headers=ph, json={"kind": "takeback"})
+    assert off.status_code == 200, off.text
+    res = client.post(f"/api/v1/games/{mid}/offer/respond", headers=ch, json={"accept": True})
+    assert res.status_code == 200, res.text
+    body = res.json()
+    assert body["state"]["board"][7][7] is None
+    assert len(body["state"]["moves"]) == 0
+    assert body["turn_user_id"] == host_id  # trả lượt về người xin đi lại
+    assert body["pending_offer"] is None
+
+
+def test_takeback_only_by_last_mover(client):
+    ph, ch, _, _ = _two_players(client)
+    match = _create_caro(client, ph, side="x")
+    mid = match["id"]
+    client.post(f"/api/v1/games/{mid}/join", headers=ch)
+    client.post(f"/api/v1/games/{mid}/move", headers=ph, json={"move": "7,7"})
+    # Guest (đang tới lượt, chưa đi nước nào) xin đi lại -> bị từ chối.
+    r = client.post(f"/api/v1/games/{mid}/offer", headers=ch, json={"kind": "takeback"})
+    assert r.status_code == 409
+
+
+def test_offer_cleared_after_new_move(client):
+    ph, ch, _, _ = _two_players(client)
+    match = _create_caro(client, ph, side="x")
+    mid = match["id"]
+    client.post(f"/api/v1/games/{mid}/join", headers=ch)
+    client.post(f"/api/v1/games/{mid}/move", headers=ph, json={"move": "7,7"})
+    client.post(f"/api/v1/games/{mid}/offer", headers=ph, json={"kind": "draw"})
+    # Guest phớt lờ lời mời và đi nước của mình -> lời mời bị xóa.
+    body = client.post(f"/api/v1/games/{mid}/move", headers=ch, json={"move": "8,8"}).json()
+    assert body["pending_offer"] is None
+
+
 def test_chess_move_requires_fen(client):
     ph, ch, _, _ = _two_players(client)
     match = client.post("/api/v1/games", headers=ph, json={"game_type": "chess", "side": "white"}).json()

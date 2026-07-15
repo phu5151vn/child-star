@@ -345,6 +345,21 @@ class GameMoveRequest(BaseModel):
         return v
 
 
+class GameOfferRequest(BaseModel):
+    kind: str
+
+    @field_validator("kind")
+    @classmethod
+    def _v_kind(cls, v: str) -> str:
+        if v not in ("draw", "takeback"):
+            raise ValueError("kind phải là 'draw' hoặc 'takeback'")
+        return v
+
+
+class GameOfferRespondRequest(BaseModel):
+    accept: bool
+
+
 class GamePlayer(BaseModel):
     id: UUID
     display_name: str
@@ -366,6 +381,8 @@ class GameMatchResponse(BaseModel):
     result: str | None = None
     winner_id: UUID | None = None
     win_line: dict | None = None
+    pending_offer: str | None = None
+    pending_by: UUID | None = None
     version: int
     created_at: datetime
 

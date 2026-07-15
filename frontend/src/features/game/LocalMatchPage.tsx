@@ -43,6 +43,7 @@ function LocalCaro({ onExit }: { onExit: () => void }) {
   const [winLine, setWinLine] = useState<CaroWinLine | null>(null);
   const [last, setLast] = useState<{ r: number; c: number } | null>(null);
   const [result, setResult] = useState<'x' | 'o' | 'draw' | null>(null);
+  const [history, setHistory] = useState<{ r: number; c: number; side: 'x' | 'o' }[]>([]);
 
   const place = (r: number, c: number) => {
     if (result || board[r][c]) return;
@@ -50,6 +51,7 @@ function LocalCaro({ onExit }: { onExit: () => void }) {
     next[r][c] = side;
     setBoard(next);
     setLast({ r, c });
+    setHistory((h) => [...h, { r, c, side }]);
     const win = checkCaroWin(next, r, c, side, block);
     if (win) {
       setWinLine(win);
@@ -61,12 +63,28 @@ function LocalCaro({ onExit }: { onExit: () => void }) {
     }
   };
 
+  const undo = () => {
+    if (history.length === 0) return;
+    const h = [...history];
+    const removed = h.pop()!;
+    const next = board.map((row) => [...row]);
+    next[removed.r][removed.c] = null;
+    setBoard(next);
+    setHistory(h);
+    setWinLine(null);
+    setResult(null);
+    setSide(removed.side); // trả lượt cho người vừa đi
+    const prev = h[h.length - 1];
+    setLast(prev ? { r: prev.r, c: prev.c } : null);
+  };
+
   const reset = () => {
     setBoard(emptyCaroBoard(CARO_SIZE));
     setSide('x');
     setWinLine(null);
     setLast(null);
     setResult(null);
+    setHistory([]);
   };
 
   return (
@@ -88,6 +106,11 @@ function LocalCaro({ onExit }: { onExit: () => void }) {
         )}
       </Card>
       <CaroBoard board={board} onPlace={place} disabled={!!result} lastMove={last} winLine={winLine} />
+      <div style={{ textAlign: 'center' }}>
+        <Button onClick={undo} disabled={history.length === 0}>
+          Đi lại ↩️
+        </Button>
+      </div>
       {result && (
         <GameResultOverlay
           kind={result === 'draw' ? 'draw' : 'win'}
@@ -105,9 +128,11 @@ function LocalChess({ onExit }: { onExit: () => void }) {
   const [lastUci, setLastUci] = useState<string | null>(null);
   const [rotate, setRotate] = useState(true);
   const [over, setOver] = useState<{ kind: ResultKind; subtitle: string } | null>(null);
+  const [past, setPast] = useState<{ fen: string; lastUci: string | null }[]>([]);
   const { turn } = useChessGame(fen);
 
   const handleMove = (mv: AppliedMove) => {
+    setPast((p) => [...p, { fen, lastUci }]); // lưu trạng thái trước nước đi để đi lại
     setFen(mv.fen);
     setLastUci(mv.uci);
     if (mv.over) {
@@ -120,10 +145,21 @@ function LocalChess({ onExit }: { onExit: () => void }) {
     }
   };
 
+  const undo = () => {
+    if (past.length === 0) return;
+    const p = [...past];
+    const prev = p.pop()!;
+    setPast(p);
+    setFen(prev.fen);
+    setLastUci(prev.lastUci);
+    setOver(null);
+  };
+
   const reset = () => {
     setFen(CHESS_START);
     setLastUci(null);
     setOver(null);
+    setPast([]);
   };
 
   const orientation = rotate ? (turn === 'w' ? 'white' : 'black') : 'white';
@@ -140,6 +176,11 @@ function LocalChess({ onExit }: { onExit: () => void }) {
         </Space>
       </Card>
       <ChessBoard fen={fen} onMove={handleMove} orientation={orientation} lastMoveUci={lastUci} disabled={!!over} />
+      <div style={{ textAlign: 'center' }}>
+        <Button onClick={undo} disabled={past.length === 0}>
+          Đi lại ↩️
+        </Button>
+      </div>
       {over && (
         <GameResultOverlay kind={over.kind} subtitle={over.subtitle} onPlayAgain={reset} onLobby={onExit} />
       )}

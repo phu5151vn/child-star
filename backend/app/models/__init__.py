@@ -270,6 +270,10 @@ class GameMatch(Base):
             "result IS NULL OR result IN ('host_win','guest_win','draw')",
             name="ck_game_result",
         ),
+        CheckConstraint(
+            "pending_offer IS NULL OR pending_offer IN ('draw','takeback')",
+            name="ck_game_pending_offer",
+        ),
         Index("ix_games_family_status", "family_id", "status"),
     )
 
@@ -286,6 +290,9 @@ class GameMatch(Base):
     result: Mapped[str | None] = mapped_column(String(10), nullable=True)
     winner_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=True)
     win_line: Mapped[dict | None] = mapped_column(JSON, nullable=True)
+    # Lời mời đang chờ phản hồi: 'draw' (cầu hòa) hoặc 'takeback' (xin đi lại); pending_by = người mời.
+    pending_offer: Mapped[str | None] = mapped_column(String(10), nullable=True)
+    pending_by: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=True)
     version: Mapped[int] = mapped_column(Integer, nullable=False, default=1, server_default="1")
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(

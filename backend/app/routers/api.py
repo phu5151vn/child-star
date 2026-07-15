@@ -19,6 +19,8 @@ from app.schemas import (
     GameCreateRequest,
     GameMatchResponse,
     GameMoveRequest,
+    GameOfferRequest,
+    GameOfferRespondRequest,
     GameSummaryResponse,
     LedgerEntry,
     ManualAdjustRequest,
@@ -492,6 +494,32 @@ def resign_game(
 ):
     try:
         return GameService.resign(db, ctx, match_id)
+    except DomainError as e:
+        _handle_domain(e)
+
+
+@router.post("/games/{match_id}/offer", response_model=GameMatchResponse)
+def offer_game(
+    match_id: UUID,
+    data: GameOfferRequest,
+    ctx: AuthContext = Depends(get_auth_context),
+    db: Session = Depends(get_db),
+):
+    try:
+        return GameService.offer_action(db, ctx, match_id, data.kind)
+    except DomainError as e:
+        _handle_domain(e)
+
+
+@router.post("/games/{match_id}/offer/respond", response_model=GameMatchResponse)
+def respond_offer_game(
+    match_id: UUID,
+    data: GameOfferRespondRequest,
+    ctx: AuthContext = Depends(get_auth_context),
+    db: Session = Depends(get_db),
+):
+    try:
+        return GameService.respond_offer(db, ctx, match_id, data.accept)
     except DomainError as e:
         _handle_domain(e)
 

@@ -234,6 +234,8 @@ export interface GameMatch {
   result?: GameResult | null;
   winner_id?: string | null;
   win_line?: CaroWinLine | null;
+  pending_offer?: 'draw' | 'takeback' | null;
+  pending_by?: string | null;
   version: number;
   created_at: string;
 }

@@ -220,6 +220,9 @@ class GameService:
             match.turn_user_id = None
         else:
             match.turn_user_id = match.guest_id if ctx.user_id == match.host_id else match.host_id
+        # Nước đi mới làm mọi lời mời cầu hòa/xin đi lại cũ hết hiệu lực.
+        match.pending_offer = None
+        match.pending_by = None
         match.version += 1
 
         try:
@@ -260,6 +263,118 @@ class GameService:
         )
         db.commit()
         return GameService._to_response(db, ctx, match)
+
+    @staticmethod
+    def offer_action(db: Session, ctx: AuthContext, match_id: UUID, kind: str) -> GameMatchResponse:
+        """Gửi lời mời 'draw' (cầu hòa) hoặc 'takeback' (xin đi lại)."""
+        match = _get_match_in_family(db, match_id, ctx.family_id)
+        if not match:
+            raise NotFoundError("Không tìm thấy ván")
+        if ctx.user_id not in (match.host_id, match.guest_id):
+            raise NotFoundError("Không tìm thấy ván")
+        if match.status != "active":
+            raise InvalidTransitionError("Ván không ở trạng thái đang chơi")
+        if match.pending_offer:
+            raise InvalidTransitionError("Đang có một lời mời chờ phản hồi")
+        if kind == "takeback":
+            last = db.scalar(
+                select(GameMove).where(GameMove.match_id == match.id).order_by(GameMove.ply.desc()).limit(1)
+            )
+            if not last:
+                raise InvalidTransitionError("Chưa có nước nào để đi lại")
+            if last.by_user_id != ctx.user_id:
+                raise InvalidTransitionError("Chỉ người vừa đi mới xin đi lại được")
+
+        match.pending_offer = kind
+        match.pending_by = ctx.user_id
+        match.version += 1
+        AuditRepository.log(
+            db, family_id=ctx.family_id, actor_id=ctx.user_id,
+            action=f"game.offer.{kind}", entity_type="game", entity_id=match.id, changes={},
+        )
+        db.commit()
+        return GameService._to_response(db, ctx, match)
+
+    @staticmethod
+    def respond_offer(db: Session, ctx: AuthContext, match_id: UUID, accept: bool) -> GameMatchResponse:
+        """Phản hồi lời mời. Người mời gọi -> hủy lời mời; đối thủ gọi -> đồng ý/từ chối."""
+        match = _get_match_in_family(db, match_id, ctx.family_id)
+        if not match:
+            raise NotFoundError("Không tìm thấy ván")
+        if ctx.user_id not in (match.host_id, match.guest_id):
+            raise NotFoundError("Không tìm thấy ván")
+        if not match.pending_offer:
+            raise InvalidTransitionError("Không có lời mời nào")
+
+        kind = match.pending_offer
+        # Người mời tự gọi -> coi như hủy lời mời.
+        if ctx.user_id == match.pending_by:
+            match.pending_offer = None
+            match.pending_by = None
+            match.version += 1
+            db.commit()
+            return GameService._to_response(db, ctx, match)
+
+        if not accept:
+            match.pending_offer = None
+            match.pending_by = None
+            match.version += 1
+            db.commit()
+            return GameService._to_response(db, ctx, match)
+
+        if kind == "draw":
+            match.result = "draw"
+            match.winner_id = None
+            match.status = "finished"
+            match.turn_user_id = None
+            match.finished_at = datetime.now(timezone.utc)
+        elif kind == "takeback":
+            GameService._revert_last_move(db, match)
+
+        match.pending_offer = None
+        match.pending_by = None
+        match.version += 1
+        AuditRepository.log(
+            db, family_id=ctx.family_id, actor_id=ctx.user_id,
+            action=f"game.accept.{kind}", entity_type="game", entity_id=match.id, changes={},
+        )
+        db.commit()
+        return GameService._to_response(db, ctx, match)
+
+    @staticmethod
+    def _revert_last_move(db: Session, match: GameMatch) -> None:
+        """Hoàn nước cuối: xóa GameMove cuối, phục hồi state, trả lượt cho người xin đi lại."""
+        moves = db.scalars(
+            select(GameMove).where(GameMove.match_id == match.id).order_by(GameMove.ply.desc())
+        ).all()
+        if not moves:
+            return
+        last = moves[0]
+        requester = match.pending_by
+
+        if match.game_type == "caro":
+            state = dict(match.state)
+            board = [list(row) for row in state["board"]]
+            hist = list(state["moves"])
+            if hist:
+                popped = hist.pop()
+                board[popped["r"]][popped["c"]] = None
+            state["board"] = board
+            state["moves"] = hist
+            match.state = state
+        else:
+            prev_fen = moves[1].resulting_fen if len(moves) > 1 else CHESS_START_FEN
+            state = dict(match.state)
+            hist = list(state.get("history", []))
+            if hist:
+                hist.pop()
+            state["fen"] = prev_fen
+            state["history"] = hist
+            state["last_move"] = hist[-1] if hist else None
+            match.state = state
+
+        db.delete(last)
+        match.turn_user_id = requester
 
     # --- helpers cụ thể từng loại ---
 
@@ -341,6 +456,8 @@ class GameService:
             result=match.result,
             winner_id=match.winner_id,
             win_line=match.win_line,
+            pending_offer=match.pending_offer,
+            pending_by=match.pending_by,
             version=match.version,
             created_at=match.created_at,
         )
