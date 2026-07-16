@@ -117,9 +117,11 @@ class TaskAssignment(Base):
 
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     family_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("families.id"), nullable=False)
-    task_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("tasks.id"), nullable=False)
+    # task_id NULL = nhiệm vụ tự do do con đề xuất (dùng custom_title).
+    task_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True), ForeignKey("tasks.id"), nullable=True)
     child_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
     status: Mapped[str] = mapped_column(String(20), nullable=False)
+    custom_title: Mapped[str | None] = mapped_column(Text, nullable=True)
     proof_media_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True), ForeignKey("media.id"), nullable=True)
     reject_reason: Mapped[str | None] = mapped_column(Text, nullable=True)
     submitted_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
@@ -165,9 +167,11 @@ class RewardRedemption(Base):
 
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     family_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("families.id"), nullable=False)
-    reward_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("rewards.id"), nullable=False)
+    # reward_id NULL = phần thưởng tự do do con yêu cầu (dùng custom_title).
+    reward_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True), ForeignKey("rewards.id"), nullable=True)
     child_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
     status: Mapped[str] = mapped_column(String(20), nullable=False, default="requested")
+    custom_title: Mapped[str | None] = mapped_column(Text, nullable=True)
     points_spent: Mapped[int | None] = mapped_column(Integer, nullable=True)
     reject_reason: Mapped[str | None] = mapped_column(Text, nullable=True)
     requested_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
@@ -175,6 +179,27 @@ class RewardRedemption(Base):
     decided_by: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=True)
 
     reward: Mapped["Reward"] = relationship()
+
+
+class ParentPermission(Base):
+    """Phân quyền cho tài khoản kiểu bố mẹ (parent).
+
+    - Admin (người tạo gia đình): is_admin=True, đủ quyền.
+    - Người thân đồng hành: is_admin=False, có thể bị tắt từng quyền.
+    - Parent KHÔNG có hàng nào -> coi là admin đầy đủ (tương thích tài khoản cũ).
+    """
+
+    __tablename__ = "parent_permissions"
+    __table_args__ = (UniqueConstraint("user_id", name="uq_parent_permission_user"),)
+
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    family_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("families.id"), nullable=False)
+    user_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
+    is_admin: Mapped[bool] = mapped_column(Boolean, default=False, server_default="false")
+    can_manage_members: Mapped[bool] = mapped_column(Boolean, default=False, server_default="false")
+    can_approve_tasks: Mapped[bool] = mapped_column(Boolean, default=False, server_default="false")
+    can_approve_rewards: Mapped[bool] = mapped_column(Boolean, default=False, server_default="false")
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
 
 class PointsLedger(Base):
@@ -293,6 +318,33 @@ class GameMatch(Base):
     # Lời mời đang chờ phản hồi: 'draw' (cầu hòa) hoặc 'takeback' (xin đi lại); pending_by = người mời.
     pending_offer: Mapped[str | None] = mapped_column(String(10), nullable=True)
     pending_by: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=True)
+    version: Mapped[int] = mapped_column(Integer, nullable=False, default=1, server_default="1")
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
+    )
+    finished_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+
+
+class LudoMatch(Base):
+    """Ván cờ cá ngựa 2–4 người trong gia đình. Trạng thái đầy đủ nằm trong JSON `state`.
+
+    Không gắn điểm/thưởng. Backend là nguồn sự thật: gieo xúc xắc, tính nước đi, ăn quân,
+    thứ tự lượt, chen ngang giữa ván (thêm người khi còn màu trống).
+    """
+
+    __tablename__ = "ludo_matches"
+    __table_args__ = (
+        CheckConstraint("status IN ('waiting','active','finished')", name="ck_ludo_status"),
+        Index("ix_ludo_family_status", "family_id", "status"),
+    )
+
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    family_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("families.id"), nullable=False)
+    status: Mapped[str] = mapped_column(String(12), nullable=False, default="waiting", server_default="waiting")
+    created_by: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
+    state: Mapped[dict] = mapped_column(JSON, nullable=False)
+    winner_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=True)
     version: Mapped[int] = mapped_column(Integer, nullable=False, default=1, server_default="1")
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(

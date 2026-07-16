@@ -3,10 +3,12 @@ from sqlalchemy.orm import Session
 from uuid import UUID
 
 from app.core.db import get_db
-from app.core.deps import AuthContext, get_auth_context, require_role
+from app.core.deps import AuthContext, get_auth_context, require_permission, require_role
 from app.core.exceptions import DomainError, NotFoundError
 from app.core.rate_limit import check_login_rate_limit
 from app.schemas import (
+    ApproveAssignmentRequest,
+    ApproveRedemptionRequest,
     AssignmentResponse,
     BalanceResponse,
     ChildCreate,
@@ -14,7 +16,12 @@ from app.schemas import (
     ChildProfile,
     ChildResponse,
     ChildUpdate,
+    CustomRewardRequest,
+    CustomTaskRequest,
     FamilyResponse,
+    PermissionUpdate,
+    RelativeCreate,
+    RelativeResponse,
     GameCreateRequest,
     GameMatchResponse,
     GameMoveRequest,
@@ -22,6 +29,7 @@ from app.schemas import (
     GameOfferRespondRequest,
     GameSummaryResponse,
     LedgerEntry,
+    LudoMoveRequest,
     ManualAdjustRequest,
     MeResponse,
     ParentLoginRequest,
@@ -41,8 +49,9 @@ from app.schemas import (
     WeeklyGoalUpsert,
     WeeklyProgressResponse,
 )
-from app.services.auth_service import AuthService, ChildrenService
+from app.services.auth_service import AuthService, ChildrenService, RelativesService
 from app.services.game_service import GameService
+from app.services.ludo_service import LudoService
 from app.services.media_service import MediaService
 from app.services.reward_service import RedemptionService, RewardService
 from app.services.task_service import AssignmentService, PointsService, TaskService
@@ -114,7 +123,7 @@ def list_children(ctx: AuthContext = Depends(require_role("parent")), db: Sessio
 @router.post("/children", response_model=ChildResponse)
 def create_child(
     data: ChildCreate,
-    ctx: AuthContext = Depends(require_role("parent")),
+    ctx: AuthContext = Depends(require_permission("can_manage_members")),
     db: Session = Depends(get_db),
 ):
     return ChildrenService.create_child(db, ctx, data)
@@ -124,10 +133,41 @@ def create_child(
 def update_child(
     child_id: UUID,
     data: ChildUpdate,
-    ctx: AuthContext = Depends(require_role("parent")),
+    ctx: AuthContext = Depends(require_permission("can_manage_members")),
     db: Session = Depends(get_db),
 ):
     return ChildrenService.update_child(db, ctx, child_id, data)
+
+
+# Người thân đồng hành (tài khoản parent phụ)
+@router.get("/relatives", response_model=list[RelativeResponse])
+def list_relatives(ctx: AuthContext = Depends(require_role("parent")), db: Session = Depends(get_db)):
+    return RelativesService.list_relatives(db, ctx)
+
+
+@router.post("/relatives", response_model=RelativeResponse)
+def create_relative(
+    data: RelativeCreate,
+    ctx: AuthContext = Depends(require_permission("can_manage_members")),
+    db: Session = Depends(get_db),
+):
+    try:
+        return RelativesService.create_relative(db, ctx, data)
+    except DomainError as e:
+        _handle_domain(e)
+
+
+@router.patch("/relatives/{user_id}", response_model=RelativeResponse)
+def update_relative(
+    user_id: UUID,
+    data: PermissionUpdate,
+    ctx: AuthContext = Depends(require_permission("can_manage_members")),
+    db: Session = Depends(get_db),
+):
+    try:
+        return RelativesService.update_relative(db, ctx, user_id, data)
+    except DomainError as e:
+        _handle_domain(e)
 
 
 @router.get("/children/{child_id}/balance", response_model=BalanceResponse)
@@ -288,14 +328,27 @@ def submit_assignment(
         _handle_domain(e)
 
 
-@router.post("/assignments/{assignment_id}/approve", response_model=AssignmentResponse)
-def approve_assignment(
-    assignment_id: UUID,
-    ctx: AuthContext = Depends(require_role("parent")),
+@router.post("/assignments/custom", response_model=AssignmentResponse)
+def create_custom_assignment(
+    data: CustomTaskRequest,
+    ctx: AuthContext = Depends(require_role("child")),
     db: Session = Depends(get_db),
 ):
     try:
-        return AssignmentService.approve(db, ctx, assignment_id)
+        return AssignmentService.create_custom(db, ctx, data.title, data.proof_media_id)
+    except DomainError as e:
+        _handle_domain(e)
+
+
+@router.post("/assignments/{assignment_id}/approve", response_model=AssignmentResponse)
+def approve_assignment(
+    assignment_id: UUID,
+    data: ApproveAssignmentRequest | None = None,
+    ctx: AuthContext = Depends(require_permission("can_approve_tasks")),
+    db: Session = Depends(get_db),
+):
+    try:
+        return AssignmentService.approve(db, ctx, assignment_id, data.points if data else None)
     except DomainError as e:
         _handle_domain(e)
 
@@ -304,7 +357,7 @@ def approve_assignment(
 def reject_assignment(
     assignment_id: UUID,
     data: RejectAssignmentRequest,
-    ctx: AuthContext = Depends(require_role("parent")),
+    ctx: AuthContext = Depends(require_permission("can_approve_tasks")),
     db: Session = Depends(get_db),
 ):
     try:
@@ -389,14 +442,27 @@ def list_redemptions(
     return RedemptionService.list_redemptions(db, ctx, child_id, status)
 
 
-@router.post("/redemptions/{redemption_id}/approve", response_model=RedemptionResponse)
-def approve_redemption(
-    redemption_id: UUID,
-    ctx: AuthContext = Depends(require_role("parent")),
+@router.post("/redemptions/custom", response_model=RedemptionResponse)
+def create_custom_redemption(
+    data: CustomRewardRequest,
+    ctx: AuthContext = Depends(require_role("child")),
     db: Session = Depends(get_db),
 ):
     try:
-        return RedemptionService.approve(db, ctx, redemption_id)
+        return RedemptionService.create_custom(db, ctx, data.title)
+    except DomainError as e:
+        _handle_domain(e)
+
+
+@router.post("/redemptions/{redemption_id}/approve", response_model=RedemptionResponse)
+def approve_redemption(
+    redemption_id: UUID,
+    data: ApproveRedemptionRequest | None = None,
+    ctx: AuthContext = Depends(require_permission("can_approve_rewards")),
+    db: Session = Depends(get_db),
+):
+    try:
+        return RedemptionService.approve(db, ctx, redemption_id, data.points_spent if data else None)
     except DomainError as e:
         _handle_domain(e)
 
@@ -405,7 +471,7 @@ def approve_redemption(
 def reject_redemption(
     redemption_id: UUID,
     data: RejectRedemptionRequest,
-    ctx: AuthContext = Depends(require_role("parent")),
+    ctx: AuthContext = Depends(require_permission("can_approve_rewards")),
     db: Session = Depends(get_db),
 ):
     try:
@@ -519,6 +585,62 @@ def respond_offer_game(
 ):
     try:
         return GameService.respond_offer(db, ctx, match_id, data.accept)
+    except DomainError as e:
+        _handle_domain(e)
+
+
+# Cờ cá ngựa (Ludo) — 2..4 người trong gia đình
+@router.post("/ludo")
+def create_ludo(ctx: AuthContext = Depends(get_auth_context), db: Session = Depends(get_db)):
+    return LudoService.create(db, ctx)
+
+
+@router.get("/ludo")
+def list_ludo(ctx: AuthContext = Depends(get_auth_context), db: Session = Depends(get_db)):
+    return LudoService.list_matches(db, ctx)
+
+
+@router.get("/ludo/{match_id}")
+def get_ludo(match_id: UUID, ctx: AuthContext = Depends(get_auth_context), db: Session = Depends(get_db)):
+    try:
+        return LudoService.get(db, ctx, match_id)
+    except DomainError as e:
+        _handle_domain(e)
+
+
+@router.post("/ludo/{match_id}/join")
+def join_ludo(match_id: UUID, ctx: AuthContext = Depends(get_auth_context), db: Session = Depends(get_db)):
+    try:
+        return LudoService.join(db, ctx, match_id)
+    except DomainError as e:
+        _handle_domain(e)
+
+
+@router.post("/ludo/{match_id}/start")
+def start_ludo(match_id: UUID, ctx: AuthContext = Depends(get_auth_context), db: Session = Depends(get_db)):
+    try:
+        return LudoService.start(db, ctx, match_id)
+    except DomainError as e:
+        _handle_domain(e)
+
+
+@router.post("/ludo/{match_id}/roll")
+def roll_ludo(match_id: UUID, ctx: AuthContext = Depends(get_auth_context), db: Session = Depends(get_db)):
+    try:
+        return LudoService.roll(db, ctx, match_id)
+    except DomainError as e:
+        _handle_domain(e)
+
+
+@router.post("/ludo/{match_id}/move")
+def move_ludo(
+    match_id: UUID,
+    data: LudoMoveRequest,
+    ctx: AuthContext = Depends(get_auth_context),
+    db: Session = Depends(get_db),
+):
+    try:
+        return LudoService.move(db, ctx, match_id, data.token)
     except DomainError as e:
         _handle_domain(e)
 

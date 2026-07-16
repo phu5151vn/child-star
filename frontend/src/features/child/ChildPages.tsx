@@ -2,8 +2,9 @@ import { Button, Card, Space, Steps, Typography, message } from 'antd';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { api, ApiClientError, type LedgerEntry, type Reward, type Task, type WeeklyProgress } from '@/api/client';
+import { api, ApiClientError, type Assignment, type LedgerEntry, type Redemption, type Reward, type Task, type WeeklyProgress } from '@/api/client';
 import { PageState } from '@/components/PageState';
+import { CustomRequestButton } from '@/components/CustomRequestButton';
 import { MediaUpload } from '@/components/MediaUpload';
 import { LedgerTimeline } from '@/components/LedgerTimeline';
 import { PointsBadge } from '@/components/PointsBadge';
@@ -65,6 +66,11 @@ export function ChildTasksPage() {
     queryKey: ['tasks'],
     queryFn: () => api.get<Task[]>('/tasks'),
   });
+  // Nhiệm vụ con tự đề xuất đang chờ bố mẹ duyệt.
+  const { data: submitted } = useQuery({
+    queryKey: ['assignments', 'submitted'],
+    queryFn: () => api.get<Assignment[]>('/assignments?status=submitted'),
+  });
 
   const claimMut = useMutation({
     mutationFn: (taskId: string) => api.post(`/tasks/${taskId}/claim`),
@@ -76,9 +82,45 @@ export function ChildTasksPage() {
     onError: (e: Error) => message.error(e.message),
   });
 
+  const customMut = useMutation({
+    mutationFn: (title: string) => api.post('/assignments/custom', { title }),
+    onSuccess: () => {
+      message.success('Đã gửi đề xuất cho bố mẹ! Chờ bố mẹ duyệt nhé ✨');
+      void qc.invalidateQueries({ queryKey: ['assignments', 'submitted'] });
+    },
+    onError: (e: Error) => message.error(e.message),
+  });
+
+  const customPending = submitted?.filter((a) => a.is_custom) ?? [];
+
   return (
     <>
       <Title level={3}>⭐ Nhiệm vụ của con</Title>
+      <div style={{ marginBottom: 20 }}>
+        <CustomRequestButton
+          label="➕ Đề xuất một việc tốt khác"
+          modalTitle="Con muốn làm việc tốt gì?"
+          placeholder="Vd: Con phụ mẹ rửa bát tối nay"
+          submitting={customMut.isPending}
+          onSubmit={(t) => customMut.mutateAsync(t)}
+        />
+      </div>
+      {customPending.length > 0 && (
+        <>
+          <Title level={5}>Đề xuất đang chờ bố mẹ duyệt ⏳</Title>
+          <Space direction="vertical" style={{ width: '100%', marginBottom: 24 }} size="middle">
+            {customPending.map((a) => (
+              <Card key={a.id} style={{ borderRadius: 16, background: '#fff7e6' }} styles={{ body: { padding: 14 } }}>
+                <Space>
+                  <span style={{ fontSize: 22 }}>✨</span>
+                  <Text strong>{a.task_title}</Text>
+                  <Text type="secondary">— đang chờ duyệt</Text>
+                </Space>
+              </Card>
+            ))}
+          </Space>
+        </>
+      )}
       <PageState isLoading={isLoading} isError={isError} isEmpty={!data?.length} onRetry={refetch} emptyDescription="Chưa có nhiệm vụ nào">
         <Space direction="vertical" className="bn-stagger" style={{ width: '100%' }} size="middle">
           {data?.map((task) => (
@@ -175,6 +217,11 @@ export function ChildRewardsPage() {
     queryKey: ['rewards'],
     queryFn: () => api.get<Reward[]>('/rewards'),
   });
+  // Yêu cầu đổi thưởng đang chờ của con (gồm cả yêu cầu tự do ngoài danh sách).
+  const { data: myRequests } = useQuery({
+    queryKey: ['redemptions', 'requested'],
+    queryFn: () => api.get<Redemption[]>('/redemptions?status=requested'),
+  });
 
   const redeemMut = useMutation({
     mutationFn: (rewardId: string) => api.post(`/rewards/${rewardId}/redeem`),
@@ -190,13 +237,59 @@ export function ChildRewardsPage() {
     },
   });
 
-  const unlocked = data?.filter((r) => r.is_unlocked) ?? [];
-  const locked = data?.filter((r) => !r.is_unlocked) ?? [];
+  const customMut = useMutation({
+    mutationFn: (title: string) => api.post('/redemptions/custom', { title }),
+    onSuccess: () => {
+      message.success('Đã gửi mong ước cho bố mẹ! Chờ bố mẹ duyệt nhé ✨');
+      void qc.invalidateQueries({ queryKey: ['redemptions', 'requested'] });
+    },
+    onError: (e: Error) => message.error(e.message),
+  });
+
+  const customPending = myRequests?.filter((r) => r.is_custom) ?? [];
+  const pending = data?.filter((r) => r.is_pending) ?? [];
+  const unlocked = data?.filter((r) => r.is_unlocked && !r.is_pending) ?? [];
+  const locked = data?.filter((r) => !r.is_unlocked && !r.is_pending) ?? [];
 
   return (
     <>
       <Title level={3}>Kho thưởng</Title>
+      <div style={{ marginBottom: 20 }}>
+        <CustomRequestButton
+          label="✨ Xin một phần thưởng khác"
+          modalTitle="Con muốn xin phần thưởng gì?"
+          placeholder="Vd: Được đi công viên nước cuối tuần"
+          submitting={customMut.isPending}
+          onSubmit={(t) => customMut.mutateAsync(t)}
+        />
+      </div>
+      {customPending.length > 0 && (
+        <>
+          <Title level={5}>Mong ước đang chờ bố mẹ duyệt ⏳</Title>
+          <Space direction="vertical" style={{ width: '100%', marginBottom: 24 }} size="middle">
+            {customPending.map((r) => (
+              <Card key={r.id} style={{ borderRadius: 16, background: '#fff7e6' }} styles={{ body: { padding: 14 } }}>
+                <Space>
+                  <span style={{ fontSize: 22 }}>✨</span>
+                  <Text strong>{r.reward_title}</Text>
+                  <Text type="secondary">— đang chờ duyệt</Text>
+                </Space>
+              </Card>
+            ))}
+          </Space>
+        </>
+      )}
       <PageState isLoading={isLoading} isError={isError} isEmpty={!data?.length} onRetry={refetch} emptyDescription="Chưa có phần thưởng">
+        {pending.length > 0 && (
+          <>
+            <Title level={5}>Đang chờ bố mẹ duyệt ⏳</Title>
+            <Space direction="vertical" style={{ width: '100%', marginBottom: 24 }} size="middle">
+              {pending.map((r) => (
+                <RewardCard key={r.id} reward={r} balance={me?.balance} isChild />
+              ))}
+            </Space>
+          </>
+        )}
         {unlocked.length > 0 && (
           <>
             <Title level={5}>Đã mở khóa 🎁</Title>

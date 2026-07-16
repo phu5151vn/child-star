@@ -21,10 +21,13 @@ Xây dựng ứng dụng web gamification giúp gia đình khuyến khích con h
 
 | Role | Mô tả | Cách đăng nhập |
 |---|---|---|
-| `parent` (Bố mẹ) | Quản trị hộ gia đình. Tạo/sửa/xóa nhiệm vụ & phần thưởng, duyệt hoàn thành, duyệt đổi thưởng, xem toàn bộ sổ điểm. | Email + mật khẩu. |
+| `parent` — **admin** (Bố mẹ) | Quản trị hộ gia đình. Đủ quyền: tạo/sửa/xóa nhiệm vụ & phần thưởng, duyệt hoàn thành, duyệt đổi thưởng, quản lý thành viên, xem toàn bộ sổ điểm. | Email + mật khẩu. |
+| `parent` — **người thân đồng hành** | Tài khoản bố mẹ phụ, đăng nhập giống admin. Mặc định **KHÔNG** có 3 quyền nhạy cảm: thêm/sửa thành viên, duyệt hoàn thành nhiệm vụ, duyệt đổi thưởng. Các quyền còn lại tương tự admin. Admin có thể cấp thêm từng quyền. | Email + mật khẩu (do admin tạo). |
 | `child` (Con) | Người chơi. Nhận nhiệm vụ, báo hoàn thành, xem kho thưởng, gửi yêu cầu đổi, xem sổ điểm của chính mình. | Username + PIN do bố mẹ tạo, không dùng email/sđt trẻ. `[ASSUMPTION Q6]` |
 
 Mỗi tài khoản gắn với một **hộ gia đình (family)**. Một gia đình có 1..n bố mẹ và 1..n con `[ASSUMPTION Q1]`. Dữ liệu bị cô lập theo `family_id`.
+
+**Phân quyền (bảng `parent_permissions`)**: mỗi tài khoản parent có 1 hàng quyền (`is_admin`, `can_manage_members`, `can_approve_tasks`, `can_approve_rewards`). Admin luôn đủ quyền. Parent **không có** hàng nào ⇒ coi là admin (tương thích tài khoản cũ). Backend enforce qua `require_permission(...)`.
 
 ## 4. Role matrix (quyền chi tiết)
 
@@ -95,6 +98,8 @@ child yêu cầu đổi ──► requested ──(bố mẹ duyệt)──► a
 - **BR-X3:** Kiểm tra số dư đủ điểm **tại thời điểm duyệt** (không chỉ lúc gửi yêu cầu), trong transaction, tránh đổi vượt điểm khi có nhiều yêu cầu song song. Kiểm tra ở bước gửi yêu cầu dùng số dư **khả dụng** (đã trừ hold).
 - **BR-X4:** Khi `approved` và có stock: giảm stock 1 đơn vị trong cùng transaction.
 - **BR-X5:** Từ chối/hủy không ghi ledger; phần giữ chỗ tự được nhả ra nên số sao khả dụng của con **khôi phục lại ngay** (hiệu ứng "hoàn điểm"). Không đổi stock.
+- **BR-X6 (yêu cầu tự do):** Con có thể **yêu cầu phần thưởng ngoài danh sách** (`reward_redemptions.reward_id = NULL`, `custom_title` = mô tả của con). Số sao do **bố mẹ nhập khi duyệt** (`points_spent`); không giữ chỗ khi gửi (chưa biết số sao). Approve trừ đúng số sao bố mẹ nhập nếu con đủ điểm; reject không trừ. Không áp dụng stock.
+- **BR-T-custom (nhiệm vụ tự do):** Con có thể **đề xuất nhiệm vụ ngoài danh sách** (`task_assignments.task_id = NULL`, `custom_title` = mô tả), vào thẳng trạng thái `submitted`. Bố mẹ **nhập số sao thưởng khi duyệt**; approve cộng đúng số sao đó vào ledger (`task_approved`), reject không cộng.
 
 ## 6. Trường bắt buộc
 

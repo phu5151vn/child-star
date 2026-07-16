@@ -1,4 +1,4 @@
-import { LockOutlined, StarFilled } from '@ant-design/icons';
+import { ClockCircleOutlined, LockOutlined, StarFilled } from '@ant-design/icons';
 import { Button, Card, Space, Tag, theme, Typography } from 'antd';
 import type { Reward } from '@/api/client';
 import { EmojiIcon } from '@/components/CuteBits';
@@ -17,8 +17,10 @@ interface RewardCardProps {
 
 export function RewardCard({ reward, balance = 0, onRedeem, isChild }: RewardCardProps) {
   const { token } = theme.useToken();
-  const isLocked = isChild && !reward.is_unlocked;
+  const isPending = !!(isChild && reward.is_pending);
+  const isLocked = isChild && !reward.is_unlocked && !isPending;
   const isOutOfStock = reward.is_out_of_stock;
+  const dimmed = isLocked || isPending;
   const emoji = reward.icon_emoji || defaultRewardEmoji(reward.title);
 
   return (
@@ -27,19 +29,23 @@ export function RewardCard({ reward, balance = 0, onRedeem, isChild }: RewardCar
       styles={{ body: { padding: 16 } }}
       style={{
         borderRadius: token.borderRadiusLG,
-        opacity: isLocked ? 0.9 : 1,
-        background: isLocked ? token.colorFillAlter : token.colorBgContainer,
+        opacity: dimmed ? 0.9 : 1,
+        background: dimmed ? token.colorFillAlter : token.colorBgContainer,
         position: 'relative',
         overflow: 'hidden',
       }}
     >
-      {isLocked && (
+      {isPending ? (
+        <div style={{ position: 'absolute', top: 12, right: 12, color: token.colorWarning, fontSize: 22 }}>
+          <ClockCircleOutlined />
+        </div>
+      ) : isLocked ? (
         <div style={{ position: 'absolute', top: 12, right: 12, color: lockedColor, fontSize: 22 }}>
           <LockOutlined />
         </div>
-      )}
+      ) : null}
       <div style={{ display: 'flex', gap: 14, alignItems: 'flex-start' }}>
-        <EmojiIcon emoji={emoji} size={isChild ? 58 : 48} className={isLocked ? undefined : 'bn-float'} />
+        <EmojiIcon emoji={emoji} size={isChild ? 58 : 48} className={dimmed ? undefined : 'bn-float'} />
         <div style={{ flex: 1, minWidth: 0 }}>
           <Title level={isChild ? 4 : 5} style={{ margin: 0 }}>
             {reward.title}
@@ -53,15 +59,25 @@ export function RewardCard({ reward, balance = 0, onRedeem, isChild }: RewardCar
             <Tag icon={<StarFilled />} color="gold" style={{ borderRadius: 999, fontWeight: 700 }}>
               {reward.required_points} sao
             </Tag>
+            {isPending && (
+              <Tag icon={<ClockCircleOutlined />} color="orange" style={{ borderRadius: 999, fontWeight: 700 }}>
+                Đang chờ duyệt
+              </Tag>
+            )}
             {isOutOfStock && <Tag color="default" style={{ borderRadius: 999 }}>Hết hàng</Tag>}
           </div>
+          {isPending && (
+            <Text type="secondary" style={{ display: 'block', marginTop: 10 }}>
+              Con đã gửi yêu cầu đổi, đang chờ bố mẹ duyệt nhé! ⏳
+            </Text>
+          )}
           {isChild && isLocked && reward.missing_points != null && (
             <Space direction="vertical" style={{ width: '100%', marginTop: 10 }}>
               <Text type="secondary">Còn thiếu {reward.missing_points} sao nữa nhé! 💪</Text>
               <PointsProgress current={balance} target={reward.required_points} />
             </Space>
           )}
-          {isChild && !isLocked && !isOutOfStock && onRedeem && (
+          {isChild && !isLocked && !isPending && !isOutOfStock && onRedeem && (
             <Button type="primary" block shape="round" style={{ marginTop: 12 }} onClick={() => onRedeem(reward.id)}>
               Đổi ngay 🎉
             </Button>

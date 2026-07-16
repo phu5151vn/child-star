@@ -9,7 +9,7 @@ from app.core.deps import AuthContext
 from app.core.exceptions import ConflictError, ForbiddenRoleError, NotFoundError
 from app.core.integrity import is_unique_violation
 from app.core.security import create_access_token, hash_password, hash_pin, verify_password, verify_pin
-from app.models import Family, PointsLedger, User
+from app.models import Family, ParentPermission, PointsLedger, User
 from app.repositories.base import AuditRepository, PointsRepository, generate_family_code, get_family_by_code
 from app.services.weekly_service import _count_completed_this_week
 from app.schemas import (
@@ -19,7 +19,10 @@ from app.schemas import (
     ChildUpdate,
     FamilyResponse,
     MeResponse,
+    PermissionUpdate,
     RegisterRequest,
+    RelativeCreate,
+    RelativeResponse,
 )
 
 
@@ -40,6 +43,18 @@ class AuthService:
             password_hash=hash_password(data.password),
         )
         db.add(parent)
+        db.flush()
+        # Người tạo gia đình là admin đầy đủ quyền.
+        db.add(
+            ParentPermission(
+                family_id=family.id,
+                user_id=parent.id,
+                is_admin=True,
+                can_manage_members=True,
+                can_approve_tasks=True,
+                can_approve_rewards=True,
+            )
+        )
         db.commit()
         token = create_access_token(user_id=parent.id, role="parent", family_id=family.id)
         return token, code
@@ -101,6 +116,10 @@ class AuthService:
             family_code=family.family_code if family else None,
             child_id=ctx.child_id,
             balance=balance,
+            is_admin=ctx.is_admin,
+            can_manage_members=ctx.can_manage_members,
+            can_approve_tasks=ctx.can_approve_tasks,
+            can_approve_rewards=ctx.can_approve_rewards,
         )
 
 
@@ -215,3 +234,111 @@ class ChildrenService:
         if not family:
             raise NotFoundError()
         return FamilyResponse.model_validate(family)
+
+
+class RelativesService:
+    """Quản lý tài khoản kiểu bố mẹ trong gia đình (admin + người thân đồng hành)."""
+
+    @staticmethod
+    def _to_response(user: User, perm: ParentPermission | None) -> RelativeResponse:
+        # Không có hàng phân quyền -> admin gốc, đủ quyền.
+        if perm is None:
+            return RelativeResponse(
+                id=user.id,
+                display_name=user.display_name,
+                email=user.email,
+                is_admin=True,
+                is_active=user.is_active,
+                can_manage_members=True,
+                can_approve_tasks=True,
+                can_approve_rewards=True,
+            )
+        return RelativeResponse(
+            id=user.id,
+            display_name=user.display_name,
+            email=user.email,
+            is_admin=perm.is_admin,
+            is_active=user.is_active,
+            can_manage_members=perm.is_admin or perm.can_manage_members,
+            can_approve_tasks=perm.is_admin or perm.can_approve_tasks,
+            can_approve_rewards=perm.is_admin or perm.can_approve_rewards,
+        )
+
+    @staticmethod
+    def list_relatives(db: Session, ctx: AuthContext) -> list[RelativeResponse]:
+        parents = db.scalars(
+            select(User).where(User.family_id == ctx.family_id, User.role == "parent")
+        ).all()
+        result = []
+        for u in parents:
+            perm = db.scalar(select(ParentPermission).where(ParentPermission.user_id == u.id))
+            result.append(RelativesService._to_response(u, perm))
+        # Admin lên đầu.
+        result.sort(key=lambda r: (not r.is_admin, r.display_name.lower()))
+        return result
+
+    @staticmethod
+    def create_relative(db: Session, ctx: AuthContext, data: RelativeCreate) -> RelativeResponse:
+        user = User(
+            family_id=ctx.family_id,
+            role="parent",
+            display_name=data.display_name,
+            email=data.email.lower(),
+            password_hash=hash_password(data.password),
+        )
+        db.add(user)
+        try:
+            db.flush()
+        except IntegrityError as exc:
+            db.rollback()
+            raise ConflictError("Email này đã được sử dụng") from exc
+        perm = ParentPermission(
+            family_id=ctx.family_id,
+            user_id=user.id,
+            is_admin=False,
+            can_manage_members=data.can_manage_members,
+            can_approve_tasks=data.can_approve_tasks,
+            can_approve_rewards=data.can_approve_rewards,
+        )
+        db.add(perm)
+        AuditRepository.log(
+            db, family_id=ctx.family_id, actor_id=ctx.user_id,
+            action="relative.create", entity_type="parent", entity_id=user.id,
+            changes={"email": user.email, "display_name": user.display_name},
+        )
+        db.commit()
+        return RelativesService._to_response(user, perm)
+
+    @staticmethod
+    def update_relative(db: Session, ctx: AuthContext, user_id: UUID, data: PermissionUpdate) -> RelativeResponse:
+        user = db.scalar(
+            select(User).where(User.id == user_id, User.family_id == ctx.family_id, User.role == "parent")
+        )
+        if not user:
+            raise NotFoundError()
+        perm = db.scalar(select(ParentPermission).where(ParentPermission.user_id == user.id))
+        # Không cho sửa quyền của admin (tài khoản gốc luôn đủ quyền).
+        if perm is None or perm.is_admin:
+            raise ConflictError("Không thể chỉnh quyền của quản trị viên gia đình")
+        if user.id == ctx.user_id:
+            raise ConflictError("Không thể tự đổi quyền của chính mình")
+        if data.can_manage_members is not None:
+            perm.can_manage_members = data.can_manage_members
+        if data.can_approve_tasks is not None:
+            perm.can_approve_tasks = data.can_approve_tasks
+        if data.can_approve_rewards is not None:
+            perm.can_approve_rewards = data.can_approve_rewards
+        if data.is_active is not None:
+            user.is_active = data.is_active
+        AuditRepository.log(
+            db, family_id=ctx.family_id, actor_id=ctx.user_id,
+            action="relative.update", entity_type="parent", entity_id=user.id,
+            changes={
+                "can_manage_members": perm.can_manage_members,
+                "can_approve_tasks": perm.can_approve_tasks,
+                "can_approve_rewards": perm.can_approve_rewards,
+                "is_active": user.is_active,
+            },
+        )
+        db.commit()
+        return RelativesService._to_response(user, perm)

@@ -3,7 +3,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Icon } from '@iconify/react';
-import { api, ApiClientError, type GameMatch, type GameSummary, type GameType } from '@/api/client';
+import { api, ApiClientError, type GameMatch, type GameSummary, type GameType, type LudoMatch, type LudoSummary } from '@/api/client';
 import { PageState } from '@/components/PageState';
 import { useAuth } from '@/features/auth/AuthContext';
 
@@ -39,8 +39,28 @@ export function GameLobbyPage() {
       message.error(e instanceof ApiClientError ? e.message : 'Không tham gia được ván'),
   });
 
+  const { data: ludoGames } = useQuery({
+    queryKey: ['ludo'],
+    queryFn: () => api.get<LudoSummary[]>('/ludo'),
+    refetchInterval: 4000,
+  });
+
+  const createLudoMut = useMutation({
+    mutationFn: () => api.post<LudoMatch>('/ludo'),
+    onSuccess: (m) => navigate(`/${me?.role ?? 'child'}/ludo/${m.id}`),
+    onError: (e: Error) => message.error(e.message),
+  });
+
+  const openLudo = (id: string) => navigate(`/${me?.role ?? 'child'}/ludo/${id}`);
+  const joinLudoMut = useMutation({
+    mutationFn: (id: string) => api.post<LudoMatch>(`/ludo/${id}/join`),
+    onSuccess: (m) => openLudo(m.id),
+    onError: (e: Error) => message.error(e instanceof ApiClientError ? e.message : 'Không tham gia được'),
+  });
+
   const waiting = games?.filter((g) => g.status === 'waiting' && !g.is_yours) ?? [];
   const mine = games?.filter((g) => g.is_yours && g.status !== 'finished') ?? [];
+  const ludoList = ludoGames ?? [];
 
   const partnerLabel = me?.role === 'child' ? 'bố mẹ' : 'con';
 
@@ -84,6 +104,61 @@ export function GameLobbyPage() {
         partnerLabel={partnerLabel}
       />
 
+      <Card className="bn-card-hover" style={{ borderRadius: 24, background: 'linear-gradient(135deg,#fff1f0,#e8fff3)', border: 'none' }}>
+        <Space align="start" style={{ width: '100%', justifyContent: 'space-between' }}>
+          <Space direction="vertical" size={2}>
+            <Title level={4} style={{ margin: 0, fontFamily: '"Baloo 2", cursive' }}>🐴 Cờ Cá Ngựa</Title>
+            <Text type="secondary" style={{ fontSize: 13 }}>
+              2–4 người, tung xúc xắc đua ngựa về đích. Có thể chen ngang giữa ván khi còn chỗ!
+            </Text>
+          </Space>
+        </Space>
+        <div style={{ marginTop: 16 }}>
+          <Button type="primary" size="large" loading={createLudoMut.isPending} onClick={() => createLudoMut.mutate()}>
+            Tạo ván cá ngựa mới
+          </Button>
+        </div>
+        {ludoList.length > 0 && (
+          <List
+            style={{ marginTop: 12 }}
+            dataSource={ludoList}
+            renderItem={(g) => (
+              <List.Item
+                actions={[
+                  g.is_yours ? (
+                    <Button key="resume" type="link" onClick={() => openLudo(g.id)}>Quay lại</Button>
+                  ) : (
+                    <Button
+                      key="join"
+                      type="primary"
+                      size="small"
+                      loading={joinLudoMut.isPending}
+                      onClick={() => joinLudoMut.mutate(g.id)}
+                    >
+                      {g.status === 'active' ? 'Chen ngang' : 'Tham gia'}
+                    </Button>
+                  ),
+                ]}
+              >
+                <List.Item.Meta
+                  avatar={<span style={{ fontSize: 24 }}>🐴</span>}
+                  title={
+                    <Space wrap size={[6, 2]}>
+                      <span style={{ whiteSpace: 'nowrap' }}>Cá ngựa · {g.player_count}/4</span>
+                      {g.is_yours && <Tag color="purple" style={{ marginInlineEnd: 0 }}>Của bạn</Tag>}
+                      {g.status === 'active'
+                        ? <Tag color="green" style={{ marginInlineEnd: 0 }}>Đang chơi</Tag>
+                        : <Tag color="orange" style={{ marginInlineEnd: 0 }}>Đang chờ</Tag>}
+                    </Space>
+                  }
+                  description={g.player_names.join(', ') || '—'}
+                />
+              </List.Item>
+            )}
+          />
+        )}
+      </Card>
+
       <Card title="🎯 Ván đang chờ trong nhà" style={{ borderRadius: 20 }}>
         <PageState
           isLoading={isLoading}
@@ -124,10 +199,10 @@ export function GameLobbyPage() {
                     />
                   }
                   title={
-                    <Space>
-                      {g.game_type === 'chess' ? 'Cờ Vua' : 'Cờ Caro'}
-                      {g.is_yours && <Tag color="purple">Của bạn</Tag>}
-                      {g.status === 'active' && <Tag color="green">Đang chơi</Tag>}
+                    <Space wrap size={[6, 2]}>
+                      <span style={{ whiteSpace: 'nowrap' }}>{g.game_type === 'chess' ? 'Cờ Vua' : 'Cờ Caro'}</span>
+                      {g.is_yours && <Tag color="purple" style={{ marginInlineEnd: 0 }}>Của bạn</Tag>}
+                      {g.status === 'active' && <Tag color="green" style={{ marginInlineEnd: 0 }}>Đang chơi</Tag>}
                     </Space>
                   }
                   description={`Chủ ván: ${g.host_name ?? '—'}`}

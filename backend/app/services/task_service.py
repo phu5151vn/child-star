@@ -203,7 +203,7 @@ class AssignmentService:
         assignments = db.scalars(q.order_by(TaskAssignment.created_at.desc())).all()
         result = []
         for a in assignments:
-            task = db.get(Task, a.task_id)
+            task = db.get(Task, a.task_id) if a.task_id else None
             child = db.get(User, a.child_id)
             result.append(
                 AssignmentResponse(
@@ -211,15 +211,16 @@ class AssignmentService:
                     task_id=a.task_id,
                     child_id=a.child_id,
                     status=a.status,
-                    task_title=task.title if task else None,
+                    task_title=task.title if task else a.custom_title,
                     task_points=task.points if task else None,
-                    task_emoji=task.icon_emoji if task else None,
+                    task_emoji=task.icon_emoji if task else "✨",
                     child_name=child.display_name if child else None,
                     child_gender=child.gender if child else None,
                     proof_media_id=a.proof_media_id,
                     reject_reason=a.reject_reason,
                     submitted_at=a.submitted_at,
                     decided_at=a.decided_at,
+                    is_custom=a.task_id is None,
                 )
             )
         return result
@@ -304,7 +305,9 @@ class AssignmentService:
         return AssignmentService._to_response(db, assignment)
 
     @staticmethod
-    def approve(db: Session, ctx: AuthContext, assignment_id: UUID) -> AssignmentResponse:
+    def approve(
+        db: Session, ctx: AuthContext, assignment_id: UUID, points: int | None = None
+    ) -> AssignmentResponse:
         assignment = get_assignment_in_family(db, assignment_id, ctx.family_id)
         if not assignment:
             raise NotFoundError()
@@ -323,11 +326,17 @@ class AssignmentService:
             raise InvalidTransitionError()
         assert_transition(assignment.status, "approved")
 
-        task = db.get(Task, assignment.task_id)
+        task = db.get(Task, assignment.task_id) if assignment.task_id else None
+        if assignment.task_id is None:
+            # Nhiệm vụ tự do: bố mẹ phải nhập số sao thưởng (> 0).
+            if not points or points <= 0:
+                raise InvalidTransitionError("Cần nhập số sao để duyệt nhiệm vụ này")
+            points_delta = points
+        else:
+            points_delta = task.points if task else 0
         assignment.status = "approved"
         assignment.decided_at = datetime.now(timezone.utc)
         assignment.decided_by = ctx.user_id
-        points_delta = task.points if task else 0
 
         try:
             db.add(
@@ -401,23 +410,51 @@ class AssignmentService:
         return AssignmentService._to_response(db, assignment)
 
     @staticmethod
+    def create_custom(
+        db: Session, ctx: AuthContext, title: str, proof_media_id: UUID | None = None
+    ) -> AssignmentResponse:
+        """Con đề xuất nhiệm vụ ngoài danh sách (task_id=NULL), vào thẳng 'submitted' chờ duyệt.
+
+        Bố mẹ nhập số sao thưởng khi duyệt.
+        """
+        if not ctx.child_id:
+            raise InvalidTransitionError()
+        if proof_media_id is not None:
+            media = db.get(Media, proof_media_id)
+            if not media or media.family_id != ctx.family_id or media.kind != "proof" or media.uploaded_by != ctx.user_id:
+                raise NotFoundError("Ảnh minh chứng không hợp lệ")
+        assignment = TaskAssignment(
+            family_id=ctx.family_id,
+            task_id=None,
+            custom_title=title.strip(),
+            child_id=ctx.child_id,
+            status="submitted",
+            proof_media_id=proof_media_id,
+            submitted_at=datetime.now(timezone.utc),
+        )
+        db.add(assignment)
+        db.commit()
+        return AssignmentService._to_response(db, assignment)
+
+    @staticmethod
     def _to_response(db: Session, assignment: TaskAssignment) -> AssignmentResponse:
-        task = db.get(Task, assignment.task_id)
+        task = db.get(Task, assignment.task_id) if assignment.task_id else None
         child = db.get(User, assignment.child_id)
         return AssignmentResponse(
             id=assignment.id,
             task_id=assignment.task_id,
             child_id=assignment.child_id,
             status=assignment.status,
-            task_title=task.title if task else None,
+            task_title=task.title if task else assignment.custom_title,
             task_points=task.points if task else None,
-            task_emoji=task.icon_emoji if task else None,
+            task_emoji=task.icon_emoji if task else "✨",
             child_name=child.display_name if child else None,
             child_gender=child.gender if child else None,
             proof_media_id=assignment.proof_media_id,
             reject_reason=assignment.reject_reason,
             submitted_at=assignment.submitted_at,
             decided_at=assignment.decided_at,
+            is_custom=assignment.task_id is None,
         )
 
 

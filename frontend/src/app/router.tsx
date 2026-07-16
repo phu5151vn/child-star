@@ -10,6 +10,7 @@ import { ParentRewardsPage } from '@/features/parent/ParentRewardsPage';
 import { RewardFormPage } from '@/features/parent/RewardFormPage';
 import { ParentApprovalsPage, ParentRedemptionsPage } from '@/features/parent/ParentApprovalsPage';
 import { ParentChildrenPage, ParentChildLedgerPage } from '@/features/parent/ParentChildrenPage';
+import { ParentRelativesPage } from '@/features/parent/ParentRelativesPage';
 import {
   ChildHomePage,
   ChildTasksPage,
@@ -20,6 +21,7 @@ import {
 import { GameLobbyPage } from '@/features/game/GameLobbyPage';
 import { OnlineMatchPage } from '@/features/game/OnlineMatchPage';
 import { LocalMatchPage } from '@/features/game/LocalMatchPage';
+import { LudoMatchPage } from '@/features/game/LudoMatchPage';
 
 export function AppRouter() {
   return (
@@ -42,9 +44,11 @@ export function AppRouter() {
             <Route path="/parent/approvals" element={<ParentApprovalsPage />} />
             <Route path="/parent/redemptions" element={<ParentRedemptionsPage />} />
             <Route path="/parent/children" element={<ParentChildrenPage />} />
+            <Route path="/parent/relatives" element={<ParentRelativesPage />} />
             <Route path="/parent/children/:id" element={<ParentChildLedgerPage />} />
             <Route path="/parent/games" element={<GameLobbyPage />} />
             <Route path="/parent/games/local/:type" element={<LocalMatchPage />} />
+            <Route path="/parent/ludo/:id" element={<LudoMatchPage />} />
             <Route path="/parent/games/:id" element={<OnlineMatchPage />} />
           </Route>
         </Route>
@@ -58,6 +62,7 @@ export function AppRouter() {
             <Route path="/child/history" element={<ChildHistoryPage />} />
             <Route path="/child/games" element={<GameLobbyPage />} />
             <Route path="/child/games/local/:type" element={<LocalMatchPage />} />
+            <Route path="/child/ludo/:id" element={<LudoMatchPage />} />
             <Route path="/child/games/:id" element={<OnlineMatchPage />} />
           </Route>
         </Route>

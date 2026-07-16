@@ -9,6 +9,7 @@ import { LedgerTimeline } from '@/components/LedgerTimeline';
 import { PageState } from '@/components/PageState';
 import { PointsBadge } from '@/components/PointsBadge';
 import { WeeklyProgressCard } from '@/components/WeeklyProgressCard';
+import { useAuth } from '@/features/auth/AuthContext';
 import { GENDER_OPTIONS } from '@/theme/cute';
 
 const { Title } = Typography;
@@ -30,6 +31,8 @@ function buildProgress(child: Child, goal?: WeeklyGoal): WeeklyProgress | null {
 }
 
 export function ParentChildrenPage() {
+  const { me } = useAuth();
+  const canManage = me?.can_manage_members ?? false;
   const [modalOpen, setModalOpen] = useState(false);
   const [adjustModal, setAdjustModal] = useState<Child | null>(null);
   const qc = useQueryClient();
@@ -72,9 +75,11 @@ export function ParentChildrenPage() {
     <>
       <Space style={{ width: '100%', justifyContent: 'space-between', marginBottom: 16 }}>
         <Title level={3} style={{ margin: 0 }}>👨‍👩‍👧 Con & Sổ điểm</Title>
-        <Button type="primary" shape="round" icon={<PlusOutlined />} onClick={() => setModalOpen(true)}>
-          Thêm con
-        </Button>
+        {canManage && (
+          <Button type="primary" shape="round" icon={<PlusOutlined />} onClick={() => setModalOpen(true)}>
+            Thêm con
+          </Button>
+        )}
       </Space>
       <PageState isLoading={isLoading} isError={isError} isEmpty={!data?.length} onRetry={refetch}>
         <Space direction="vertical" className="bn-stagger" style={{ width: '100%' }} size="middle">

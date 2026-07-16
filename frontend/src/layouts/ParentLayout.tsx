@@ -8,6 +8,7 @@ import {
   PlayCircleOutlined,
   TeamOutlined,
   TrophyOutlined,
+  UsergroupAddOutlined,
 } from '@ant-design/icons';
 import { Badge, Button, Drawer, Grid, Layout, Menu, theme, Typography } from 'antd';
 import { useQuery } from '@tanstack/react-query';
@@ -25,7 +26,7 @@ export function ParentLayout() {
   const { token } = theme.useToken();
   const navigate = useNavigate();
   const location = useLocation();
-  const { logout } = useAuth();
+  const { logout, me } = useAuth();
   const screens = useBreakpoint();
   const isMobile = !screens.lg;
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -63,6 +64,9 @@ export function ParentLayout() {
       onClick: () => go('/parent/redemptions'),
     },
     { key: 'children', icon: <TeamOutlined />, label: 'Con & Sổ điểm', onClick: () => go('/parent/children') },
+    ...(me?.can_manage_members
+      ? [{ key: 'relatives', icon: <UsergroupAddOutlined />, label: 'Người thân', onClick: () => go('/parent/relatives') }]
+      : []),
     { key: 'games', icon: <PlayCircleOutlined />, label: 'Trò chơi', onClick: () => go('/parent/games') },
     { key: 'logout', icon: <LogoutOutlined />, label: 'Đăng xuất', onClick: logout },
   ];

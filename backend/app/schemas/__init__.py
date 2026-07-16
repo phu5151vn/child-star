@@ -54,6 +54,40 @@ class MeResponse(BaseModel):
     family_code: str | None = None
     child_id: UUID | None = None
     balance: int | None = None
+    # Phân quyền cho tài khoản parent (admin vs người thân đồng hành).
+    is_admin: bool = False
+    can_manage_members: bool = False
+    can_approve_tasks: bool = False
+    can_approve_rewards: bool = False
+
+
+# Người thân đồng hành (tài khoản parent phụ)
+class RelativeCreate(BaseModel):
+    email: EmailStr
+    password: str = Field(min_length=6)
+    display_name: str = Field(min_length=1)
+    # Quyền cấp ban đầu (mặc định tắt hết 3 quyền nhạy cảm).
+    can_manage_members: bool = False
+    can_approve_tasks: bool = False
+    can_approve_rewards: bool = False
+
+
+class PermissionUpdate(BaseModel):
+    can_manage_members: bool | None = None
+    can_approve_tasks: bool | None = None
+    can_approve_rewards: bool | None = None
+    is_active: bool | None = None
+
+
+class RelativeResponse(BaseModel):
+    id: UUID
+    display_name: str
+    email: str | None = None
+    is_admin: bool = False
+    is_active: bool = True
+    can_manage_members: bool = False
+    can_approve_tasks: bool = False
+    can_approve_rewards: bool = False
 
 
 # Children
@@ -178,6 +212,18 @@ class SubmitAssignmentRequest(BaseModel):
     proof_media_id: UUID | None = None
 
 
+class CustomTaskRequest(BaseModel):
+    """Con đề xuất một nhiệm vụ ngoài danh sách; bố mẹ nhập số sao khi duyệt."""
+
+    title: str = Field(min_length=1, max_length=120)
+    proof_media_id: UUID | None = None
+
+
+class ApproveAssignmentRequest(BaseModel):
+    # Bắt buộc & > 0 với nhiệm vụ tự do (không có task); bỏ qua với nhiệm vụ có sẵn.
+    points: int | None = Field(default=None, gt=0)
+
+
 class RejectAssignmentRequest(BaseModel):
     reason: str | None = None
 
@@ -186,7 +232,7 @@ class AssignmentResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     id: UUID
-    task_id: UUID
+    task_id: UUID | None = None
     child_id: UUID
     status: str
     task_title: str | None = None
@@ -198,6 +244,7 @@ class AssignmentResponse(BaseModel):
     reject_reason: str | None = None
     submitted_at: datetime | None = None
     decided_at: datetime | None = None
+    is_custom: bool = False
 
 
 # Rewards
@@ -235,6 +282,19 @@ class RewardResponse(BaseModel):
     is_unlocked: bool | None = None
     missing_points: int | None = None
     is_out_of_stock: bool = False
+    # True khi con đang có 1 yêu cầu đổi thưởng này ở trạng thái 'requested' (chờ bố mẹ duyệt).
+    is_pending: bool | None = None
+
+
+class CustomRewardRequest(BaseModel):
+    """Con yêu cầu một phần thưởng ngoài danh sách; bố mẹ nhập số sao khi duyệt."""
+
+    title: str = Field(min_length=1, max_length=120)
+
+
+class ApproveRedemptionRequest(BaseModel):
+    # Bắt buộc & > 0 với phần thưởng tự do (không có reward); bỏ qua với phần thưởng có sẵn.
+    points_spent: int | None = Field(default=None, gt=0)
 
 
 class RejectRedemptionRequest(BaseModel):
@@ -245,7 +305,7 @@ class RedemptionResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     id: UUID
-    reward_id: UUID
+    reward_id: UUID | None = None
     child_id: UUID
     status: str
     points_spent: int | None = None
@@ -256,6 +316,7 @@ class RedemptionResponse(BaseModel):
     reject_reason: str | None = None
     requested_at: datetime
     decided_at: datetime | None = None
+    is_custom: bool = False
 
 
 # Ledger
@@ -358,6 +419,11 @@ class GameOfferRequest(BaseModel):
 
 class GameOfferRespondRequest(BaseModel):
     accept: bool
+
+
+# Cờ cá ngựa (Ludo)
+class LudoMoveRequest(BaseModel):
+    token: int = Field(ge=0, le=3)
 
 
 class GamePlayer(BaseModel):

@@ -98,6 +98,21 @@ export interface Me {
   family_code?: string;
   child_id?: string;
   balance?: number;
+  is_admin?: boolean;
+  can_manage_members?: boolean;
+  can_approve_tasks?: boolean;
+  can_approve_rewards?: boolean;
+}
+
+export interface Relative {
+  id: string;
+  display_name: string;
+  email?: string | null;
+  is_admin: boolean;
+  is_active: boolean;
+  can_manage_members: boolean;
+  can_approve_tasks: boolean;
+  can_approve_rewards: boolean;
 }
 
 export interface Task {
@@ -126,6 +141,7 @@ export interface Assignment {
   proof_media_id?: string;
   reject_reason?: string;
   submitted_at?: string;
+  is_custom?: boolean;
 }
 
 export interface Reward {
@@ -139,6 +155,7 @@ export interface Reward {
   is_unlocked?: boolean;
   missing_points?: number;
   is_out_of_stock: boolean;
+  is_pending?: boolean;
 }
 
 export interface Redemption {
@@ -153,6 +170,7 @@ export interface Redemption {
   child_gender?: 'male' | 'female' | null;
   reject_reason?: string;
   requested_at: string;
+  is_custom?: boolean;
 }
 
 export interface LedgerEntry {
@@ -262,4 +280,56 @@ export interface GameSummary {
   guest_name?: string | null;
   is_yours: boolean;
   created_at: string;
+}
+
+// Cờ cá ngựa (Ludo)
+export interface LudoPlayer {
+  user_id: string;
+  name: string;
+  gender?: 'male' | 'female' | null;
+  color: number; // 0..3
+  tokens: number[]; // 4 quân: -1 chuồng, 0..50 vòng, 51..56 cầu thang/đích
+  is_you: boolean;
+  is_turn: boolean;
+}
+
+export interface LudoLastAction {
+  type: 'roll' | 'move' | 'no_move' | 'burn_six';
+  color: number;
+  dice?: number;
+  token?: number;
+  to?: number;
+  reroll?: boolean;
+  captures?: { color: number; token: number }[];
+}
+
+export interface LudoMatch {
+  id: string;
+  status: 'waiting' | 'active' | 'finished';
+  created_by: string;
+  is_creator: boolean;
+  you_joined: boolean;
+  players: LudoPlayer[];
+  turn: number;
+  turn_color: number | null;
+  turn_user_id: string | null;
+  is_your_turn: boolean;
+  dice: number | null;
+  can_roll: boolean;
+  movable_tokens: number[];
+  free_slots: number;
+  winner_id: string | null;
+  winner_name: string | null;
+  last: LudoLastAction | null;
+  version: number;
+}
+
+export interface LudoSummary {
+  id: string;
+  status: 'waiting' | 'active' | 'finished';
+  player_count: number;
+  player_names: string[];
+  is_yours: boolean;
+  is_creator: boolean;
+  created_at: string | null;
 }

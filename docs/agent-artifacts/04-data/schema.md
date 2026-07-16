@@ -220,7 +220,7 @@ COMMIT;
 | `points_ledger.kind` | `task_approved`, `reward_redeemed`, `manual_adjust` | BR-P2 |
 | `media.kind` | `task_icon`, `reward_image`, `proof`, `avatar` | upload PRD §7 |
 | Đơn vị điểm | số nguyên "sao ⭐" (int, không phân số) | UI "+30 ⭐" |
-| Trạng thái reward (computed) | `unlocked` (balance≥required), `locked` (+missing_points), `out_of_stock` (stock=0) | BR-R2..R4, states.md |
+| Trạng thái reward (computed) | `pending` (con đang có redemption `requested` → khóa, hiển thị "đang chờ duyệt"), `unlocked` (balance≥required), `locked` (+missing_points), `out_of_stock` (stock=0) | BR-R2..R4, BR-X2b, states.md |
 
 ## 6. Ghi chú migration & seed
 

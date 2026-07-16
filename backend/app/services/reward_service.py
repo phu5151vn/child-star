@@ -38,14 +38,25 @@ class RewardService:
             select(Reward).where(Reward.family_id == ctx.family_id).order_by(Reward.required_points)
         ).all()
         balance = 0
+        pending_ids: set = set()
         if ctx.role == "child" and ctx.child_id:
             # Unlock/thiếu điểm tính trên số dư KHẢ DỤNG để con không đổi vượt điểm.
             balance = PointsRepository.get_available_balance(db, ctx.child_id)
+            # Các phần thưởng con đang có yêu cầu chờ duyệt -> khóa lại, hiển thị "đang yêu cầu".
+            pending_ids = set(
+                db.scalars(
+                    select(RewardRedemption.reward_id).where(
+                        RewardRedemption.child_id == ctx.child_id,
+                        RewardRedemption.status == "requested",
+                    )
+                ).all()
+            )
         result = []
         for r in rewards:
             if ctx.role == "child" and not r.is_active:
                 continue
             is_unlocked, missing, is_out_of_stock = RewardService._compute_unlock(balance, r)
+            is_pending = r.id in pending_ids
             result.append(
                 RewardResponse(
                     id=r.id,
@@ -57,8 +68,9 @@ class RewardService:
                     stock=r.stock,
                     is_active=r.is_active,
                     is_unlocked=is_unlocked if ctx.role == "child" else None,
-                    missing_points=missing if ctx.role == "child" and not is_unlocked else None,
+                    missing_points=missing if ctx.role == "child" and not is_unlocked and not is_pending else None,
                     is_out_of_stock=is_out_of_stock,
+                    is_pending=is_pending if ctx.role == "child" else None,
                 )
             )
         return result
@@ -69,8 +81,19 @@ class RewardService:
         if not reward:
             raise NotFoundError()
         balance = 0
+        is_pending = False
         if ctx.role == "child" and ctx.child_id:
             balance = PointsRepository.get_available_balance(db, ctx.child_id)
+            is_pending = (
+                db.scalar(
+                    select(RewardRedemption.id).where(
+                        RewardRedemption.reward_id == reward.id,
+                        RewardRedemption.child_id == ctx.child_id,
+                        RewardRedemption.status == "requested",
+                    )
+                )
+                is not None
+            )
         is_unlocked, missing, is_out_of_stock = RewardService._compute_unlock(balance, reward)
         return RewardResponse(
             id=reward.id,
@@ -82,8 +105,9 @@ class RewardService:
             stock=reward.stock,
             is_active=reward.is_active,
             is_unlocked=is_unlocked if ctx.role == "child" else None,
-            missing_points=missing if ctx.role == "child" and not is_unlocked else None,
+            missing_points=missing if ctx.role == "child" and not is_unlocked and not is_pending else None,
             is_out_of_stock=is_out_of_stock,
+            is_pending=is_pending if ctx.role == "child" else None,
         )
 
     @staticmethod
@@ -151,10 +175,12 @@ class RedemptionService:
         if status:
             q = q.where(RewardRedemption.status == status)
         redemptions = db.scalars(q.order_by(RewardRedemption.requested_at.desc())).all()
+        from app.models import User
+
         result = []
         for r in redemptions:
-            reward = db.get(Reward, r.reward_id)
-            child = db.get(__import__("app.models", fromlist=["User"]).User, r.child_id)
+            reward = db.get(Reward, r.reward_id) if r.reward_id else None
+            child = db.get(User, r.child_id)
             result.append(
                 RedemptionResponse(
                     id=r.id,
@@ -162,13 +188,14 @@ class RedemptionService:
                     child_id=r.child_id,
                     status=r.status,
                     points_spent=r.points_spent,
-                    reward_title=reward.title if reward else None,
-                    reward_emoji=reward.icon_emoji if reward else None,
+                    reward_title=reward.title if reward else r.custom_title,
+                    reward_emoji=reward.icon_emoji if reward else "✨",
                     child_name=child.display_name if child else None,
                     child_gender=child.gender if child else None,
                     reject_reason=r.reject_reason,
                     requested_at=r.requested_at,
                     decided_at=r.decided_at,
+                    is_custom=r.reward_id is None,
                 )
             )
         return result
@@ -180,14 +207,8 @@ class RedemptionService:
             raise NotFoundError()
         if not ctx.child_id:
             raise RewardLockedError()
-        # Kiểm tra trên số dư KHẢ DỤNG (đã trừ các yêu cầu đang chờ duyệt) để con
-        # không thể gửi nhiều yêu cầu vượt quá số sao đang có.
-        balance = PointsRepository.get_available_balance(db, ctx.child_id)
-        is_unlocked, missing, is_out_of_stock = RewardService._compute_unlock(balance, reward)
-        if is_out_of_stock:
-            raise OutOfStockError()
-        if not is_unlocked:
-            raise RewardLockedError(f"Con cần thêm {missing} điểm nữa")
+        # Nếu con đã có yêu cầu đổi phần thưởng này đang chờ duyệt -> trả về yêu cầu cũ
+        # (idempotent). Kiểm tra TRƯỚC số dư vì phần điểm đã bị giữ chỗ cho chính yêu cầu này.
         existing = db.scalar(
             select(RewardRedemption).where(
                 RewardRedemption.reward_id == reward_id,
@@ -197,6 +218,14 @@ class RedemptionService:
         )
         if existing:
             return RedemptionService._to_response(db, existing)
+        # Kiểm tra trên số dư KHẢ DỤNG (đã trừ các yêu cầu đang chờ duyệt) để con
+        # không thể gửi nhiều yêu cầu vượt quá số sao đang có.
+        balance = PointsRepository.get_available_balance(db, ctx.child_id)
+        is_unlocked, missing, is_out_of_stock = RewardService._compute_unlock(balance, reward)
+        if is_out_of_stock:
+            raise OutOfStockError()
+        if not is_unlocked:
+            raise RewardLockedError(f"Con cần thêm {missing} điểm nữa")
         redemption = RewardRedemption(
             family_id=ctx.family_id,
             reward_id=reward_id,
@@ -222,7 +251,9 @@ class RedemptionService:
         return RedemptionService._to_response(db, redemption)
 
     @staticmethod
-    def approve(db: Session, ctx: AuthContext, redemption_id: UUID) -> RedemptionResponse:
+    def approve(
+        db: Session, ctx: AuthContext, redemption_id: UUID, points_spent: int | None = None
+    ) -> RedemptionResponse:
         redemption = get_redemption_in_family(db, redemption_id, ctx.family_id)
         if not redemption:
             raise NotFoundError()
@@ -240,23 +271,31 @@ class RedemptionService:
         if redemption.status != "requested":
             raise NotFoundError("Yêu cầu không còn chờ duyệt")
 
-        reward = db.get(Reward, redemption.reward_id)
-        if not reward:
+        reward = db.get(Reward, redemption.reward_id) if redemption.reward_id else None
+        if redemption.reward_id is not None and not reward:
             raise NotFoundError()
-        if reward.stock is not None and reward.stock <= 0:
-            raise OutOfStockError()
+
+        if reward is None:
+            # Phần thưởng tự do: bố mẹ phải nhập số sao (> 0).
+            if not points_spent or points_spent <= 0:
+                raise RewardLockedError("Cần nhập số sao để duyệt phần thưởng này")
+            cost = points_spent
+        else:
+            cost = reward.required_points
+            if reward.stock is not None and reward.stock <= 0:
+                raise OutOfStockError()
 
         balance = PointsRepository.get_balance(db, redemption.child_id)
-        if balance < reward.required_points:
+        if balance < cost:
             raise InsufficientPointsError("Số dư con không còn đủ điểm")
 
-        if reward.stock is not None:
+        if reward is not None and reward.stock is not None:
             reward.stock -= 1
         redemption.status = "approved"
-        redemption.points_spent = reward.required_points
+        redemption.points_spent = cost
         redemption.decided_at = datetime.now(timezone.utc)
         redemption.decided_by = ctx.user_id
-        points_delta = -reward.required_points
+        points_delta = -cost
 
         try:
             db.add(
@@ -332,10 +371,29 @@ class RedemptionService:
         return RedemptionService._to_response(db, redemption)
 
     @staticmethod
+    def create_custom(db: Session, ctx: AuthContext, title: str) -> RedemptionResponse:
+        """Con yêu cầu phần thưởng ngoài danh sách (reward_id=NULL). Bố mẹ nhập sao khi duyệt.
+
+        Không giữ chỗ điểm vì chưa biết số sao tới khi bố mẹ duyệt.
+        """
+        if not ctx.child_id:
+            raise RewardLockedError()
+        redemption = RewardRedemption(
+            family_id=ctx.family_id,
+            reward_id=None,
+            custom_title=title.strip(),
+            child_id=ctx.child_id,
+            status="requested",
+        )
+        db.add(redemption)
+        db.commit()
+        return RedemptionService._to_response(db, redemption)
+
+    @staticmethod
     def _to_response(db: Session, redemption: RewardRedemption) -> RedemptionResponse:
         from app.models import User
 
-        reward = db.get(Reward, redemption.reward_id)
+        reward = db.get(Reward, redemption.reward_id) if redemption.reward_id else None
         child = db.get(User, redemption.child_id)
         return RedemptionResponse(
             id=redemption.id,
@@ -343,11 +401,12 @@ class RedemptionService:
             child_id=redemption.child_id,
             status=redemption.status,
             points_spent=redemption.points_spent,
-            reward_title=reward.title if reward else None,
-            reward_emoji=reward.icon_emoji if reward else None,
+            reward_title=reward.title if reward else redemption.custom_title,
+            reward_emoji=reward.icon_emoji if reward else "✨",
             child_name=child.display_name if child else None,
             child_gender=child.gender if child else None,
             reject_reason=redemption.reject_reason,
             requested_at=redemption.requested_at,
             decided_at=redemption.decided_at,
+            is_custom=redemption.reward_id is None,
         )
