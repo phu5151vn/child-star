@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { Button } from 'antd';
+import { useTranslation } from 'react-i18next';
 import { celebrateUnlock } from '@/components/CelebrationFx';
 
 export type ResultKind = 'win' | 'lose' | 'draw';
@@ -11,13 +12,14 @@ interface GameResultOverlayProps {
   subtitle?: string;
 }
 
-const CONTENT: Record<ResultKind, { emoji: string; title: string; color: string }> = {
-  win: { emoji: '🏆', title: 'Chiến thắng!', color: '#3DD598' },
-  lose: { emoji: '💪', title: 'Thua rồi, cố lên nhé!', color: '#FF5C5C' },
-  draw: { emoji: '🤝', title: 'Hòa nhau rồi!', color: '#FFC531' },
+const CONTENT: Record<ResultKind, { emoji: string; titleKey: string; color: string }> = {
+  win: { emoji: '🏆', titleKey: 'game:result.win', color: '#3DD598' },
+  lose: { emoji: '💪', titleKey: 'game:result.lose', color: '#FF5C5C' },
+  draw: { emoji: '🤝', titleKey: 'game:result.draw', color: '#FFC531' },
 };
 
 export function GameResultOverlay({ kind, onPlayAgain, onLobby, subtitle }: GameResultOverlayProps) {
+  const { t } = useTranslation();
   useEffect(() => {
     if (kind === 'win') celebrateUnlock();
   }, [kind]);
@@ -52,16 +54,16 @@ export function GameResultOverlay({ kind, onPlayAgain, onLobby, subtitle }: Game
         <div className="bn-float" style={{ fontSize: 64, lineHeight: 1 }}>
           {c.emoji}
         </div>
-        <h2 style={{ margin: '12px 0 4px', fontFamily: '"Baloo 2", cursive', color: c.color }}>{c.title}</h2>
+        <h2 style={{ margin: '12px 0 4px', fontFamily: '"Baloo 2", cursive', color: c.color }}>{t(c.titleKey)}</h2>
         {subtitle && <p style={{ margin: '0 0 8px', color: '#8c85a3' }}>{subtitle}</p>}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 18 }}>
           {onPlayAgain && (
             <Button type="primary" size="large" block onClick={onPlayAgain}>
-              Chơi lại 🔄
+              {t('game:result.playAgain')}
             </Button>
           )}
           <Button size="large" block onClick={onLobby}>
-            Về sảnh 🏠
+            {t('game:result.toLobby')}
           </Button>
         </div>
       </div>

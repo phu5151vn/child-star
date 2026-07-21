@@ -1,11 +1,13 @@
 import { LockOutlined, MailOutlined, UserOutlined } from '@ant-design/icons';
 import { Button, Card, Form, Grid, Input, Segmented, Space, Typography, message } from 'antd';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { api, ApiClientError, type ChildProfile } from '@/api/client';
 import { ChildAvatar } from '@/components/CuteBits';
 import { useAuth } from '@/features/auth/AuthContext';
+import { LanguageSwitcher } from '@/i18n/LanguageSwitcher';
 
 const { Title, Text, Link } = Typography;
 const { useBreakpoint } = Grid;
@@ -26,6 +28,7 @@ function Sparkle({ top, left, size, delay }: { top: string; left: string; size: 
 
 /** Panel thương hiệu gradient + mascot, dùng cho cả desktop (bên trái) và mobile (banner trên). */
 function BrandHero({ variant }: { variant: 'side' | 'top' }) {
+  const { t } = useTranslation();
   const isSide = variant === 'side';
   return (
     <div
@@ -62,10 +65,10 @@ function BrandHero({ variant }: { variant: 'side' | 'top' }) {
         <span className="bn-float" style={{ fontSize: isSide ? 90 : 52 }} role="img" aria-label="mascot">🧸</span>
       </div>
       <Title level={isSide ? 2 : 3} style={{ color: '#fff', margin: 0, fontFamily: '"Baloo 2", cursive' }}>
-        Bé Ngoan ⭐
+        {t('brand.name')} ⭐
       </Title>
       <Text style={{ color: 'rgba(255,255,255,0.92)', fontSize: isSide ? 15 : 13 }}>
-        Tích sao mỗi ngày • Đổi quà siêu vui
+        {t('brand.heroTagline')}
       </Text>
     </div>
   );
@@ -73,6 +76,7 @@ function BrandHero({ variant }: { variant: 'side' | 'top' }) {
 
 export function LoginPage() {
   const [mode, setMode] = useState<'login' | 'register'>('login');
+  const { t } = useTranslation();
   const { login } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
@@ -85,7 +89,7 @@ export function LoginPage() {
       if (mode === 'register') {
         const res = await api.post<{ access_token: string; family_code: string }>('/auth/register', values);
         login(res.access_token, 'parent');
-        message.success(`Đăng ký thành công! Mã gia đình: ${res.family_code}`);
+        message.success(t('auth:registerSuccess', { code: res.family_code }));
         navigate('/parent');
       } else {
         const res = await api.post<{ access_token: string }>('/auth/parent/login', values);
@@ -93,7 +97,7 @@ export function LoginPage() {
         navigate('/parent');
       }
     } catch (e) {
-      message.error(e instanceof ApiClientError ? e.message : 'Đăng nhập thất bại');
+      message.error(e instanceof ApiClientError ? e.message : t('auth:loginFailed'));
     } finally {
       setLoading(false);
     }
@@ -118,52 +122,53 @@ export function LoginPage() {
 
         <div style={{ flex: 1, padding: isMobile ? '28px 24px 32px' : '48px 44px' }}>
           <Space direction="vertical" size="large" style={{ width: '100%' }}>
+            <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+              <LanguageSwitcher />
+            </div>
             <Segmented
               block
               size="large"
               value={mode}
               onChange={(v) => setMode(v as 'login' | 'register')}
               options={[
-                { label: 'Đăng nhập', value: 'login' },
-                { label: 'Đăng ký', value: 'register' },
+                { label: t('auth:tabLogin'), value: 'login' },
+                { label: t('auth:tabRegister'), value: 'register' },
               ]}
             />
             <div>
               <Title level={3} style={{ margin: 0 }}>
-                {mode === 'register' ? 'Tạo gia đình mới 🎉' : 'Chào mừng Bố Mẹ! 👋'}
+                {mode === 'register' ? t('auth:registerTitle') : t('auth:loginTitle')}
               </Title>
               <Text type="secondary">
-                {mode === 'register'
-                  ? 'Đăng ký để bắt đầu hành trình nuôi con ngoan.'
-                  : 'Hãy đăng nhập để cùng bé chinh phục các nhiệm vụ nhé.'}
+                {mode === 'register' ? t('auth:registerSubtitle') : t('auth:loginSubtitle')}
               </Text>
             </div>
 
             <Form layout="vertical" onFinish={onParentSubmit} requiredMark={false}>
               {mode === 'register' && (
                 <>
-                  <Form.Item name="family_name" label="Tên gia đình" rules={[{ required: true }]}>
-                    <Input size="large" placeholder="VD: Gia đình Hạnh Phúc" />
+                  <Form.Item name="family_name" label={t('auth:familyName')} rules={[{ required: true }]}>
+                    <Input size="large" placeholder={t('auth:familyNamePlaceholder')} />
                   </Form.Item>
-                  <Form.Item name="display_name" label="Tên bố/mẹ" rules={[{ required: true }]}>
-                    <Input size="large" prefix={<UserOutlined />} placeholder="VD: Mẹ Lan" />
+                  <Form.Item name="display_name" label={t('auth:parentName')} rules={[{ required: true }]}>
+                    <Input size="large" prefix={<UserOutlined />} placeholder={t('auth:parentNamePlaceholder')} />
                   </Form.Item>
                 </>
               )}
-              <Form.Item name="email" label="Email của Bố Mẹ" rules={[{ required: true, type: 'email' }]}>
+              <Form.Item name="email" label={t('auth:parentEmail')} rules={[{ required: true, type: 'email' }]}>
                 <Input size="large" prefix={<MailOutlined />} placeholder="bo_me@example.com" />
               </Form.Item>
-              <Form.Item name="password" label="Mật khẩu" rules={[{ required: true, min: 6 }]}>
+              <Form.Item name="password" label={t('auth:password')} rules={[{ required: true, min: 6 }]}>
                 <Input.Password size="large" prefix={<LockOutlined />} placeholder="••••••••" />
               </Form.Item>
               <Button type="primary" htmlType="submit" block size="large" shape="round" loading={loading}>
-                {mode === 'register' ? 'Tạo tài khoản' : 'Đăng nhập Bố Mẹ'}
+                {mode === 'register' ? t('auth:submitRegister') : t('auth:submitLogin')}
               </Button>
             </Form>
 
             <div style={{ textAlign: 'center' }}>
               <Button type="link" onClick={() => navigate('/profiles')} style={{ fontWeight: 600 }}>
-                😊 Con đăng nhập tại đây →
+                {t('auth:childLoginLink')}
               </Button>
             </div>
           </Space>
@@ -177,6 +182,7 @@ export function ProfilesPage() {
   const [familyCode, setFamilyCode] = useState('');
   const [selectedChild, setSelectedChild] = useState<ChildProfile | null>(null);
   const [pin, setPin] = useState('');
+  const { t } = useTranslation();
   const { login } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
@@ -199,7 +205,7 @@ export function ProfilesPage() {
       login(res.access_token, 'child');
       navigate('/child');
     } catch (e) {
-      message.error(e instanceof ApiClientError ? e.message : 'PIN không đúng');
+      message.error(e instanceof ApiClientError ? e.message : t('auth:wrongPin'));
     } finally {
       setLoading(false);
     }
@@ -209,30 +215,33 @@ export function ProfilesPage() {
     <div style={{ minHeight: '100vh', background: PAGE_BG, padding: '20px 24px 48px' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
         <span style={{ fontSize: 22 }}>⭐</span>
-        <Title level={4} style={{ margin: 0, color: '#7C5CFC', fontFamily: '"Baloo 2", cursive' }}>Bé Ngoan</Title>
+        <Title level={4} style={{ margin: 0, color: '#7C5CFC', fontFamily: '"Baloo 2", cursive' }}>{t('brand.name')}</Title>
+        <div style={{ marginLeft: 'auto' }}>
+          <LanguageSwitcher />
+        </div>
       </div>
 
       <div className="bn-fade-up" style={{ maxWidth: 460, margin: '32px auto 0', textAlign: 'center' }}>
-        <Title level={3} style={{ margin: 0, fontFamily: '"Baloo 2", cursive' }}>Chọn hồ sơ con</Title>
-        <Text type="secondary">Chào mừng bé quay lại! 👋</Text>
+        <Title level={3} style={{ margin: 0, fontFamily: '"Baloo 2", cursive' }}>{t('auth:chooseProfile')}</Title>
+        <Text type="secondary">{t('auth:welcomeBack')}</Text>
 
         <Card style={{ borderRadius: 24, marginTop: 24, textAlign: 'left' }} styles={{ body: { padding: 20 } }}>
           <Text strong style={{ fontSize: 12, letterSpacing: 1, textTransform: 'uppercase', color: '#797587' }}>
-            Mã gia đình
+            {t('auth:familyCode')}
           </Text>
           <Input
             size="large"
             value={familyCode}
             onChange={(e) => setFamilyCode(e.target.value.toUpperCase())}
-            placeholder="VD: DEMO01"
+            placeholder={t('auth:familyCodePlaceholder')}
             style={{ marginTop: 8, textAlign: 'center', fontWeight: 700, letterSpacing: 2 }}
           />
         </Card>
 
-        {isLoading && <Text style={{ display: 'block', marginTop: 16 }}>Đang tải...</Text>}
-        {isError && <Button style={{ marginTop: 16 }} onClick={() => refetch()}>Thử lại</Button>}
+        {isLoading && <Text style={{ display: 'block', marginTop: 16 }}>{t('state.loading')}</Text>}
+        {isError && <Button style={{ marginTop: 16 }} onClick={() => refetch()}>{t('state.retry')}</Button>}
         {profiles && profiles.length === 0 && (
-          <Text type="secondary" style={{ display: 'block', marginTop: 16 }}>Không tìm thấy hồ sơ con</Text>
+          <Text type="secondary" style={{ display: 'block', marginTop: 16 }}>{t('auth:noProfiles')}</Text>
         )}
 
         {!!profiles?.length && (
@@ -266,7 +275,7 @@ export function ProfilesPage() {
         {selectedChild && (
           <div style={{ marginTop: 28 }}>
             <Text strong style={{ display: 'block', marginBottom: 12 }}>
-              Nhập mã PIN của {selectedChild.display_name} 🔒
+              {t('auth:enterPin', { name: selectedChild.display_name })}
             </Text>
             <Input.OTP
               length={4}
@@ -286,13 +295,13 @@ export function ProfilesPage() {
               disabled={pin.length !== 4}
               onClick={handleLogin}
             >
-              Vào chơi! 🚀
+              {t('auth:play')}
             </Button>
           </div>
         )}
 
         <Link onClick={() => navigate('/login')} style={{ display: 'block', marginTop: 24, fontWeight: 600 }}>
-          Đăng nhập với tài khoản khác
+          {t('auth:otherAccount')}
         </Link>
       </div>
     </div>

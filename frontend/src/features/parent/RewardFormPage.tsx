@@ -1,5 +1,6 @@
 import { Button, Form, Input, InputNumber, Switch, Typography, message } from 'antd';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 import { api, type Reward } from '@/api/client';
 import { EmojiPicker } from '@/components/EmojiPicker';
@@ -9,6 +10,7 @@ import { REWARD_EMOJIS } from '@/theme/cute';
 const { Title } = Typography;
 
 export function RewardFormPage() {
+  const { t } = useTranslation();
   const { id } = useParams();
   const isEdit = !!id;
   const navigate = useNavigate();
@@ -30,7 +32,7 @@ export function RewardFormPage() {
       isEdit ? api.put(`/rewards/${id}`, values) : api.post('/rewards', values),
     onSuccess: () => {
       void qc.invalidateQueries({ queryKey: ['rewards'] });
-      message.success(isEdit ? 'Đã cập nhật' : 'Đã tạo phần thưởng');
+      message.success(isEdit ? t('parent:form.updated') : t('parent:rewardForm.created'));
       navigate('/parent/rewards');
     },
     onError: (e: Error) => message.error(e.message),
@@ -38,7 +40,7 @@ export function RewardFormPage() {
 
   return (
     <PageState isLoading={isEdit && isLoading}>
-      <Title level={3}>{isEdit ? 'Sửa phần thưởng' : 'Tạo phần thưởng mới'}</Title>
+      <Title level={3}>{isEdit ? t('parent:rewardForm.editTitle') : t('parent:rewardForm.newTitle')}</Title>
       <Form
         form={form}
         layout="vertical"
@@ -46,26 +48,26 @@ export function RewardFormPage() {
         initialValues={{ is_active: true, required_points: 50, icon_emoji: '🎁' }}
         onFinish={(v) => saveMut.mutate(v)}
       >
-        <Form.Item name="title" label="Tên phần thưởng" rules={[{ required: true }]}>
-          <Input placeholder="Ví dụ: Kem que" />
+        <Form.Item name="title" label={t('parent:rewardForm.nameLabel')} rules={[{ required: true }]}>
+          <Input placeholder={t('parent:rewardForm.namePlaceholder')} />
         </Form.Item>
-        <Form.Item name="icon_emoji" label="Chọn icon dễ thương">
+        <Form.Item name="icon_emoji" label={t('parent:form.iconLabel')}>
           <EmojiPicker options={REWARD_EMOJIS} />
         </Form.Item>
-        <Form.Item name="description" label="Mô tả">
+        <Form.Item name="description" label={t('parent:form.descLabel')}>
           <Input.TextArea rows={3} />
         </Form.Item>
-        <Form.Item name="required_points" label="Mốc điểm mở khóa ⭐" rules={[{ required: true, type: 'number', min: 1 }]}>
+        <Form.Item name="required_points" label={t('parent:rewardForm.pointsLabel')} rules={[{ required: true, type: 'number', min: 1 }]}>
           <InputNumber min={1} style={{ width: '100%' }} />
         </Form.Item>
-        <Form.Item name="stock" label="Số lượng (để trống = không giới hạn)">
+        <Form.Item name="stock" label={t('parent:rewardForm.stockLabel')}>
           <InputNumber min={0} style={{ width: '100%' }} />
         </Form.Item>
-        <Form.Item name="is_active" label="Đang bật" valuePropName="checked">
+        <Form.Item name="is_active" label={t('parent:form.activeLabel')} valuePropName="checked">
           <Switch />
         </Form.Item>
-        <Button type="primary" htmlType="submit" loading={saveMut.isPending}>Lưu</Button>
-        <Button style={{ marginLeft: 8 }} onClick={() => navigate('/parent/rewards')}>Hủy</Button>
+        <Button type="primary" htmlType="submit" loading={saveMut.isPending}>{t('action.save')}</Button>
+        <Button style={{ marginLeft: 8 }} onClick={() => navigate('/parent/rewards')}>{t('action.cancel')}</Button>
       </Form>
     </PageState>
   );

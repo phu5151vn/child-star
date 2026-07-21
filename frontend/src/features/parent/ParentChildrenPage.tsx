@@ -2,6 +2,7 @@ import { PlusOutlined } from '@ant-design/icons';
 import { Button, Card, Form, Input, Modal, Segmented, Space, Typography, message } from 'antd';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 import { api, type Child, type LedgerEntry, type WeeklyGoal, type WeeklyProgress } from '@/api/client';
 import { ChildAvatar } from '@/components/CuteBits';
@@ -31,6 +32,7 @@ function buildProgress(child: Child, goal?: WeeklyGoal): WeeklyProgress | null {
 }
 
 export function ParentChildrenPage() {
+  const { t } = useTranslation();
   const { me } = useAuth();
   const canManage = me?.can_manage_members ?? false;
   const [modalOpen, setModalOpen] = useState(false);
@@ -55,7 +57,7 @@ export function ParentChildrenPage() {
       void qc.invalidateQueries({ queryKey: ['children'] });
       setModalOpen(false);
       form.resetFields();
-      message.success('Đã tạo hồ sơ con');
+      message.success(t('parent:children.childCreated'));
     },
   });
 
@@ -66,7 +68,7 @@ export function ParentChildrenPage() {
       void qc.invalidateQueries({ queryKey: ['children'] });
       setAdjustModal(null);
       adjustForm.resetFields();
-      message.success('Đã điều chỉnh điểm');
+      message.success(t('parent:children.pointsAdjusted'));
     },
     onError: (e: Error) => message.error(e.message),
   });
@@ -74,10 +76,10 @@ export function ParentChildrenPage() {
   return (
     <>
       <Space style={{ width: '100%', justifyContent: 'space-between', marginBottom: 16 }}>
-        <Title level={3} style={{ margin: 0 }}>👨‍👩‍👧 Con & Sổ điểm</Title>
+        <Title level={3} style={{ margin: 0 }}>{t('parent:children.title')}</Title>
         {canManage && (
           <Button type="primary" shape="round" icon={<PlusOutlined />} onClick={() => setModalOpen(true)}>
-            Thêm con
+            {t('parent:children.addBtn')}
           </Button>
         )}
       </Space>
@@ -96,9 +98,9 @@ export function ParentChildrenPage() {
                     </Space>
                   </Space>
                   <Space>
-                    <Button shape="round" onClick={() => setAdjustModal(child)}>Điều chỉnh điểm</Button>
+                    <Button shape="round" onClick={() => setAdjustModal(child)}>{t('parent:children.adjustBtn')}</Button>
                     <Button type="link" onClick={() => navigate(`/parent/children/${child.id}`)}>
-                      Xem sổ điểm
+                      {t('parent:children.viewLedger')}
                     </Button>
                   </Space>
                 </Space>
@@ -113,30 +115,30 @@ export function ParentChildrenPage() {
         </Space>
       </PageState>
 
-      <Modal title="Thêm con" open={modalOpen} onCancel={() => setModalOpen(false)} footer={null}>
+      <Modal title={t('parent:children.addModalTitle')} open={modalOpen} onCancel={() => setModalOpen(false)} footer={null}>
         <Form form={form} layout="vertical" initialValues={{ gender: 'female' }} onFinish={(v) => createMut.mutate(v)}>
-          <Form.Item name="display_name" label="Tên con" rules={[{ required: true }]}>
-            <Input placeholder="Ví dụ: Bé An" />
+          <Form.Item name="display_name" label={t('parent:children.nameLabel')} rules={[{ required: true }]}>
+            <Input placeholder={t('parent:children.namePlaceholder')} />
           </Form.Item>
-          <Form.Item name="gender" label="Giới tính">
+          <Form.Item name="gender" label={t('parent:children.genderLabel')}>
             <Segmented options={GENDER_OPTIONS} />
           </Form.Item>
-          <Form.Item name="pin" label="PIN 4 số" rules={[{ required: true, len: 4 }]}>
+          <Form.Item name="pin" label={t('parent:children.pinLabel')} rules={[{ required: true, len: 4 }]}>
             <Input maxLength={4} />
           </Form.Item>
-          <Button type="primary" shape="round" htmlType="submit" loading={createMut.isPending}>Tạo</Button>
+          <Button type="primary" shape="round" htmlType="submit" loading={createMut.isPending}>{t('parent:children.createBtn')}</Button>
         </Form>
       </Modal>
 
-      <Modal title={`Điều chỉnh điểm — ${adjustModal?.display_name}`} open={!!adjustModal} onCancel={() => setAdjustModal(null)} footer={null}>
+      <Modal title={t('parent:children.adjustModalTitle', { name: adjustModal?.display_name })} open={!!adjustModal} onCancel={() => setAdjustModal(null)} footer={null}>
         <Form form={adjustForm} layout="vertical" onFinish={(v) => adjustMut.mutate({ childId: adjustModal!.id, ...v })}>
-          <Form.Item name="delta" label="Số điểm (+/-)" rules={[{ required: true }]}>
+          <Form.Item name="delta" label={t('parent:children.deltaLabel')} rules={[{ required: true }]}>
             <Input type="number" />
           </Form.Item>
-          <Form.Item name="reason" label="Lý do" rules={[{ required: true }]}>
+          <Form.Item name="reason" label={t('parent:children.reasonLabel')} rules={[{ required: true }]}>
             <Input.TextArea />
           </Form.Item>
-          <Button type="primary" htmlType="submit" loading={adjustMut.isPending}>Lưu</Button>
+          <Button type="primary" htmlType="submit" loading={adjustMut.isPending}>{t('action.save')}</Button>
         </Form>
       </Modal>
     </>
@@ -144,6 +146,7 @@ export function ParentChildrenPage() {
 }
 
 export function ParentChildLedgerPage() {
+  const { t } = useTranslation();
   const { id } = useParams();
   const { data, isLoading, isError, refetch } = useQuery({
     queryKey: ['ledger', id],
@@ -153,7 +156,7 @@ export function ParentChildLedgerPage() {
 
   return (
     <PageState isLoading={isLoading} isError={isError} isEmpty={!data?.length} onRetry={refetch}>
-      <Title level={3}>Sổ điểm</Title>
+      <Title level={3}>{t('parent:children.ledgerTitle')}</Title>
       <LedgerTimeline entries={data ?? []} />
     </PageState>
   );

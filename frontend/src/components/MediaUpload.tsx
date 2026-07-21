@@ -1,6 +1,7 @@
 import { Upload, message } from 'antd';
 import { LoadingOutlined, PlusOutlined } from '@ant-design/icons';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { UploadFile, UploadProps } from 'antd';
 import { api } from '@/api/client';
 
@@ -11,6 +12,7 @@ interface MediaUploadProps {
 }
 
 export function MediaUpload({ kind, value: _mediaId, onChange }: MediaUploadProps) {
+  const { t } = useTranslation();
   const [uploading, setUploading] = useState(false);
   const [fileList, setFileList] = useState<UploadFile[]>([]);
 
@@ -22,9 +24,9 @@ export function MediaUpload({ kind, value: _mediaId, onChange }: MediaUploadProp
       onChange?.(mediaId);
       setFileList([{ uid: mediaId, name: (file as File).name, status: 'done' }]);
       onSuccess?.(result);
-      message.success('Đã tải ảnh lên');
+      message.success(t('components:mediaUpload.uploadSuccess'));
     } catch (e) {
-      const msg = e instanceof Error ? e.message : 'Tải ảnh thất bại';
+      const msg = e instanceof Error ? e.message : t('components:mediaUpload.uploadError');
       message.error(msg);
       onError?.(e as Error);
     } finally {
@@ -48,7 +50,7 @@ export function MediaUpload({ kind, value: _mediaId, onChange }: MediaUploadProp
       {fileList.length === 0 && (
         <div>
           {uploading ? <LoadingOutlined /> : <PlusOutlined />}
-          <div style={{ marginTop: 8 }}>Chọn ảnh</div>
+          <div style={{ marginTop: 8 }}>{t('components:mediaUpload.selectPhoto')}</div>
         </div>
       )}
     </Upload>

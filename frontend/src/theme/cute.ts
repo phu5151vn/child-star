@@ -3,6 +3,8 @@
  * Dùng chung cho task, phần thưởng, avatar con và các nhãn recurrence.
  */
 
+import i18n from '@/i18n';
+
 export const TASK_EMOJIS = [
   '🧹', '📚', '🍽️', '🦷', '🌱', '👕', '🛏️', '🗑️', '🐕', '🐱',
   '🎨', '🎹', '🏃', '📖', '✏️', '🧼', '🚿', '🍚', '🧦', '🎒',
@@ -62,15 +64,31 @@ export function defaultRewardEmoji(title?: string): string {
 
 export type Recurrence = 'once' | 'daily' | 'weekly';
 
+// Nhãn được đọc qua getter để tự đổi theo ngôn ngữ i18n hiện hành (không cache giá trị lúc import).
 export const RECURRENCE_META: Record<Recurrence, { label: string; short: string; emoji: string; color: string }> = {
-  once: { label: 'Một lần', short: 'Một lần', emoji: '🎯', color: 'default' },
-  daily: { label: 'Hàng ngày', short: 'Mỗi ngày', emoji: '🔁', color: 'blue' },
-  weekly: { label: 'Hàng tuần', short: 'Mỗi tuần', emoji: '📅', color: 'purple' },
+  once: {
+    get label() { return i18n.t('common:recurrence.once'); },
+    get short() { return i18n.t('common:recurrence.onceShort'); },
+    emoji: '🎯',
+    color: 'default',
+  },
+  daily: {
+    get label() { return i18n.t('common:recurrence.daily'); },
+    get short() { return i18n.t('common:recurrence.dailyShort'); },
+    emoji: '🔁',
+    color: 'blue',
+  },
+  weekly: {
+    get label() { return i18n.t('common:recurrence.weekly'); },
+    get short() { return i18n.t('common:recurrence.weeklyShort'); },
+    emoji: '📅',
+    color: 'purple',
+  },
 };
 
 export const RECURRENCE_OPTIONS = (Object.keys(RECURRENCE_META) as Recurrence[]).map((key) => ({
   value: key,
-  label: `${RECURRENCE_META[key].emoji} ${RECURRENCE_META[key].label}`,
+  get label() { return `${RECURRENCE_META[key].emoji} ${RECURRENCE_META[key].label}`; },
 }));
 
 export type Gender = 'male' | 'female' | null | undefined;
@@ -102,6 +120,6 @@ export function genderEmoji(gender?: Gender): string {
 }
 
 export const GENDER_OPTIONS = [
-  { value: 'female', label: '👧 Bé gái' },
-  { value: 'male', label: '👦 Bé trai' },
+  { value: 'female', get label() { return i18n.t('common:gender.female'); } },
+  { value: 'male', get label() { return i18n.t('common:gender.male'); } },
 ];

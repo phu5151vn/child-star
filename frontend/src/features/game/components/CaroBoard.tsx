@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { CaroWinLine, Side } from '@/api/client';
 import { CaroMark } from './PieceIcon';
 
@@ -12,6 +13,7 @@ interface CaroBoardProps {
 }
 
 export function CaroBoard({ board, onPlace, disabled, lastMove, winLine, maxWidth = 560 }: CaroBoardProps) {
+  const { t } = useTranslation();
   const size = board.length;
   const winSet = useMemo(() => {
     const s = new Set<string>();
@@ -49,7 +51,11 @@ export function CaroBoard({ board, onPlace, disabled, lastMove, winLine, maxWidt
               type="button"
               disabled={disabled || !empty || !onPlace}
               onClick={() => empty && onPlace?.(r, c)}
-              aria-label={`Ô ${r + 1}, ${c + 1}${cell ? ` (${cell.toUpperCase()})` : ''}`}
+              aria-label={
+                cell
+                  ? t('game:caro.cellAriaMark', { row: r + 1, col: c + 1, mark: cell.toUpperCase() })
+                  : t('game:caro.cellAria', { row: r + 1, col: c + 1 })
+              }
               style={{
                 border: 'none',
                 borderRadius: 6,

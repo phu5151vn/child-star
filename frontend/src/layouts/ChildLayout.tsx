@@ -7,10 +7,12 @@ import {
   StarOutlined,
 } from '@ant-design/icons';
 import { Layout, theme, Typography } from 'antd';
+import { useTranslation } from 'react-i18next';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { ChildAvatar } from '@/components/CuteBits';
 import { PointsBadge } from '@/components/PointsBadge';
 import { useAuth } from '@/features/auth/AuthContext';
+import { LanguageSwitcher } from '@/i18n/LanguageSwitcher';
 
 const { Header, Content } = Layout;
 const { Title } = Typography;
@@ -20,6 +22,7 @@ export function ChildLayout() {
   const navigate = useNavigate();
   const location = useLocation();
   const { me, logout } = useAuth();
+  const { t } = useTranslation();
 
   const pathKey = location.pathname.startsWith('/child/tasks')
     ? 'tasks'
@@ -32,11 +35,11 @@ export function ChildLayout() {
           : 'home';
 
   const tabItems = [
-    { key: 'home', label: 'Trang chính', icon: <HomeOutlined />, path: '/child' },
-    { key: 'tasks', label: 'Nhiệm vụ', icon: <StarOutlined />, path: '/child/tasks' },
-    { key: 'rewards', label: 'Kho thưởng', icon: <GiftOutlined />, path: '/child/rewards' },
-    { key: 'games', label: 'Chơi game', icon: <PlayCircleOutlined />, path: '/child/games' },
-    { key: 'history', label: 'Lịch sử', icon: <HistoryOutlined />, path: '/child/history' },
+    { key: 'home', label: t('childNav.home'), icon: <HomeOutlined />, path: '/child' },
+    { key: 'tasks', label: t('childNav.tasks'), icon: <StarOutlined />, path: '/child/tasks' },
+    { key: 'rewards', label: t('childNav.rewards'), icon: <GiftOutlined />, path: '/child/rewards' },
+    { key: 'games', label: t('childNav.games'), icon: <PlayCircleOutlined />, path: '/child/games' },
+    { key: 'history', label: t('childNav.history'), icon: <HistoryOutlined />, path: '/child/history' },
   ];
 
   return (
@@ -58,10 +61,11 @@ export function ChildLayout() {
         <SpaceRow>
           <ChildAvatar name={me?.display_name} gender={me?.gender} size={46} float />
           <Title level={4} style={{ margin: 0, color: '#fff', fontFamily: '"Baloo 2", cursive' }}>
-            Chào {me?.display_name}! 👋
+            {t('greeting', { name: me?.display_name })}
           </Title>
         </SpaceRow>
         <SpaceRow>
+          <LanguageSwitcher variant="onDark" />
           <div
             style={{
               background: '#fff',

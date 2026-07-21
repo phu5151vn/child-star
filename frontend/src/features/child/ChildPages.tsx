@@ -1,6 +1,7 @@
 import { Button, Card, Space, Steps, Typography, message } from 'antd';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 import { api, ApiClientError, type Assignment, type LedgerEntry, type Redemption, type Reward, type Task, type WeeklyProgress } from '@/api/client';
 import { PageState } from '@/components/PageState';
@@ -17,6 +18,7 @@ import { useAuth } from '@/features/auth/AuthContext';
 const { Title, Text } = Typography;
 
 export function ChildHomePage() {
+  const { t } = useTranslation();
   const { me } = useAuth();
   const { data: rewards, isLoading, isError, refetch } = useQuery({
     queryKey: ['rewards'],
@@ -38,7 +40,7 @@ export function ChildHomePage() {
           <Space direction="vertical" align="center" style={{ width: '100%' }}>
             <div className="bn-float" style={{ fontSize: 44 }}>🌟</div>
             <Title level={2} style={{ fontFamily: '"Baloo 2", cursive', margin: 0 }}>
-              Tuyệt vời lắm!
+              {t('child:home.hero')}
             </Title>
             <PointsBadge balance={me?.balance ?? 0} size="large" />
           </Space>
@@ -49,10 +51,10 @@ export function ChildHomePage() {
           </Card>
         )}
         {nextTarget && (
-          <Card className="bn-card-hover" title="🎁 Mốc thưởng gần nhất" style={{ borderRadius: 24 }}>
+          <Card className="bn-card-hover" title={t('child:home.nextTargetTitle')} style={{ borderRadius: 24 }}>
             <Text strong>{nextTarget.title}</Text>
             <PointsProgress current={me?.balance ?? 0} target={nextTarget.required_points} />
-            <Text type="secondary">Còn thiếu {nextTarget.missing_points} sao nữa nhé! 💪</Text>
+            <Text type="secondary">{t('child:home.missingPoints', { count: nextTarget.missing_points })}</Text>
           </Card>
         )}
       </Space>
@@ -61,6 +63,7 @@ export function ChildHomePage() {
 }
 
 export function ChildTasksPage() {
+  const { t } = useTranslation();
   const qc = useQueryClient();
   const { data, isLoading, isError, refetch } = useQuery({
     queryKey: ['tasks'],
@@ -77,7 +80,7 @@ export function ChildTasksPage() {
     onSuccess: () => {
       void qc.invalidateQueries({ queryKey: ['tasks'] });
       void qc.invalidateQueries({ queryKey: ['task'] });
-      message.success('Đã nhận nhiệm vụ!');
+      message.success(t('child:tasks.claimSuccess'));
     },
     onError: (e: Error) => message.error(e.message),
   });
@@ -85,7 +88,7 @@ export function ChildTasksPage() {
   const customMut = useMutation({
     mutationFn: (title: string) => api.post('/assignments/custom', { title }),
     onSuccess: () => {
-      message.success('Đã gửi đề xuất cho bố mẹ! Chờ bố mẹ duyệt nhé ✨');
+      message.success(t('child:tasks.proposeSuccess'));
       void qc.invalidateQueries({ queryKey: ['assignments', 'submitted'] });
     },
     onError: (e: Error) => message.error(e.message),
@@ -95,33 +98,33 @@ export function ChildTasksPage() {
 
   return (
     <>
-      <Title level={3}>⭐ Nhiệm vụ của con</Title>
+      <Title level={3}>{t('child:tasks.title')}</Title>
       <div style={{ marginBottom: 20 }}>
         <CustomRequestButton
-          label="➕ Đề xuất một việc tốt khác"
-          modalTitle="Con muốn làm việc tốt gì?"
-          placeholder="Vd: Con phụ mẹ rửa bát tối nay"
+          label={t('child:tasks.proposeLabel')}
+          modalTitle={t('child:tasks.proposeModalTitle')}
+          placeholder={t('child:tasks.proposePlaceholder')}
           submitting={customMut.isPending}
           onSubmit={(t) => customMut.mutateAsync(t)}
         />
       </div>
       {customPending.length > 0 && (
         <>
-          <Title level={5}>Đề xuất đang chờ bố mẹ duyệt ⏳</Title>
+          <Title level={5}>{t('child:tasks.pendingTitle')}</Title>
           <Space direction="vertical" style={{ width: '100%', marginBottom: 24 }} size="middle">
             {customPending.map((a) => (
               <Card key={a.id} style={{ borderRadius: 16, background: '#fff7e6' }} styles={{ body: { padding: 14 } }}>
                 <Space>
                   <span style={{ fontSize: 22 }}>✨</span>
                   <Text strong>{a.task_title}</Text>
-                  <Text type="secondary">— đang chờ duyệt</Text>
+                  <Text type="secondary">{t('child:tasks.pendingHint')}</Text>
                 </Space>
               </Card>
             ))}
           </Space>
         </>
       )}
-      <PageState isLoading={isLoading} isError={isError} isEmpty={!data?.length} onRetry={refetch} emptyDescription="Chưa có nhiệm vụ nào">
+      <PageState isLoading={isLoading} isError={isError} isEmpty={!data?.length} onRetry={refetch} emptyDescription={t('child:tasks.empty')}>
         <Space direction="vertical" className="bn-stagger" style={{ width: '100%' }} size="middle">
           {data?.map((task) => (
             <TaskCard
@@ -138,6 +141,7 @@ export function ChildTasksPage() {
 }
 
 export function ChildTaskDetailPage() {
+  const { t } = useTranslation();
   const { id } = useParams();
   const qc = useQueryClient();
   const navigate = useNavigate();
@@ -155,7 +159,7 @@ export function ChildTaskDetailPage() {
         proof_media_id: proofMediaId ?? null,
       }),
     onSuccess: () => {
-      message.success('Đã gửi hoàn thành! Chờ bố mẹ duyệt nhé');
+      message.success(t('child:taskDetail.submitSuccess'));
       void qc.invalidateQueries({ queryKey: ['tasks'] });
       void qc.invalidateQueries({ queryKey: ['task', id] });
     },
@@ -172,20 +176,20 @@ export function ChildTaskDetailPage() {
       {task && (
         <Space direction="vertical" size="large" style={{ width: '100%' }}>
           <Title level={3}>{task.title}</Title>
-          <Text>+{task.points} sao khi hoàn thành</Text>
+          <Text>{t('child:taskDetail.pointsOnComplete', { count: task.points })}</Text>
           {task.description && <Text type="secondary">{task.description}</Text>}
           <Steps
             current={stepMap[status] ?? 0}
             items={[
-              { title: 'Nhận' },
-              { title: 'Làm' },
-              { title: 'Gửi' },
-              { title: 'Duyệt' },
+              { title: t('child:taskDetail.steps.claim') },
+              { title: t('child:taskDetail.steps.doing') },
+              { title: t('child:taskDetail.steps.submit') },
+              { title: t('child:taskDetail.steps.approve') },
             ]}
             size="small"
           />
           {canSubmit && needsProof && (
-            <Card title="Ảnh minh chứng" size="small">
+            <Card title={t('child:taskDetail.proofTitle')} size="small">
               <MediaUpload kind="proof" value={proofMediaId} onChange={setProofMediaId} />
             </Card>
           )}
@@ -198,12 +202,12 @@ export function ChildTaskDetailPage() {
               disabled={needsProof && !proofMediaId}
               onClick={() => submitMut.mutate()}
             >
-              Báo hoàn thành! ✅
+              {t('child:taskDetail.submitButton')}
             </Button>
           )}
-          {status === 'submitted' && <Text type="warning">Đang chờ bố mẹ duyệt...</Text>}
-          {status === 'approved' && <Text type="success">Hoàn thành rồi! 🎉</Text>}
-          <Button onClick={() => navigate('/child/tasks')}>Quay lại</Button>
+          {status === 'submitted' && <Text type="warning">{t('child:taskDetail.waitingApproval')}</Text>}
+          {status === 'approved' && <Text type="success">{t('child:taskDetail.approved')}</Text>}
+          <Button onClick={() => navigate('/child/tasks')}>{t('action.back')}</Button>
         </Space>
       )}
     </PageState>
@@ -211,6 +215,7 @@ export function ChildTaskDetailPage() {
 }
 
 export function ChildRewardsPage() {
+  const { t } = useTranslation();
   const { me, refetchMe } = useAuth();
   const qc = useQueryClient();
   const { data, isLoading, isError, refetch } = useQuery({
@@ -226,7 +231,7 @@ export function ChildRewardsPage() {
   const redeemMut = useMutation({
     mutationFn: (rewardId: string) => api.post(`/rewards/${rewardId}/redeem`),
     onSuccess: () => {
-      message.success('Đã gửi yêu cầu đổi thưởng! Sao được tạm giữ tới khi bố mẹ duyệt ✨');
+      message.success(t('child:rewards.redeemSuccess'));
       // Số dư khả dụng đã giảm ngay -> làm mới số sao và kho thưởng để phản ánh.
       void qc.invalidateQueries({ queryKey: ['rewards'] });
       void refetchMe();
@@ -240,7 +245,7 @@ export function ChildRewardsPage() {
   const customMut = useMutation({
     mutationFn: (title: string) => api.post('/redemptions/custom', { title }),
     onSuccess: () => {
-      message.success('Đã gửi mong ước cho bố mẹ! Chờ bố mẹ duyệt nhé ✨');
+      message.success(t('child:rewards.wishSuccess'));
       void qc.invalidateQueries({ queryKey: ['redemptions', 'requested'] });
     },
     onError: (e: Error) => message.error(e.message),
@@ -253,36 +258,36 @@ export function ChildRewardsPage() {
 
   return (
     <>
-      <Title level={3}>Kho thưởng</Title>
+      <Title level={3}>{t('child:rewards.title')}</Title>
       <div style={{ marginBottom: 20 }}>
         <CustomRequestButton
-          label="✨ Xin một phần thưởng khác"
-          modalTitle="Con muốn xin phần thưởng gì?"
-          placeholder="Vd: Được đi công viên nước cuối tuần"
+          label={t('child:rewards.requestLabel')}
+          modalTitle={t('child:rewards.requestModalTitle')}
+          placeholder={t('child:rewards.requestPlaceholder')}
           submitting={customMut.isPending}
           onSubmit={(t) => customMut.mutateAsync(t)}
         />
       </div>
       {customPending.length > 0 && (
         <>
-          <Title level={5}>Mong ước đang chờ bố mẹ duyệt ⏳</Title>
+          <Title level={5}>{t('child:rewards.wishPendingTitle')}</Title>
           <Space direction="vertical" style={{ width: '100%', marginBottom: 24 }} size="middle">
             {customPending.map((r) => (
               <Card key={r.id} style={{ borderRadius: 16, background: '#fff7e6' }} styles={{ body: { padding: 14 } }}>
                 <Space>
                   <span style={{ fontSize: 22 }}>✨</span>
                   <Text strong>{r.reward_title}</Text>
-                  <Text type="secondary">— đang chờ duyệt</Text>
+                  <Text type="secondary">{t('child:rewards.pendingHint')}</Text>
                 </Space>
               </Card>
             ))}
           </Space>
         </>
       )}
-      <PageState isLoading={isLoading} isError={isError} isEmpty={!data?.length} onRetry={refetch} emptyDescription="Chưa có phần thưởng">
+      <PageState isLoading={isLoading} isError={isError} isEmpty={!data?.length} onRetry={refetch} emptyDescription={t('child:rewards.empty')}>
         {pending.length > 0 && (
           <>
-            <Title level={5}>Đang chờ bố mẹ duyệt ⏳</Title>
+            <Title level={5}>{t('child:rewards.pendingTitle')}</Title>
             <Space direction="vertical" style={{ width: '100%', marginBottom: 24 }} size="middle">
               {pending.map((r) => (
                 <RewardCard key={r.id} reward={r} balance={me?.balance} isChild />
@@ -292,7 +297,7 @@ export function ChildRewardsPage() {
         )}
         {unlocked.length > 0 && (
           <>
-            <Title level={5}>Đã mở khóa 🎁</Title>
+            <Title level={5}>{t('child:rewards.unlockedTitle')}</Title>
             <Space direction="vertical" style={{ width: '100%', marginBottom: 24 }} size="middle">
               {unlocked.map((r) => (
                 <RewardCard key={r.id} reward={r} balance={me?.balance} isChild onRedeem={(id) => redeemMut.mutate(id)} />
@@ -302,7 +307,7 @@ export function ChildRewardsPage() {
         )}
         {locked.length > 0 && (
           <>
-            <Title level={5}>Đang phấn đấu 🔒</Title>
+            <Title level={5}>{t('child:rewards.lockedTitle')}</Title>
             <Space direction="vertical" style={{ width: '100%' }} size="middle">
               {locked.map((r) => (
                 <RewardCard key={r.id} reward={r} balance={me?.balance} isChild />
@@ -316,6 +321,7 @@ export function ChildRewardsPage() {
 }
 
 export function ChildHistoryPage() {
+  const { t } = useTranslation();
   const { me } = useAuth();
   const { data, isLoading, isError, refetch } = useQuery({
     queryKey: ['ledger', me?.child_id],
@@ -325,8 +331,8 @@ export function ChildHistoryPage() {
 
   return (
     <>
-      <Title level={3}>Lịch sử điểm</Title>
-      <PageState isLoading={isLoading} isError={isError} isEmpty={!data?.length} onRetry={refetch} emptyDescription="Chưa có giao dịch điểm">
+      <Title level={3}>{t('child:history.title')}</Title>
+      <PageState isLoading={isLoading} isError={isError} isEmpty={!data?.length} onRetry={refetch} emptyDescription={t('child:history.empty')}>
         <LedgerTimeline entries={data ?? []} />
       </PageState>
     </>

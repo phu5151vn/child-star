@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 // Vị trí chấm (pip) cho từng mặt 1..6 trên lưới 3x3.
 const PIPS: Record<number, number[]> = {
@@ -46,6 +47,7 @@ interface LudoDiceProps {
 }
 
 export function LudoDice({ value, spinKey, disabled, onRoll }: LudoDiceProps) {
+  const { t } = useTranslation();
   const turns = useRef(0);
   const [transform, setTransform] = useState(() => faceTransform(value ?? 1, 0));
   const [spinning, setSpinning] = useState(false);
@@ -69,7 +71,7 @@ export function LudoDice({ value, spinKey, disabled, onRoll }: LudoDiceProps) {
           style={{ transform }}
           onClick={!disabled ? onRoll : undefined}
           role="button"
-          aria-label="Tung xúc xắc"
+          aria-label={t('components:ludoDice.rollAria')}
         >
           <Face value={1} className="f-front" />
           <Face value={6} className="f-back" />
@@ -82,7 +84,7 @@ export function LudoDice({ value, spinKey, disabled, onRoll }: LudoDiceProps) {
       <div className="ludo-dice-shadow" />
       {onRoll && (
         <button className="ludo-roll-btn" onClick={onRoll} disabled={disabled || spinning}>
-          {spinning ? 'Đang tung…' : '🎲 Tung xúc xắc'}
+          {spinning ? t('components:ludoDice.rolling') : t('components:ludoDice.roll')}
         </button>
       )}
     </div>

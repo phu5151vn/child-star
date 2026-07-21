@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { CheckOutlined, CloseOutlined, StarFilled } from '@ant-design/icons';
 import { Alert, Button, Card, InputNumber, Space, Tag, Typography, message } from 'antd';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import { api, ApiClientError, type Assignment, type Redemption } from '@/api/client';
 import { celebratePoints } from '@/components/CelebrationFx';
 import { ChildAvatar, EmojiIcon } from '@/components/CuteBits';
@@ -42,12 +43,13 @@ function ApprovalCard({
   pointsPrefix = '+',
   proofMediaId,
   askPoints,
-  pointsPrompt = 'Số sao',
+  pointsPrompt,
   readOnly,
   onApprove,
   onReject,
   approving,
 }: ApprovalCardProps) {
+  const { t } = useTranslation();
   const [pts, setPts] = useState<number | null>(null);
   const canApprove = !askPoints || (pts != null && pts > 0);
   return (
@@ -63,7 +65,7 @@ function ApprovalCard({
             <Text style={{ fontSize: 16 }}>{title}</Text>
             {points != null && (
               <Tag icon={<StarFilled />} color="gold" style={{ borderRadius: 999, fontWeight: 700, margin: 0 }}>
-                {pointsPrefix}{points} sao
+                {pointsPrefix}{points} {t('parent:unit.stars')}
               </Tag>
             )}
           </div>
@@ -73,7 +75,7 @@ function ApprovalCard({
           {proofMediaId && (
             <div style={{ marginTop: 10 }}>
               <Text type="secondary" style={{ display: 'block', fontSize: 12, marginBottom: 4 }}>
-                📷 Ảnh minh chứng (bấm để xem lớn)
+                {t('parent:card.proofLabel')}
               </Text>
               <MediaImage mediaId={proofMediaId} size={84} />
             </div>
@@ -81,21 +83,21 @@ function ApprovalCard({
           {!readOnly && askPoints && (
             <div style={{ marginTop: 12 }}>
               <Text type="secondary" style={{ display: 'block', fontSize: 13, marginBottom: 4 }}>
-                {pointsPrompt}
+                {pointsPrompt ?? t('parent:card.pointsDefault')}
               </Text>
               <InputNumber
                 min={1}
                 max={100000}
                 value={pts}
                 onChange={(v) => setPts(v)}
-                placeholder="Nhập số sao"
-                addonAfter="sao"
+                placeholder={t('parent:card.pointsPlaceholder')}
+                addonAfter={t('parent:unit.stars')}
                 style={{ width: 180 }}
               />
             </div>
           )}
           {readOnly ? (
-            <Text type="secondary" style={{ display: 'block', marginTop: 12 }}>⏳ Đang chờ quản trị viên duyệt</Text>
+            <Text type="secondary" style={{ display: 'block', marginTop: 12 }}>{t('parent:card.waitingAdmin')}</Text>
           ) : (
             <Space style={{ marginTop: 12 }}>
               <Button
@@ -106,10 +108,10 @@ function ApprovalCard({
                 disabled={!canApprove}
                 onClick={() => onApprove(pts ?? undefined)}
               >
-                Duyệt
+                {t('parent:card.approve')}
               </Button>
               <Button danger shape="round" icon={<CloseOutlined />} onClick={onReject}>
-                Từ chối
+                {t('parent:card.reject')}
               </Button>
             </Space>
           )}
@@ -120,6 +122,7 @@ function ApprovalCard({
 }
 
 export function ParentApprovalsPage() {
+  const { t } = useTranslation();
   const qc = useQueryClient();
   const { me } = useAuth();
   const canApprove = me?.can_approve_tasks ?? false;
@@ -134,7 +137,7 @@ export function ParentApprovalsPage() {
     onSuccess: (_d, { id, points }) => {
       const item = data?.find((a) => a.id === id);
       const awarded = points ?? item?.task_points ?? 0;
-      message.success(`Đã duyệt! +${awarded} sao ⭐`);
+      message.success(t('parent:approvals.approved', { points: awarded }));
       celebratePoints();
       // Xóa ngay khỏi hàng đợi tại cache (badge menu dùng chung key nên tự giảm),
       // không gọi lại API danh sách.
@@ -152,9 +155,9 @@ export function ParentApprovalsPage() {
   });
 
   const rejectMut = useMutation({
-    mutationFn: (id: string) => api.post(`/assignments/${id}/reject`, { reason: 'Cần làm lại nhé!' }),
+    mutationFn: (id: string) => api.post(`/assignments/${id}/reject`, { reason: t('parent:approvals.rejectReason') }),
     onSuccess: (_d, id) => {
-      message.info('Đã từ chối');
+      message.info(t('parent:approvals.rejected'));
       qc.setQueryData<Assignment[]>(['assignments', 'submitted'], (old) =>
         old?.filter((a) => a.id !== id) ?? [],
       );
@@ -164,13 +167,13 @@ export function ParentApprovalsPage() {
 
   return (
     <>
-      <Title level={3} style={{ marginTop: 0 }}>🏆 Duyệt hoàn thành nhiệm vụ</Title>
+      <Title level={3} style={{ marginTop: 0 }}>{t('parent:approvals.title')}</Title>
       {!canApprove && (
         <Alert
           type="info"
           showIcon
           style={{ marginBottom: 16 }}
-          message="Tài khoản của bạn không có quyền duyệt nhiệm vụ. Bạn chỉ xem được danh sách chờ duyệt."
+          message={t('parent:approvals.noPermAlert')}
         />
       )}
       <PageState
@@ -178,7 +181,7 @@ export function ParentApprovalsPage() {
         isError={isError}
         isEmpty={!data?.length}
         onRetry={refetch}
-        emptyDescription="Không có nhiệm vụ chờ duyệt 🎉"
+        emptyDescription={t('parent:approvals.empty')}
       >
         <Space direction="vertical" className="bn-stagger" style={{ width: '100%' }} size="middle">
           {data?.map((item) => (
@@ -187,12 +190,12 @@ export function ParentApprovalsPage() {
               emoji={item.task_emoji || defaultTaskEmoji(item.task_title)}
               childName={item.child_name}
               childGender={item.child_gender}
-              title={item.is_custom ? <>Con đề xuất: <b>{item.task_title}</b></> : item.task_title}
-              subtitle={item.is_custom ? 'Con tự đề xuất việc này — nhập số sao thưởng khi duyệt' : undefined}
+              title={item.is_custom ? <>{t('parent:approvals.proposedPrefix')} <b>{item.task_title}</b></> : item.task_title}
+              subtitle={item.is_custom ? t('parent:approvals.proposedSubtitle') : undefined}
               points={item.is_custom ? undefined : item.task_points}
               proofMediaId={item.proof_media_id}
               askPoints={item.is_custom}
-              pointsPrompt="Số sao thưởng cho việc này"
+              pointsPrompt={t('parent:approvals.pointsPrompt')}
               readOnly={!canApprove}
               approving={approveMut.isPending && approveMut.variables?.id === item.id}
               onApprove={(points) => approveMut.mutate({ id: item.id, points })}
@@ -206,6 +209,7 @@ export function ParentApprovalsPage() {
 }
 
 export function ParentRedemptionsPage() {
+  const { t } = useTranslation();
   const qc = useQueryClient();
   const { me } = useAuth();
   const canApprove = me?.can_approve_rewards ?? false;
@@ -218,7 +222,7 @@ export function ParentRedemptionsPage() {
     mutationFn: ({ id, points }: { id: string; points?: number }) =>
       api.post(`/redemptions/${id}/approve`, points != null ? { points_spent: points } : undefined),
     onSuccess: (_d, { id }) => {
-      message.success('Đã duyệt đổi thưởng 🎁');
+      message.success(t('parent:redemptions.approved'));
       celebratePoints();
       // Xóa khỏi hàng đợi tại cache; điểm đã "giữ chỗ" nay ghi sổ thật.
       qc.setQueryData<Redemption[]>(['redemptions', 'requested'], (old) =>
@@ -238,7 +242,7 @@ export function ParentRedemptionsPage() {
   const rejectMut = useMutation({
     mutationFn: (id: string) => api.post(`/redemptions/${id}/reject`, {}),
     onSuccess: (_d, id) => {
-      message.info('Đã từ chối, sao được hoàn lại cho con');
+      message.info(t('parent:redemptions.rejected'));
       // Từ chối -> phần giữ chỗ được nhả ra, số dư con tự khôi phục.
       qc.setQueryData<Redemption[]>(['redemptions', 'requested'], (old) =>
         old?.filter((r) => r.id !== id) ?? [],
@@ -251,13 +255,13 @@ export function ParentRedemptionsPage() {
 
   return (
     <>
-      <Title level={3} style={{ marginTop: 0 }}>🎁 Duyệt đổi thưởng</Title>
+      <Title level={3} style={{ marginTop: 0 }}>{t('parent:redemptions.title')}</Title>
       {!canApprove && (
         <Alert
           type="info"
           showIcon
           style={{ marginBottom: 16 }}
-          message="Tài khoản của bạn không có quyền duyệt đổi thưởng. Bạn chỉ xem được danh sách chờ duyệt."
+          message={t('parent:redemptions.noPermAlert')}
         />
       )}
       <PageState
@@ -265,7 +269,7 @@ export function ParentRedemptionsPage() {
         isError={isError}
         isEmpty={!data?.length}
         onRetry={refetch}
-        emptyDescription="Không có yêu cầu đổi thưởng 🎉"
+        emptyDescription={t('parent:redemptions.empty')}
       >
         <Space direction="vertical" className="bn-stagger" style={{ width: '100%' }} size="middle">
           {data?.map((item) => (
@@ -274,10 +278,10 @@ export function ParentRedemptionsPage() {
               emoji={item.reward_emoji || defaultRewardEmoji(item.reward_title)}
               childName={item.child_name}
               childGender={item.child_gender}
-              title={item.is_custom ? <>Con xin (tự do): <b>{item.reward_title}</b></> : <>Muốn đổi: <b>{item.reward_title}</b></>}
-              subtitle={item.is_custom ? 'Con tự đề xuất — nhập số sao cần để đổi khi duyệt' : 'Đổi thưởng sẽ trừ sao trong sổ điểm của con'}
+              title={item.is_custom ? <>{t('parent:redemptions.customPrefix')} <b>{item.reward_title}</b></> : <>{t('parent:redemptions.wantPrefix')} <b>{item.reward_title}</b></>}
+              subtitle={item.is_custom ? t('parent:redemptions.customSubtitle') : t('parent:redemptions.subtitle')}
               askPoints={item.is_custom}
-              pointsPrompt="Số sao cần để đổi phần thưởng này"
+              pointsPrompt={t('parent:redemptions.pointsPrompt')}
               readOnly={!canApprove}
               approving={approveMut.isPending && approveMut.variables?.id === item.id}
               onApprove={(points) => approveMut.mutate({ id: item.id, points })}

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { PlusOutlined } from '@ant-design/icons';
 import { Button, Input, Modal, message } from 'antd';
+import { useTranslation } from 'react-i18next';
 
 interface CustomRequestButtonProps {
   label: string;
@@ -18,16 +19,17 @@ export function CustomRequestButton({
   onSubmit,
   submitting,
 }: CustomRequestButtonProps) {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const [text, setText] = useState('');
 
   const handleOk = async () => {
-    const t = text.trim();
-    if (!t) {
-      message.warning('Con hãy nhập nội dung nhé');
+    const value = text.trim();
+    if (!value) {
+      message.warning(t('components:customRequest.emptyWarning'));
       return;
     }
-    await onSubmit(t);
+    await onSubmit(value);
     setText('');
     setOpen(false);
   };
@@ -42,8 +44,8 @@ export function CustomRequestButton({
         open={open}
         onOk={handleOk}
         onCancel={() => setOpen(false)}
-        okText="Gửi cho bố mẹ"
-        cancelText="Hủy"
+        okText={t('components:customRequest.submit')}
+        cancelText={t('action.cancel')}
         confirmLoading={submitting}
       >
         <Input.TextArea

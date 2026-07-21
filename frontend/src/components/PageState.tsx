@@ -1,5 +1,6 @@
 import { Button, Empty, Result, Skeleton, Spin } from 'antd';
 import type { ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface PageStateProps {
   isLoading?: boolean;
@@ -17,11 +18,12 @@ export function PageState({
   isError,
   isEmpty,
   errorMessage,
-  emptyDescription = 'Chưa có dữ liệu',
+  emptyDescription,
   onRetry,
   children,
   skeletonRows = 4,
 }: PageStateProps) {
+  const { t } = useTranslation();
   if (isLoading) {
     return <Skeleton active paragraph={{ rows: skeletonRows }} />;
   }
@@ -29,14 +31,14 @@ export function PageState({
     return (
       <Result
         status="error"
-        title="Có lỗi xảy ra"
-        subTitle={errorMessage ?? 'Vui lòng thử lại sau'}
-        extra={onRetry && <Button onClick={onRetry}>Thử lại</Button>}
+        title={t('state.error')}
+        subTitle={errorMessage ?? t('components:pageState.errorSubtitle')}
+        extra={onRetry && <Button onClick={onRetry}>{t('state.retry')}</Button>}
       />
     );
   }
   if (isEmpty) {
-    return <Empty description={emptyDescription} />;
+    return <Empty description={emptyDescription ?? t('state.empty')} />;
   }
   return <>{children}</>;
 }

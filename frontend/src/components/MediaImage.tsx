@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Image, Skeleton, Typography } from 'antd';
+import { useTranslation } from 'react-i18next';
 import { api } from '@/api/client';
 
 interface MediaImageProps {
@@ -13,9 +14,11 @@ interface MediaImageProps {
  * Hiển thị ảnh media (vd ảnh minh chứng nhiệm vụ). Vì endpoint /media cần Bearer token,
  * component tải ảnh qua fetch (kèm token) rồi dựng Object URL cho <Image> — hỗ trợ xem phóng to.
  */
-export function MediaImage({ mediaId, size = 72, alt = 'Ảnh minh chứng' }: MediaImageProps) {
+export function MediaImage({ mediaId, size = 72, alt }: MediaImageProps) {
+  const { t } = useTranslation();
   const [url, setUrl] = useState<string>();
   const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading');
+  const altText = alt ?? t('components:mediaImage.proofAlt');
 
   useEffect(() => {
     let active = true;
@@ -47,14 +50,14 @@ export function MediaImage({ mediaId, size = 72, alt = 'Ảnh minh chứng' }: M
   if (status === 'error' || !url) {
     return (
       <Typography.Text type="secondary" style={{ fontSize: 12 }}>
-        Không tải được ảnh
+        {t('components:mediaImage.loadError')}
       </Typography.Text>
     );
   }
   return (
     <Image
       src={url}
-      alt={alt}
+      alt={altText}
       width={size}
       height={size}
       style={{ objectFit: 'cover', borderRadius: 12 }}

@@ -1,6 +1,7 @@
 import { DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons';
 import { Button, Popconfirm, Space, Typography, message } from 'antd';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { api, type Reward } from '@/api/client';
 import { PageState } from '@/components/PageState';
@@ -9,6 +10,7 @@ import { RewardCard } from '@/components/RewardCard';
 const { Title } = Typography;
 
 export function ParentRewardsPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const qc = useQueryClient();
   const { data, isLoading, isError, refetch } = useQuery({
@@ -20,25 +22,25 @@ export function ParentRewardsPage() {
     mutationFn: (id: string) => api.delete(`/rewards/${id}`),
     onSuccess: () => {
       void qc.invalidateQueries({ queryKey: ['rewards'] });
-      message.success('Đã vô hiệu hóa phần thưởng');
+      message.success(t('parent:rewards.disabled'));
     },
   });
 
   return (
     <>
       <Space style={{ width: '100%', justifyContent: 'space-between', marginBottom: 16 }}>
-        <Title level={3} style={{ margin: 0 }}>Quản lý phần thưởng</Title>
+        <Title level={3} style={{ margin: 0 }}>{t('parent:rewards.title')}</Title>
         <Button type="primary" icon={<PlusOutlined />} onClick={() => navigate('/parent/rewards/new')}>
-          Tạo mới
+          {t('parent:rewards.addBtn')}
         </Button>
       </Space>
-      <PageState isLoading={isLoading} isError={isError} isEmpty={!data?.length} onRetry={refetch} emptyDescription="Chưa có phần thưởng">
+      <PageState isLoading={isLoading} isError={isError} isEmpty={!data?.length} onRetry={refetch} emptyDescription={t('parent:rewards.empty')}>
         <Space direction="vertical" style={{ width: '100%' }} size="middle">
           {data?.map((reward) => (
             <div key={reward.id} style={{ display: 'flex', gap: 8 }}>
               <div style={{ flex: 1 }}><RewardCard reward={reward} /></div>
               <Button icon={<EditOutlined />} onClick={() => navigate(`/parent/rewards/${reward.id}/edit`)} />
-              <Popconfirm title="Vô hiệu hóa?" onConfirm={() => deleteMut.mutate(reward.id)}>
+              <Popconfirm title={t('parent:rewards.disableConfirm')} onConfirm={() => deleteMut.mutate(reward.id)}>
                 <Button danger icon={<DeleteOutlined />} />
               </Popconfirm>
             </div>

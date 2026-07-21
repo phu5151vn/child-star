@@ -1,4 +1,5 @@
 import { Progress, Tag, theme, Typography } from 'antd';
+import { useTranslation } from 'react-i18next';
 import type { WeeklyProgress } from '@/api/client';
 
 const { Text } = Typography;
@@ -11,6 +12,7 @@ interface WeeklyProgressCardProps {
 /** Thanh tiến độ mục tiêu nhiệm vụ tuần + nhãn bonus. */
 export function WeeklyProgressCard({ progress, compact }: WeeklyProgressCardProps) {
   const { token } = theme.useToken();
+  const { t } = useTranslation();
   if (!progress.enabled) return null;
 
   const percent = progress.target_count
@@ -21,12 +23,16 @@ export function WeeklyProgressCard({ progress, compact }: WeeklyProgressCardProp
     <div style={{ width: '100%' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
         <Text strong style={{ fontSize: compact ? 13 : 15 }}>
-          🎯 Mục tiêu tuần: {progress.completed}/{progress.target_count} nhiệm vụ
+          {t('components:weeklyProgress.goal', { completed: progress.completed, target: progress.target_count })}
         </Text>
         {progress.bonus_earned ? (
-          <Tag color="success" style={{ borderRadius: 999, margin: 0 }}>🏆 +{progress.bonus_points} bonus</Tag>
+          <Tag color="success" style={{ borderRadius: 999, margin: 0 }}>
+            {t('components:weeklyProgress.bonusEarned', { points: progress.bonus_points })}
+          </Tag>
         ) : (
-          <Tag color="gold" style={{ borderRadius: 999, margin: 0 }}>Thưởng +{progress.bonus_points} sao</Tag>
+          <Tag color="gold" style={{ borderRadius: 999, margin: 0 }}>
+            {t('components:weeklyProgress.bonusTag', { points: progress.bonus_points })}
+          </Tag>
         )}
       </div>
       <Progress
@@ -38,8 +44,8 @@ export function WeeklyProgressCard({ progress, compact }: WeeklyProgressCardProp
       {!compact && (
         <Text type="secondary" style={{ fontSize: 13 }}>
           {progress.achieved
-            ? '🎉 Tuyệt vời! Con đã đạt mục tiêu tuần và nhận thưởng bonus!'
-            : `Cố lên! Còn ${progress.remaining} nhiệm vụ nữa là nhận +${progress.bonus_points} sao bonus! 💪`}
+            ? t('components:weeklyProgress.achieved')
+            : t('components:weeklyProgress.remaining', { remaining: progress.remaining, points: progress.bonus_points })}
         </Text>
       )}
     </div>

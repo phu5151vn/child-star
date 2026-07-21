@@ -1,3 +1,5 @@
+import i18n from '@/i18n';
+
 const API_BASE = '/api/v1';
 
 export interface ApiError {
@@ -49,7 +51,7 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
     const detail = body.detail ?? body;
     throw new ApiClientError(
       detail.error_code ?? 'UNKNOWN',
-      detail.message ?? detail ?? 'Lỗi không xác định',
+      detail.message ?? detail ?? i18n.t('common:apiError.unknown'),
       res.status,
     );
   }
@@ -82,7 +84,7 @@ export const api = {
     const res = await fetch(`${API_BASE}/media/${mediaId}`, {
       headers: token ? { Authorization: `Bearer ${token}` } : {},
     });
-    if (!res.ok) throw new ApiClientError('MEDIA_LOAD_FAILED', 'Không tải được ảnh', res.status);
+    if (!res.ok) throw new ApiClientError('MEDIA_LOAD_FAILED', i18n.t('common:apiError.mediaLoad'), res.status);
     const blob = await res.blob();
     return URL.createObjectURL(blob);
   },

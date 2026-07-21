@@ -1,6 +1,7 @@
 import { CheckCircleFilled, StarFilled } from '@ant-design/icons';
 import { Button, Card, Space, Tag, theme, Typography } from 'antd';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import type { Task } from '@/api/client';
 import { EmojiIcon } from '@/components/CuteBits';
 import { defaultTaskEmoji, RECURRENCE_META, type Recurrence } from '@/theme/cute';
@@ -13,19 +14,21 @@ interface TaskCardProps {
   isChild?: boolean;
 }
 
-const statusLabels: Record<string, { label: string; color: string }> = {
-  available: { label: 'Chưa nhận', color: 'default' },
-  in_progress: { label: 'Đang làm', color: 'processing' },
-  submitted: { label: 'Chờ duyệt', color: 'warning' },
-  approved: { label: 'Hoàn thành', color: 'success' },
-  rejected: { label: 'Làm lại', color: 'error' },
+const statusColors: Record<string, string> = {
+  available: 'default',
+  in_progress: 'processing',
+  submitted: 'warning',
+  approved: 'success',
+  rejected: 'error',
 };
 
 export function TaskCard({ task, onClaim, isChild }: TaskCardProps) {
   const { token } = theme.useToken();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const status = task.assignment_status ?? 'available';
-  const statusInfo = statusLabels[status] ?? statusLabels.available;
+  const statusKey = statusColors[status] ? status : 'available';
+  const statusInfo = { label: t(`components:taskCard.status.${statusKey}`), color: statusColors[statusKey] };
   const emoji = task.icon_emoji || defaultTaskEmoji(task.title);
   const rec = RECURRENCE_META[(task.recurrence ?? 'once') as Recurrence];
   const clickable = isChild && !!task.assignment_id;
@@ -48,7 +51,7 @@ export function TaskCard({ task, onClaim, isChild }: TaskCardProps) {
               {task.title}
             </Title>
             <Tag icon={<StarFilled />} color="gold" style={{ borderRadius: 999, fontWeight: 700, margin: 0 }}>
-              +{task.points} sao
+              +{task.points} {t('components:units.stars')}
             </Tag>
           </Space>
           {task.description && (
@@ -77,12 +80,12 @@ export function TaskCard({ task, onClaim, isChild }: TaskCardProps) {
                       onClaim(task.id);
                     }}
                   >
-                    Nhận nhiệm vụ 🙋
+                    {t('components:taskCard.claim')}
                   </Button>
                 )}
                 {(status === 'in_progress' || status === 'submitted') && (
                   <Button type="link" size="small" onClick={() => navigate(`/child/tasks/${task.id}`)}>
-                    Xem chi tiết
+                    {t('components:taskCard.viewDetail')}
                   </Button>
                 )}
                 {status === 'approved' && (
@@ -91,7 +94,7 @@ export function TaskCard({ task, onClaim, isChild }: TaskCardProps) {
               </>
             ) : (
               <Tag color={task.is_active ? 'success' : 'default'} style={{ borderRadius: 999, margin: 0 }}>
-                {task.is_active ? 'Đang bật' : 'Đã tắt'}
+                {task.is_active ? t('components:taskCard.active') : t('components:taskCard.inactive')}
               </Tag>
             )}
           </Space>

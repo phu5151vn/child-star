@@ -1,9 +1,12 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ConfigProvider } from 'antd';
 import viVN from 'antd/locale/vi_VN';
+import enUS from 'antd/locale/en_US';
+import { useTranslation } from 'react-i18next';
 import { AppRouter } from '@/app/router';
-import { AuthProvider } from '@/features/auth/AuthContext';
+import { AuthProvider } from '@/features/auth/AuthProvider';
 import { appTheme } from '@/theme/tokens';
+import '@/i18n';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -26,9 +29,13 @@ const queryClient = new QueryClient({
 });
 
 export function App() {
+  // Locale của Ant Design (định dạng ngày, text mặc định của component) bám theo ngôn ngữ i18n.
+  const { i18n } = useTranslation();
+  const antdLocale = i18n.language === 'en' ? enUS : viVN;
+
   return (
     <QueryClientProvider client={queryClient}>
-      <ConfigProvider theme={appTheme} locale={viVN}>
+      <ConfigProvider theme={appTheme} locale={antdLocale}>
         <AuthProvider>
           <AppRouter />
         </AuthProvider>

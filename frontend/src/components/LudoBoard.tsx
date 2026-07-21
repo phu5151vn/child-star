@@ -1,10 +1,9 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { LudoPlayer } from '@/api/client';
 import { LudoHorse } from './LudoHorse';
+import { LUDO_COLORS, LUDO_COLOR_KEYS } from './ludoConstants';
 
-/** Bảng màu dễ thương cho 4 người chơi (0..3). */
-export const LUDO_COLORS = ['#FF6B6B', '#4D96FF', '#FFC93C', '#6BCB77'];
-export const LUDO_COLOR_NAMES = ['Đỏ', 'Xanh dương', 'Vàng', 'Xanh lá'];
 const LUDO_DARK = ['#E23D4B', '#2F6BD6', '#E0A100', '#3FA857'];
 const LUDO_LIGHT = ['#FFC2C2', '#B9D4FF', '#FFE9A6', '#C2ECC7'];
 
@@ -31,7 +30,7 @@ const RED_SEG: Coord[] = [
   [5, 8], [4, 8], [3, 8], [2, 8], [1, 8], [0, 8],
   [0, 7],
 ];
-export const RING: Coord[] = [];
+const RING: Coord[] = [];
 for (let k = 0; k < 4; k++) for (let i = 0; i < SEG_LEN; i++) RING.push(rot(RED_SEG[i], k));
 
 // Ô số về đích đỏ (nhánh PHẢI): #1..#6 = [7,13]..[7,8] (#6 sát tâm); các màu khác quay tương ứng.
@@ -69,6 +68,7 @@ interface LudoBoardProps {
 }
 
 export function LudoBoard({ players, movableTokens = [], yourColor, isYourTurn, onPickToken }: LudoBoardProps) {
+  const { t } = useTranslation();
   const targets = useMemo(() => {
     const m: Record<string, number> = {};
     players.forEach((p) => p.tokens.forEach((prog, ti) => (m[`${p.color}-${ti}`] = prog)));
@@ -193,7 +193,10 @@ export function LudoBoard({ players, movableTokens = [], yourColor, isYourTurn, 
               onClick={canMove ? () => onPickToken?.(ti) : undefined}
               disabled={!canMove}
               style={{ top: `calc(${pct(r)} + ${off}px)`, left: `calc(${pct(c)} + ${off}px)` }}
-              aria-label={`Ngựa ${LUDO_COLOR_NAMES[p.color]} ${ti + 1}`}
+              aria-label={t('components:ludo.horseAria', {
+                color: t(`components:ludo.color.${LUDO_COLOR_KEYS[p.color]}`),
+                index: ti + 1,
+              })}
             >
               <LudoHorse color={LUDO_COLORS[p.color]} dark={LUDO_DARK[p.color]} light={LUDO_LIGHT[p.color]} />
             </button>

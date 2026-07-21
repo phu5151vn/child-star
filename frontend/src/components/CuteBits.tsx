@@ -1,4 +1,5 @@
 import { Avatar } from 'antd';
+import { useTranslation } from 'react-i18next';
 import { childAvatarUrl, genderEmoji, type Gender } from '@/theme/cute';
 
 interface EmojiIconProps {
@@ -9,12 +10,13 @@ interface EmojiIconProps {
 
 /** Icon emoji trong nền tròn gradient dễ thương. */
 export function EmojiIcon({ emoji, size = 48, className }: EmojiIconProps) {
+  const { t } = useTranslation();
   return (
     <span
       className={`bn-emoji-badge${className ? ` ${className}` : ''}`}
       style={{ width: size, height: size, fontSize: Math.round(size * 0.55) }}
       role="img"
-      aria-label="icon"
+      aria-label={t('components:cuteBits.iconAlt')}
     >
       {emoji}
     </span>

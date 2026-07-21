@@ -12,9 +12,11 @@ import {
 } from '@ant-design/icons';
 import { Badge, Button, Drawer, Grid, Layout, Menu, theme, Typography } from 'antd';
 import { useQuery } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { api, type Assignment, type Redemption } from '@/api/client';
 import { useAuth } from '@/features/auth/AuthContext';
+import { LanguageSwitcher } from '@/i18n/LanguageSwitcher';
 
 const { Sider, Content, Header } = Layout;
 const { Title, Text } = Typography;
@@ -27,6 +29,7 @@ export function ParentLayout() {
   const navigate = useNavigate();
   const location = useLocation();
   const { logout, me } = useAuth();
+  const { t } = useTranslation();
   const screens = useBreakpoint();
   const isMobile = !screens.lg;
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -48,36 +51,36 @@ export function ParentLayout() {
   };
 
   const items = [
-    { key: 'dashboard', icon: <HomeOutlined />, label: 'Tổng quan', onClick: () => go('/parent') },
-    { key: 'tasks', icon: <CheckSquareOutlined />, label: 'Nhiệm vụ', onClick: () => go('/parent/tasks') },
-    { key: 'rewards', icon: <GiftOutlined />, label: 'Phần thưởng', onClick: () => go('/parent/rewards') },
+    { key: 'dashboard', icon: <HomeOutlined />, label: t('nav.dashboard'), onClick: () => go('/parent') },
+    { key: 'tasks', icon: <CheckSquareOutlined />, label: t('nav.tasks'), onClick: () => go('/parent/tasks') },
+    { key: 'rewards', icon: <GiftOutlined />, label: t('nav.rewards'), onClick: () => go('/parent/rewards') },
     {
       key: 'approvals',
       icon: <Badge count={submitted.length} size="small"><TrophyOutlined /></Badge>,
-      label: 'Duyệt hoàn thành',
+      label: t('nav.approvals'),
       onClick: () => go('/parent/approvals'),
     },
     {
       key: 'redemptions',
       icon: <Badge count={requested.length} size="small"><GiftOutlined /></Badge>,
-      label: 'Duyệt đổi thưởng',
+      label: t('nav.redemptions'),
       onClick: () => go('/parent/redemptions'),
     },
-    { key: 'children', icon: <TeamOutlined />, label: 'Con & Sổ điểm', onClick: () => go('/parent/children') },
+    { key: 'children', icon: <TeamOutlined />, label: t('nav.children'), onClick: () => go('/parent/children') },
     ...(me?.can_manage_members
-      ? [{ key: 'relatives', icon: <UsergroupAddOutlined />, label: 'Người thân', onClick: () => go('/parent/relatives') }]
+      ? [{ key: 'relatives', icon: <UsergroupAddOutlined />, label: t('nav.relatives'), onClick: () => go('/parent/relatives') }]
       : []),
-    { key: 'games', icon: <PlayCircleOutlined />, label: 'Trò chơi', onClick: () => go('/parent/games') },
-    { key: 'logout', icon: <LogoutOutlined />, label: 'Đăng xuất', onClick: logout },
+    { key: 'games', icon: <PlayCircleOutlined />, label: t('nav.games'), onClick: () => go('/parent/games') },
+    { key: 'logout', icon: <LogoutOutlined />, label: t('nav.logout'), onClick: logout },
   ];
 
   const brand = (
     <div style={{ padding: `${token.paddingLG}px ${token.paddingLG}px ${token.paddingSM}px`, textAlign: 'center' }}>
       <div className="bn-float" style={{ fontSize: 34, lineHeight: 1 }}>⭐</div>
       <Title level={4} style={{ margin: '6px 0 0', color: token.colorPrimary, fontFamily: '"Baloo 2", cursive' }}>
-        Bé Ngoan
+        {t('brand.name')}
       </Title>
-      <Text type="secondary" style={{ fontSize: 12 }}>Tích sao • Đổi thưởng</Text>
+      <Text type="secondary" style={{ fontSize: 12 }}>{t('brand.tagline')}</Text>
     </div>
   );
 
@@ -133,11 +136,14 @@ export function ParentLayout() {
               type="text"
               icon={<MenuOutlined style={{ color: '#fff', fontSize: 18 }} />}
               onClick={() => setDrawerOpen(true)}
-              aria-label="Mở menu"
+              aria-label={t('openMenu')}
             />
           )}
           <span style={{ fontSize: 22 }}>👨‍👩‍👧‍👦</span>
-          <Title level={5} style={{ margin: 0, color: '#fff' }}>Khu vực Bố Mẹ</Title>
+          <Title level={5} style={{ margin: 0, color: '#fff' }}>{t('parentArea')}</Title>
+          <div style={{ marginLeft: 'auto' }}>
+            <LanguageSwitcher variant="onDark" />
+          </div>
         </Header>
         <Content
           style={{

@@ -383,3 +383,11 @@ body {
 }
 .ludo-roll-btn:active { transform: scale(0.95); }
 .ludo-roll-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* Nút chuyển ngôn ngữ trên header gradient (chữ trắng) */
+.bn-lang-on-dark {
+  background: rgba(255, 255, 255, 0.18) !important;
+}
+.bn-lang-on-dark .ant-segmented-item-label { color: rgba(255, 255, 255, 0.9); }
+.bn-lang-on-dark .ant-segmented-item-selected { background: #fff !important; }
+.bn-lang-on-dark .ant-segmented-item-selected .ant-segmented-item-label { color: var(--bn-primary, #7C5CFC); }

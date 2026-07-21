@@ -1,5 +1,6 @@
 import { useMemo, useState, type CSSProperties } from 'react';
 import { Modal } from 'antd';
+import { useTranslation } from 'react-i18next';
 import type { Square } from 'chess.js';
 import { useChessGame, type AppliedMove } from '../hooks/useChessGame';
 import { ChessPiece } from './PieceIcon';
@@ -50,6 +51,7 @@ export function ChessBoard({
   lastMoveUci,
   maxWidth = 480,
 }: ChessBoardProps) {
+  const { t } = useTranslation();
   const { board, turn, legalTargets, needsPromotion, applyMove, game } = useChessGame(fen);
   const [selected, setSelected] = useState<Square | null>(null);
   const [promo, setPromo] = useState<{ from: Square; to: Square } | null>(null);
@@ -187,7 +189,7 @@ export function ChessBoard({
         open={!!promo}
         onCancel={() => setPromo(null)}
         footer={null}
-        title="Phong quân"
+        title={t('game:chess.promotion')}
         centered
         width={280}
       >

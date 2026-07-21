@@ -1,5 +1,6 @@
 import { Button, Card, Space, Tag, Typography, message } from 'antd';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
   api,
@@ -24,6 +25,7 @@ export function OnlineMatchPage() {
   const { me } = useAuth();
   const navigate = useNavigate();
   const qc = useQueryClient();
+  const { t } = useTranslation();
   const base = `/${me?.role ?? 'child'}/games`;
 
   const { data: match, isLoading, isError, refetch } = useQuery({
@@ -49,7 +51,7 @@ export function OnlineMatchPage() {
       api.post<GameMatch>(`/games/${id}/move`, payload),
     onSuccess: (m) => qc.setQueryData(['game', id], m),
     onError: (e: Error) => {
-      message.error(e instanceof ApiClientError ? e.message : 'Không gửi được nước đi');
+      message.error(e instanceof ApiClientError ? e.message : t('game:match.moveFail'));
       void refetch();
     },
   });
@@ -63,7 +65,7 @@ export function OnlineMatchPage() {
   const offerMut = useMutation({
     mutationFn: (kind: 'draw' | 'takeback') => api.post<GameMatch>(`/games/${id}/offer`, { kind }),
     onSuccess: (m) => qc.setQueryData(['game', id], m),
-    onError: (e: Error) => message.error(e instanceof ApiClientError ? e.message : 'Không gửi được lời mời'),
+    onError: (e: Error) => message.error(e instanceof ApiClientError ? e.message : t('game:offer.sendFail')),
   });
 
   const respondMut = useMutation({
@@ -109,7 +111,7 @@ export function OnlineMatchPage() {
                 VS
               </Text>
               <PlayerBadge
-                name={match.guest?.display_name ?? 'Đang chờ…'}
+                name={match.guest?.display_name ?? t('game:match.waitingGuest')}
                 gender={match.guest?.gender}
                 side={match.guest_side}
                 active={match.turn_user_id === match.guest?.id}
@@ -122,7 +124,7 @@ export function OnlineMatchPage() {
 
           {match.pending_offer && match.pending_by !== me?.id && (
             <OfferBanner
-              text={`Đối thủ ${match.pending_offer === 'draw' ? 'xin cầu hòa 🤝' : 'xin đi lại nước vừa rồi ↩️'}`}
+              text={t(match.pending_offer === 'draw' ? 'game:offer.incomingDraw' : 'game:offer.incomingTakeback')}
               onAccept={() => respondMut.mutate(true)}
               onDecline={() => respondMut.mutate(false)}
               loading={respondMut.isPending}
@@ -130,7 +132,7 @@ export function OnlineMatchPage() {
           )}
           {match.pending_offer && match.pending_by === me?.id && (
             <OfferBanner
-              text={`Đang chờ đối thủ trả lời lời ${match.pending_offer === 'draw' ? 'cầu hòa' : 'xin đi lại'}…`}
+              text={t(match.pending_offer === 'draw' ? 'game:offer.pendingDraw' : 'game:offer.pendingTakeback')}
               onCancel={() => respondMut.mutate(false)}
               loading={respondMut.isPending}
             />
@@ -162,7 +164,7 @@ export function OnlineMatchPage() {
                   loading={offerMut.isPending && offerMut.variables === 'draw'}
                   onClick={() => offerMut.mutate('draw')}
                 >
-                  Cầu hòa 🤝
+                  {t('game:offer.draw')}
                 </Button>
                 {!match.is_your_turn && (
                   <Button
@@ -170,15 +172,15 @@ export function OnlineMatchPage() {
                     loading={offerMut.isPending && offerMut.variables === 'takeback'}
                     onClick={() => offerMut.mutate('takeback')}
                   >
-                    Xin đi lại ↩️
+                    {t('game:offer.takeback')}
                   </Button>
                 )}
                 <Button danger disabled={!!match.pending_offer} loading={resignMut.isPending} onClick={() => resignMut.mutate()}>
-                  Đầu hàng 🏳️
+                  {t('game:match.resign')}
                 </Button>
               </>
             )}
-            <Button onClick={() => navigate(base)}>Về sảnh</Button>
+            <Button onClick={() => navigate(base)}>{t('game:common.backToLobby')}</Button>
           </div>
         </Space>
       )}
@@ -187,7 +189,7 @@ export function OnlineMatchPage() {
         <GameResultOverlay
           kind={resultKind}
           onLobby={() => navigate(base)}
-          subtitle={match?.game_type === 'caro' ? 'Cờ Caro' : 'Cờ Vua'}
+          subtitle={match?.game_type === 'caro' ? t('game:caro.name') : t('game:chess.name')}
         />
       )}
     </PageState>
@@ -212,6 +214,7 @@ function OfferBanner({
   onCancel?: () => void;
   loading?: boolean;
 }) {
+  const { t } = useTranslation();
   return (
     <div
       className="bn-pop"
@@ -233,17 +236,17 @@ function OfferBanner({
       <Space>
         {onAccept && (
           <Button type="primary" size="small" loading={loading} onClick={onAccept}>
-            Đồng ý
+            {t('game:offer.accept')}
           </Button>
         )}
         {onDecline && (
           <Button size="small" disabled={loading} onClick={onDecline}>
-            Từ chối
+            {t('game:offer.decline')}
           </Button>
         )}
         {onCancel && (
           <Button size="small" loading={loading} onClick={onCancel}>
-            Hủy lời mời
+            {t('game:offer.cancel')}
           </Button>
         )}
       </Space>
@@ -264,6 +267,7 @@ function PlayerBadge({
   active?: boolean;
   you?: boolean;
 }) {
+  const { t } = useTranslation();
   return (
     <div
       className={active ? 'bn-pulse' : undefined}
@@ -279,29 +283,26 @@ function PlayerBadge({
       <ChildAvatar name={name ?? undefined} gender={gender ?? undefined} size={38} />
       <div style={{ display: 'flex', flexDirection: 'column' }}>
         <Text strong style={{ fontSize: 14 }}>
-          {name} {you && '(bạn)'}
+          {name} {you && t('game:common.you')}
         </Text>
-        {side && <Text type="secondary" style={{ fontSize: 12 }}>{sideLabel(side)}</Text>}
+        {side && <Text type="secondary" style={{ fontSize: 12 }}>{t(`game:side.${side}`)}</Text>}
       </div>
     </div>
   );
 }
 
-function sideLabel(side: Side): string {
-  return { x: 'Quân X', o: 'Quân O', white: 'Quân trắng', black: 'Quân đen' }[side];
-}
-
 function StatusBanner({ match, youWaiting }: { match: GameMatch; youWaiting: boolean }) {
+  const { t } = useTranslation();
   let text = '';
   let color = '#7C5CFC';
   if (match.status === 'waiting') {
-    text = 'Đang chờ đối thủ tham gia… Chia sẻ để rủ người chơi nhé!';
+    text = t('game:match.waitingOpponent');
     color = '#FFC531';
   } else if (match.status === 'finished') {
-    text = match.result === 'draw' ? 'Ván đấu hòa 🤝' : 'Ván đã kết thúc';
+    text = match.result === 'draw' ? t('game:match.drawResult') : t('game:match.ended');
     color = '#3DD598';
   } else {
-    text = match.is_your_turn ? 'Đến lượt bạn! ✨' : 'Chờ đối thủ đi…';
+    text = match.is_your_turn ? t('game:match.yourTurn') : t('game:match.waitOpponentMove');
     color = match.is_your_turn ? '#3DD598' : '#8c85a3';
   }
   return (
@@ -310,7 +311,7 @@ function StatusBanner({ match, youWaiting }: { match: GameMatch; youWaiting: boo
         {text}
       </Tag>
       {youWaiting && match.status === 'active' && (
-        <div style={{ fontSize: 11, color: '#b7b0c9', marginTop: 4 }}>Tự động cập nhật…</div>
+        <div style={{ fontSize: 11, color: '#b7b0c9', marginTop: 4 }}>{t('game:match.autoUpdating')}</div>
       )}
     </div>
   );

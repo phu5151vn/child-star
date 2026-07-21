@@ -2,6 +2,7 @@ import { EditOutlined, GiftOutlined, TrophyOutlined } from '@ant-design/icons';
 import { Button, Card, Col, Form, InputNumber, Modal, Row, Space, Statistic, Switch, Typography, message } from 'antd';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { api, type Assignment, type Redemption, type WeeklyGoal } from '@/api/client';
 import { EmojiIcon } from '@/components/CuteBits';
 import { PageState } from '@/components/PageState';
@@ -9,6 +10,7 @@ import { PageState } from '@/components/PageState';
 const { Title, Text } = Typography;
 
 export function ParentDashboardPage() {
+  const { t } = useTranslation();
   const qc = useQueryClient();
   const [goalOpen, setGoalOpen] = useState(false);
   const [form] = Form.useForm();
@@ -36,7 +38,7 @@ export function ParentDashboardPage() {
     onSuccess: () => {
       void qc.invalidateQueries({ queryKey: ['weekly-goal'] });
       setGoalOpen(false);
-      message.success('Đã lưu mục tiêu tuần');
+      message.success(t('parent:dashboard.goal.saved'));
     },
     onError: (e: Error) => message.error(e.message),
   });
@@ -51,14 +53,14 @@ export function ParentDashboardPage() {
   };
 
   const stats = [
-    { title: 'Chờ duyệt hoàn thành', value: submitted?.length ?? 0, emoji: '📝', color: '#7c5cfc' },
-    { title: 'Chờ duyệt đổi thưởng', value: requested?.length ?? 0, emoji: '🎁', color: '#ff8fc7' },
-    { title: 'Mã gia đình', value: family?.family_code ?? '—', emoji: '🏠', color: '#3dd598', isText: true },
+    { title: t('parent:dashboard.stats.pendingTasks'), value: submitted?.length ?? 0, emoji: '📝', color: '#7c5cfc' },
+    { title: t('parent:dashboard.stats.pendingRewards'), value: requested?.length ?? 0, emoji: '🎁', color: '#ff8fc7' },
+    { title: t('parent:dashboard.stats.familyCode'), value: family?.family_code ?? '—', emoji: '🏠', color: '#3dd598', isText: true },
   ];
 
   return (
     <PageState isLoading={l1 || l2} isError={e1 || e2} onRetry={() => { void r1(); void r2(); }}>
-      <Title level={3} style={{ marginTop: 0 }}>🏡 Tổng quan gia đình</Title>
+      <Title level={3} style={{ marginTop: 0 }}>{t('parent:dashboard.title')}</Title>
 
       <Row gutter={[16, 16]} className="bn-stagger" style={{ marginTop: 16 }}>
         {stats.map((s) => (
@@ -80,48 +82,48 @@ export function ParentDashboardPage() {
       <Card
         className="bn-card-hover"
         style={{ borderRadius: 24, marginTop: 16 }}
-        title={<span><TrophyOutlined style={{ color: '#ffc531' }} /> Mục tiêu nhiệm vụ tuần</span>}
-        extra={<Button shape="round" icon={<EditOutlined />} onClick={openGoal}>Chỉnh sửa</Button>}
+        title={<span><TrophyOutlined style={{ color: '#ffc531' }} /> {t('parent:dashboard.goal.cardTitle')}</span>}
+        extra={<Button shape="round" icon={<EditOutlined />} onClick={openGoal}>{t('parent:dashboard.goal.edit')}</Button>}
       >
         {goal?.is_active && goal.target_count ? (
           <Space direction="vertical" size={4}>
             <Text style={{ fontSize: 16 }}>
-              Hoàn thành <b>{goal.target_count}</b> nhiệm vụ / tuần để nhận
-              <b style={{ color: '#7c5cfc' }}> +{goal.bonus_points} sao</b> thưởng 🎉
+              {t('parent:dashboard.goal.line1')} <b>{goal.target_count}</b> {t('parent:dashboard.goal.line2')}
+              <b style={{ color: '#7c5cfc' }}> +{goal.bonus_points} {t('parent:unit.stars')}</b> {t('parent:dashboard.goal.line3')}
             </Text>
-            <Text type="secondary">Bonus được tự động cộng cho mỗi con ngay khi đạt mục tiêu trong tuần.</Text>
+            <Text type="secondary">{t('parent:dashboard.goal.autoBonus')}</Text>
           </Space>
         ) : (
           <Space direction="vertical">
-            <Text type="secondary">Chưa bật mục tiêu tuần. Hãy đặt mục tiêu để khích lệ các con nhé!</Text>
+            <Text type="secondary">{t('parent:dashboard.goal.notSet')}</Text>
             <Button type="primary" shape="round" icon={<GiftOutlined />} onClick={openGoal}>
-              Đặt mục tiêu tuần
+              {t('parent:dashboard.goal.setBtn')}
             </Button>
           </Space>
         )}
       </Card>
 
-      <Modal title="🎯 Mục tiêu nhiệm vụ tuần" open={goalOpen} onCancel={() => setGoalOpen(false)} footer={null}>
+      <Modal title={t('parent:dashboard.goal.modalTitle')} open={goalOpen} onCancel={() => setGoalOpen(false)} footer={null}>
         <Form form={form} layout="vertical" onFinish={(v) => saveGoal.mutate(v)} style={{ marginTop: 12 }}>
           <Form.Item
             name="target_count"
-            label="Số nhiệm vụ cần hoàn thành / tuần"
+            label={t('parent:dashboard.goal.targetLabel')}
             rules={[{ required: true, type: 'number', min: 1 }]}
           >
             <InputNumber min={1} max={100} style={{ width: '100%' }} />
           </Form.Item>
           <Form.Item
             name="bonus_points"
-            label="Điểm thưởng bonus (sao)"
+            label={t('parent:dashboard.goal.bonusLabel')}
             rules={[{ required: true, type: 'number', min: 1 }]}
           >
             <InputNumber min={1} max={1000} style={{ width: '100%' }} />
           </Form.Item>
-          <Form.Item name="is_active" label="Bật mục tiêu tuần" valuePropName="checked">
+          <Form.Item name="is_active" label={t('parent:dashboard.goal.activeLabel')} valuePropName="checked">
             <Switch />
           </Form.Item>
           <Button type="primary" shape="round" htmlType="submit" loading={saveGoal.isPending}>
-            Lưu mục tiêu
+            {t('parent:dashboard.goal.saveBtn')}
           </Button>
         </Form>
       </Modal>

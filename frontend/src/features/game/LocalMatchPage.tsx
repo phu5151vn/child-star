@@ -1,5 +1,6 @@
 import { Button, Card, Space, Switch, Tag, Typography } from 'antd';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import type { CaroWinLine, Side } from '@/api/client';
 import { useAuth } from '@/features/auth/AuthContext';
@@ -17,25 +18,27 @@ export function LocalMatchPage() {
   const { type } = useParams();
   const navigate = useNavigate();
   const { me } = useAuth();
+  const { t } = useTranslation();
   const base = `/${me?.role ?? 'child'}/games`;
   const isChess = type === 'chess';
   return (
     <Space direction="vertical" size="middle" style={{ width: '100%' }}>
       <div style={{ textAlign: 'center' }}>
         <Title level={3} style={{ fontFamily: '"Baloo 2", cursive', margin: 0 }}>
-          {isChess ? '♟️ Cờ Vua' : '⭕ Cờ Caro'} — chung 1 máy
+          {isChess ? t('game:chess.localTitle') : t('game:caro.localTitle')}
         </Title>
-        <Text type="secondary">Hai người thay phiên nhau trên cùng thiết bị</Text>
+        <Text type="secondary">{t('game:local.subtitle')}</Text>
       </div>
       {isChess ? <LocalChess onExit={() => navigate(base)} /> : <LocalCaro onExit={() => navigate(base)} />}
       <div style={{ textAlign: 'center' }}>
-        <Button onClick={() => navigate(base)}>Về sảnh</Button>
+        <Button onClick={() => navigate(base)}>{t('game:common.backToLobby')}</Button>
       </div>
     </Space>
   );
 }
 
 function LocalCaro({ onExit }: { onExit: () => void }) {
+  const { t } = useTranslation();
   const [params] = useSearchParams();
   const block = params.get('block') === '1';
   const [board, setBoard] = useState<(Side | null)[][]>(() => emptyCaroBoard(CARO_SIZE));
@@ -91,30 +94,34 @@ function LocalCaro({ onExit }: { onExit: () => void }) {
     <>
       <Card style={{ borderRadius: 16, textAlign: 'center' }} styles={{ body: { padding: 10 } }}>
         {result ? (
-          <Text strong>Kết thúc</Text>
+          <Text strong>{t('game:match.finished')}</Text>
         ) : (
           <Space>
-            <Text>Lượt của</Text>
+            <Text>{t('game:caro.turnOf')}</Text>
             <CaroMark symbol={side} size={22} animate={false} />
-            <Text strong>{side === 'x' ? 'Quân X' : 'Quân O'}</Text>
+            <Text strong>{t(side === 'x' ? 'game:side.x' : 'game:side.o')}</Text>
           </Space>
         )}
         {block && (
           <div>
-            <Tag color="purple">Luật: Chặn 2 đầu</Tag>
+            <Tag color="purple">{t('game:caro.blockRule')}</Tag>
           </div>
         )}
       </Card>
       <CaroBoard board={board} onPlace={place} disabled={!!result} lastMove={last} winLine={winLine} />
       <div style={{ textAlign: 'center' }}>
         <Button onClick={undo} disabled={history.length === 0}>
-          Đi lại ↩️
+          {t('game:match.undo')}
         </Button>
       </div>
       {result && (
         <GameResultOverlay
           kind={result === 'draw' ? 'draw' : 'win'}
-          subtitle={result === 'draw' ? 'Cờ Caro' : `${result === 'x' ? 'Quân X' : 'Quân O'} chiến thắng!`}
+          subtitle={
+            result === 'draw'
+              ? t('game:caro.name')
+              : t('game:match.winnerMsg', { who: t(result === 'x' ? 'game:side.x' : 'game:side.o') })
+          }
           onPlayAgain={reset}
           onLobby={onExit}
         />
@@ -124,6 +131,7 @@ function LocalCaro({ onExit }: { onExit: () => void }) {
 }
 
 function LocalChess({ onExit }: { onExit: () => void }) {
+  const { t } = useTranslation();
   const [fen, setFen] = useState(CHESS_START);
   const [lastUci, setLastUci] = useState<string | null>(null);
   const [rotate, setRotate] = useState(true);
@@ -136,11 +144,13 @@ function LocalChess({ onExit }: { onExit: () => void }) {
     setFen(mv.fen);
     setLastUci(mv.uci);
     if (mv.over) {
-      if (mv.draw) setOver({ kind: 'draw', subtitle: 'Cờ Vua' });
+      if (mv.draw) setOver({ kind: 'draw', subtitle: t('game:chess.name') });
       else
         setOver({
           kind: 'win',
-          subtitle: `Quân ${mv.winnerColor === 'w' ? 'trắng' : 'đen'} chiến thắng!`,
+          subtitle: t('game:match.winnerMsg', {
+            who: t(mv.winnerColor === 'w' ? 'game:side.white' : 'game:side.black'),
+          }),
         });
     }
   };
@@ -168,17 +178,21 @@ function LocalChess({ onExit }: { onExit: () => void }) {
     <>
       <Card style={{ borderRadius: 16, textAlign: 'center' }} styles={{ body: { padding: 10 } }}>
         <Space direction="vertical" size={4}>
-          <Text strong>{over ? 'Kết thúc' : `Lượt: Quân ${turn === 'w' ? 'trắng' : 'đen'}`}</Text>
+          <Text strong>
+            {over
+              ? t('game:match.finished')
+              : t('game:chess.turn', { who: t(turn === 'w' ? 'game:side.white' : 'game:side.black') })}
+          </Text>
           <Space>
             <Switch checked={rotate} onChange={setRotate} size="small" />
-            <Text style={{ fontSize: 13 }}>Xoay bàn theo lượt</Text>
+            <Text style={{ fontSize: 13 }}>{t('game:chess.rotateBoard')}</Text>
           </Space>
         </Space>
       </Card>
       <ChessBoard fen={fen} onMove={handleMove} orientation={orientation} lastMoveUci={lastUci} disabled={!!over} />
       <div style={{ textAlign: 'center' }}>
         <Button onClick={undo} disabled={past.length === 0}>
-          Đi lại ↩️
+          {t('game:match.undo')}
         </Button>
       </div>
       {over && (
