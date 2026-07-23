@@ -22,6 +22,7 @@ from app.repositories.base import (
     get_reward_in_family,
 )
 from app.schemas import RedemptionResponse, RewardResponse
+from app.services.progression_service import ProgressionService
 
 
 class RewardService:
@@ -324,6 +325,10 @@ class RedemptionService:
                 db.refresh(redemption)
                 return RedemptionService._to_response(db, redemption)
             raise
+
+        # Đổi thưởng thành công -> có thể mở huy hiệu rewards_redeemed_total (BR-PG-13).
+        # KHÔNG cộng sao & KHÔNG tụt level (lifetime chỉ dựa trên delta>0).
+        ProgressionService.evaluate_badges(db, ctx.family_id, redemption.child_id)
 
         return RedemptionService._to_response(db, redemption)
 

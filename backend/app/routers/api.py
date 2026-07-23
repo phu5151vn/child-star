@@ -10,6 +10,7 @@ from app.schemas import (
     ApproveAssignmentRequest,
     ApproveRedemptionRequest,
     AssignmentResponse,
+    BadgeCatalogItem,
     BalanceResponse,
     ChildCreate,
     ChildLoginRequest,
@@ -33,6 +34,7 @@ from app.schemas import (
     ManualAdjustRequest,
     MeResponse,
     ParentLoginRequest,
+    ProgressionResponse,
     RedemptionResponse,
     RegisterRequest,
     RejectAssignmentRequest,
@@ -53,6 +55,7 @@ from app.services.auth_service import AuthService, ChildrenService, RelativesSer
 from app.services.game_service import GameService
 from app.services.ludo_service import LudoService
 from app.services.media_service import MediaService
+from app.services.progression_service import ProgressionService
 from app.services.reward_service import RedemptionService, RewardService
 from app.services.task_service import AssignmentService, PointsService, TaskService
 from app.services.weekly_service import WeeklyService
@@ -193,6 +196,23 @@ def get_ledger(
         return PointsService.get_ledger(db, ctx, child_id)
     except DomainError as e:
         _handle_domain(e)
+
+
+@router.get("/children/{child_id}/progression", response_model=ProgressionResponse)
+def get_progression(
+    child_id: UUID,
+    ctx: AuthContext = Depends(get_auth_context),
+    db: Session = Depends(get_db),
+):
+    try:
+        return ProgressionService.get_progression(db, ctx, child_id)
+    except DomainError as e:
+        _handle_domain(e)
+
+
+@router.get("/badges", response_model=list[BadgeCatalogItem])
+def list_badges(ctx: AuthContext = Depends(get_auth_context), db: Session = Depends(get_db)):
+    return ProgressionService.list_badges(db)
 
 
 @router.post("/children/{child_id}/adjust")

@@ -9,6 +9,66 @@ class ErrorResponse(BaseModel):
     message: str
 
 
+# --- Tiến trình (progression): level · streak · huy hiệu -------------------
+class LevelInfo(BaseModel):
+    level: int
+    title: str
+    icon: str
+    min_points: int
+    next_min: int | None = None
+    points_to_next: int | None = None
+    progress_pct: int
+
+
+class StreakInfo(BaseModel):
+    current: int
+    longest: int
+    active_today: bool
+    next_milestone: int | None = None
+    days_to_next: int | None = None
+
+
+class BadgeInfo(BaseModel):
+    code: str
+    title: str
+    icon: str
+    description: str
+    earned: bool
+    earned_at: datetime | None = None
+    progress_pct: int
+    current: int | None = None
+    threshold: int
+
+
+class BadgeCatalogItem(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    code: str
+    title: str
+    description: str
+    icon_emoji: str
+    criteria_type: str
+    threshold: int
+    sort_order: int
+
+
+class ProgressionEvents(BaseModel):
+    """Sự kiện phát sinh khi duyệt nhiệm vụ để FE ăn mừng (BR-PG-15)."""
+
+    level_up: LevelInfo | None = None
+    streak_milestone_reached: int | None = None
+    newly_earned_badges: list[BadgeInfo] = []
+
+
+class ProgressionResponse(BaseModel):
+    child_id: UUID
+    lifetime_points: int
+    balance: int
+    level: LevelInfo
+    streak: StreakInfo
+    badges: list[BadgeInfo] = []
+
+
 # Auth
 class RegisterRequest(BaseModel):
     email: EmailStr
@@ -54,6 +114,9 @@ class MeResponse(BaseModel):
     family_code: str | None = None
     child_id: UUID | None = None
     balance: int | None = None
+    # Tóm tắt tiến trình cho top-bar của con (BR-PG-2); None với parent.
+    level: LevelInfo | None = None
+    current_streak: int | None = None
     # Phân quyền cho tài khoản parent (admin vs người thân đồng hành).
     is_admin: bool = False
     can_manage_members: bool = False
@@ -245,6 +308,8 @@ class AssignmentResponse(BaseModel):
     submitted_at: datetime | None = None
     decided_at: datetime | None = None
     is_custom: bool = False
+    # Sự kiện tiến trình phát sinh từ lần duyệt này (chỉ có khi approve thành công lần đầu).
+    progression_events: ProgressionEvents | None = None
 
 
 # Rewards

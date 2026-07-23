@@ -14,16 +14,28 @@ from app.core.exceptions import (
     ProofRequiredError,
 )
 from app.core.integrity import is_unique_violation
+from app.core.progression_rules import level_for
 from app.core.timeutil import is_completed_current_period
 from app.models import Media, PointsLedger, Task, TaskAssignment, User
 from app.repositories.base import (
     AuditRepository,
     PointsRepository,
+    ProgressionRepository,
     get_assignment_in_family,
     get_task_in_family,
 )
-from app.schemas import AssignmentResponse, LedgerEntry, SubmitAssignmentRequest, TaskResponse
+from app.schemas import (
+    AssignmentResponse,
+    BadgeInfo,
+    LedgerEntry,
+    LevelInfo,
+    ProgressionEvents,
+    SubmitAssignmentRequest,
+    TaskResponse,
+)
 from app.services.media_service import MediaService
+from app.services.progression_service import ProgressionService
+from app.services.streak_service import StreakService
 from app.services.weekly_service import WeeklyService
 
 
@@ -326,6 +338,12 @@ class AssignmentService:
             raise InvalidTransitionError()
         assert_transition(assignment.status, "approved")
 
+        # Cấp độ TRƯỚC lần duyệt này (gồm cả bonus & task trước đó) để so sánh lên cấp,
+        # bắt trọn cả trường hợp chính điểm nhiệm vụ này đẩy con lên cấp mới (BR-PG-15).
+        level_before = level_for(
+            ProgressionRepository.lifetime_points(db, ctx.family_id, assignment.child_id)
+        )
+
         task = db.get(Task, assignment.task_id) if assignment.task_id else None
         if assignment.task_id is None:
             # Nhiệm vụ tự do: bố mẹ phải nhập số sao thưởng (> 0).
@@ -366,13 +384,41 @@ class AssignmentService:
                 return AssignmentService._to_response(db, assignment)
             raise
 
-        # Sau khi cộng điểm nhiệm vụ, kiểm tra mục tiêu tuần để trao bonus nếu đạt.
+        # Sau khi cộng điểm nhiệm vụ: bonus tuần -> bonus streak -> đánh giá huy hiệu.
+        # Tất cả trong phạm vi advisory_lock_child (đã mở đầu approve) — an toàn khi song song.
         WeeklyService.maybe_award_bonus(db, ctx.family_id, ctx.user_id, assignment.child_id)
+        milestone = StreakService.maybe_award_streak_bonus(
+            db, ctx.family_id, ctx.user_id, assignment.child_id
+        )
+        newly = ProgressionService.evaluate_badges(db, ctx.family_id, assignment.child_id)
+        level_after = level_for(
+            ProgressionRepository.lifetime_points(db, ctx.family_id, assignment.child_id)
+        )
+        events = ProgressionEvents(
+            level_up=LevelInfo(**level_after) if level_after["level"] > level_before["level"] else None,
+            streak_milestone_reached=milestone,
+            newly_earned_badges=[
+                BadgeInfo(
+                    code=b.code,
+                    title=b.title,
+                    icon=b.icon_emoji,
+                    description=b.description,
+                    earned=True,
+                    earned_at=None,
+                    progress_pct=100,
+                    current=b.threshold,
+                    threshold=b.threshold,
+                )
+                for b in newly
+            ],
+        )
 
         # Ảnh minh chứng đã dùng xong để duyệt -> xóa để tiết kiệm lưu trữ.
         _discard_proof(db, assignment)
 
-        return AssignmentService._to_response(db, assignment)
+        response = AssignmentService._to_response(db, assignment)
+        response.progression_events = events
+        return response
 
     @staticmethod
     def reject(db: Session, ctx: AuthContext, assignment_id: UUID, reason: str | None) -> AssignmentResponse:
