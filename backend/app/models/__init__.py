@@ -14,6 +14,7 @@ from sqlalchemy import (
     String,
     Text,
     UniqueConstraint,
+    event,
     func,
 )
 from sqlalchemy import JSON
@@ -207,7 +208,7 @@ class PointsLedger(Base):
     __table_args__ = (
         CheckConstraint("delta <> 0", name="ck_ledger_delta"),
         CheckConstraint(
-            "kind IN ('task_approved','reward_redeemed','manual_adjust','weekly_bonus')",
+            "kind IN ('task_approved','reward_redeemed','manual_adjust','weekly_bonus','streak_bonus')",
             name="ck_ledger_kind",
         ),
         Index("ix_ledger_child_created", "child_id", "created_at"),
@@ -368,3 +369,79 @@ class GameMove(Base):
     move: Mapped[str] = mapped_column(Text, nullable=False)
     resulting_fen: Mapped[str | None] = mapped_column(Text, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+
+class Badge(Base):
+    """Định nghĩa huy hiệu hệ thống (seed, KHÔNG theo family) — schema §2.1.
+
+    Bảng tra cứu dùng chung mọi gia đình; backend chỉ đọc. `code` là khóa ổn định.
+    """
+
+    __tablename__ = "badges"
+    __table_args__ = (
+        CheckConstraint(
+            "criteria_type IN ('first_task','tasks_approved_total','points_earned_total',"
+            "'streak_days','rewards_redeemed_total','weekly_goal_hits')",
+            name="ck_badge_criteria_type",
+        ),
+        CheckConstraint("threshold > 0", name="ck_badge_threshold"),
+    )
+
+    code: Mapped[str] = mapped_column(Text, primary_key=True)
+    title: Mapped[str] = mapped_column(Text, nullable=False)
+    description: Mapped[str] = mapped_column(Text, nullable=False)
+    icon_emoji: Mapped[str] = mapped_column(Text, nullable=False)
+    criteria_type: Mapped[str] = mapped_column(String(30), nullable=False)
+    threshold: Mapped[int] = mapped_column(Integer, nullable=False)
+    sort_order: Mapped[int] = mapped_column(Integer, nullable=False, default=0, server_default="0")
+    is_active: Mapped[bool] = mapped_column(Boolean, default=True, server_default="true")
+
+
+class ChildBadge(Base):
+    """Huy hiệu con đã đạt — append-only, idempotent (schema §2.2, BR-PG-13)."""
+
+    __tablename__ = "child_badges"
+    __table_args__ = (
+        UniqueConstraint("child_id", "badge_code", name="uq_child_badge"),
+        Index("ix_child_badges_child", "child_id"),
+    )
+
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    family_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("families.id"), nullable=False)
+    child_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
+    badge_code: Mapped[str] = mapped_column(Text, ForeignKey("badges.code"), nullable=False)
+    earned_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+
+class StreakMilestoneAward(Base):
+    """Đánh dấu đã thưởng mốc streak — idempotent trọn đời (schema §2.3, BR-PG-9).
+
+    Chèn award TRƯỚC, thành công mới ghi ledger `streak_bonus` (cùng transaction).
+    """
+
+    __tablename__ = "streak_milestone_awards"
+    __table_args__ = (
+        UniqueConstraint("child_id", "milestone", name="uq_streak_milestone"),
+        CheckConstraint("milestone > 0", name="ck_streak_milestone"),
+    )
+
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    family_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("families.id"), nullable=False)
+    child_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
+    milestone: Mapped[int] = mapped_column(Integer, nullable=False)
+    points_awarded: Mapped[int] = mapped_column(Integer, nullable=False)
+    ledger_id: Mapped[uuid.UUID | None] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("points_ledger.id"), nullable=True
+    )
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+
+@event.listens_for(Badge.__table__, "after_create")
+def _seed_badges(target, connection, **kw):
+    """Seed bộ huy hiệu hệ thống khi bảng `badges` được tạo qua metadata.create_all
+    (test/dev). Production seed qua Alembic migration 0006. Không double-seed vì
+    production dùng alembic, không dùng create_all."""
+    from app.core.progression_rules import BADGE_SEED
+
+    if BADGE_SEED:
+        connection.execute(target.insert(), BADGE_SEED)

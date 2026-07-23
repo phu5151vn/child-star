@@ -1,19 +1,24 @@
 import secrets
 import string
+from datetime import date
 from uuid import UUID
 
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
+from app.core.timeutil import to_vn_date
 from app.models import (
     AuditLog,
+    ChildBadge,
     Family,
     PointsLedger,
     Reward,
     RewardRedemption,
+    StreakMilestoneAward,
     Task,
     TaskAssignment,
     User,
+    WeeklyBonusAward,
 )
 
 
@@ -79,6 +84,89 @@ class PointsRepository:
             )
             is not None
         )
+
+
+class ProgressionRepository:
+    """Truy vấn dẫn xuất cho tiến trình (AD1: derive-first). Luôn scope `family_id`.
+
+    Không lưu counter làm nguồn đúng — mọi metric tính từ dữ liệu gốc.
+    """
+
+    @staticmethod
+    def lifetime_points(db: Session, family_id: UUID, child_id: UUID) -> int:
+        """Tổng sao LŨY KẾ đã kiếm (chỉ delta > 0) — nền của level & badge points (BR-PG-1)."""
+        result = db.scalar(
+            select(func.coalesce(func.sum(PointsLedger.delta), 0)).where(
+                PointsLedger.child_id == child_id,
+                PointsLedger.family_id == family_id,
+                PointsLedger.delta > 0,
+            )
+        )
+        return int(result or 0)
+
+    @staticmethod
+    def count_tasks_approved(db: Session, family_id: UUID, child_id: UUID) -> int:
+        """Số nhiệm vụ được duyệt = số dòng ledger kind='task_approved'."""
+        result = db.scalar(
+            select(func.count(PointsLedger.id)).where(
+                PointsLedger.child_id == child_id,
+                PointsLedger.family_id == family_id,
+                PointsLedger.kind == "task_approved",
+            )
+        )
+        return int(result or 0)
+
+    @staticmethod
+    def active_days(db: Session, family_id: UUID, child_id: UUID) -> set[date]:
+        """Tập NGÀY hoạt động (giờ VN) từ các assignment 'approved' — nền của streak (BR-PG-6)."""
+        rows = db.scalars(
+            select(TaskAssignment.decided_at).where(
+                TaskAssignment.child_id == child_id,
+                TaskAssignment.family_id == family_id,
+                TaskAssignment.status == "approved",
+                TaskAssignment.decided_at.is_not(None),
+            )
+        ).all()
+        return {to_vn_date(dt) for dt in rows if dt is not None}
+
+    @staticmethod
+    def count_rewards_redeemed(db: Session, family_id: UUID, child_id: UUID) -> int:
+        """Số phần thưởng đã đổi thành công (badge rewards_redeemed_total)."""
+        result = db.scalar(
+            select(func.count(RewardRedemption.id)).where(
+                RewardRedemption.child_id == child_id,
+                RewardRedemption.family_id == family_id,
+                RewardRedemption.status == "approved",
+            )
+        )
+        return int(result or 0)
+
+    @staticmethod
+    def count_weekly_hits(db: Session, family_id: UUID, child_id: UUID) -> int:
+        """Số lần đạt mục tiêu tuần (badge weekly_goal_hits)."""
+        result = db.scalar(
+            select(func.count(WeeklyBonusAward.id)).where(
+                WeeklyBonusAward.child_id == child_id,
+                WeeklyBonusAward.family_id == family_id,
+            )
+        )
+        return int(result or 0)
+
+    @staticmethod
+    def earned_badges(db: Session, child_id: UUID) -> dict:
+        """{badge_code: earned_at} các huy hiệu con đã đạt."""
+        rows = db.execute(
+            select(ChildBadge.badge_code, ChildBadge.earned_at).where(ChildBadge.child_id == child_id)
+        ).all()
+        return {code: earned_at for code, earned_at in rows}
+
+    @staticmethod
+    def awarded_milestones(db: Session, child_id: UUID) -> set[int]:
+        """Tập mốc streak đã thưởng cho con (để bỏ qua khi xét lại — dedup tuần tự)."""
+        rows = db.scalars(
+            select(StreakMilestoneAward.milestone).where(StreakMilestoneAward.child_id == child_id)
+        ).all()
+        return {int(m) for m in rows}
 
 
 class AuditRepository:

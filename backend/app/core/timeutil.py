@@ -29,6 +29,16 @@ def week_start_utc(week_start: date | None = None) -> datetime:
     return datetime.combine(ws, time.min, tzinfo=VN_TZ).astimezone(timezone.utc)
 
 
+def to_vn_date(dt: datetime) -> date:
+    """Ngày theo giờ VN của một mốc thời gian. Naive datetime coi như UTC (SQLite).
+
+    Dùng cho ranh giới "ngày hoạt động" của streak (AD7), nhất quán với recurrence.
+    """
+    if dt.tzinfo is None:
+        dt = dt.replace(tzinfo=timezone.utc)
+    return dt.astimezone(VN_TZ).date()
+
+
 def is_completed_current_period(recurrence: str, decided_at: datetime | None) -> bool:
     """Nhiệm vụ đã hoàn thành trong chu kỳ hiện tại (đang bị khóa) hay chưa.
 

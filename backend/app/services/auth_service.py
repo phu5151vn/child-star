@@ -11,6 +11,7 @@ from app.core.integrity import is_unique_violation
 from app.core.security import create_access_token, hash_password, hash_pin, verify_password, verify_pin
 from app.models import Family, ParentPermission, PointsLedger, User
 from app.repositories.base import AuditRepository, PointsRepository, generate_family_code, get_family_by_code
+from app.services.progression_service import ProgressionService
 from app.services.weekly_service import _count_completed_this_week
 from app.schemas import (
     ChildCreate,
@@ -104,9 +105,13 @@ class AuthService:
             raise NotFoundError()
         family = db.get(Family, ctx.family_id)
         balance = None
+        level = None
+        current_streak = None
         if ctx.role == "child" and ctx.child_id:
             # Con nhìn thấy số sao KHẢ DỤNG (đã trừ phần đang chờ duyệt đổi thưởng).
             balance = PointsRepository.get_available_balance(db, ctx.child_id)
+            # Tóm tắt cấp độ + streak cho top-bar (BR-PG-2).
+            level, current_streak = ProgressionService.me_summary(db, ctx.family_id, ctx.child_id)
         return MeResponse(
             id=user.id,
             role=ctx.role,
@@ -116,6 +121,8 @@ class AuthService:
             family_code=family.family_code if family else None,
             child_id=ctx.child_id,
             balance=balance,
+            level=level,
+            current_streak=current_streak,
             is_admin=ctx.is_admin,
             can_manage_members=ctx.can_manage_members,
             can_approve_tasks=ctx.can_approve_tasks,
