@@ -60,9 +60,10 @@ export function TaskCard({ task, onClaim, isChild }: TaskCardProps) {
             </Text>
           )}
           <Space size={[6, 6]} wrap style={{ marginTop: 10 }}>
-            {rec && task.recurrence !== 'once' && (
+            {rec && (
               <Tag color={rec.color} style={{ borderRadius: 999, margin: 0 }}>
-                {rec.emoji} {rec.short}
+                {task.recurrence !== 'once' ? `${rec.emoji} ` : ''}
+                {rec.short}
               </Tag>
             )}
             {isChild ? (
@@ -98,6 +99,11 @@ export function TaskCard({ task, onClaim, isChild }: TaskCardProps) {
               </Tag>
             )}
           </Space>
+          {isChild && status === 'approved' && (task.recurrence === 'daily' || task.recurrence === 'weekly') && (
+            <Text type="secondary" style={{ display: 'block', marginTop: 8 }}>
+              {t(task.recurrence === 'daily' ? 'components:taskCard.doneDaily' : 'components:taskCard.doneWeekly')}
+            </Text>
+          )}
         </div>
       </div>
     </Card>

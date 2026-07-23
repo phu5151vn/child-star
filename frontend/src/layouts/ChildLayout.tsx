@@ -4,6 +4,7 @@ import {
   HomeOutlined,
   LogoutOutlined,
   PlayCircleOutlined,
+  RocketOutlined,
   StarOutlined,
 } from '@ant-design/icons';
 import { Layout, theme, Typography } from 'antd';
@@ -12,6 +13,7 @@ import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { ChildAvatar } from '@/components/CuteBits';
 import { PointsBadge } from '@/components/PointsBadge';
 import { useAuth } from '@/features/auth/AuthContext';
+import { useProgression } from '@/features/progression/queries';
 import { LanguageSwitcher } from '@/i18n/LanguageSwitcher';
 
 const { Header, Content } = Layout;
@@ -23,19 +25,23 @@ export function ChildLayout() {
   const location = useLocation();
   const { me, logout } = useAuth();
   const { t } = useTranslation();
+  const { data: progression } = useProgression(me?.child_id);
 
-  const pathKey = location.pathname.startsWith('/child/tasks')
-    ? 'tasks'
-    : location.pathname.startsWith('/child/rewards')
-      ? 'rewards'
-      : location.pathname.startsWith('/child/games')
-        ? 'games'
-        : location.pathname.startsWith('/child/history')
-          ? 'history'
-          : 'home';
+  const pathKey = location.pathname.startsWith('/child/journey')
+    ? 'journey'
+    : location.pathname.startsWith('/child/tasks')
+      ? 'tasks'
+      : location.pathname.startsWith('/child/rewards')
+        ? 'rewards'
+        : location.pathname.startsWith('/child/games')
+          ? 'games'
+          : location.pathname.startsWith('/child/history')
+            ? 'history'
+            : 'home';
 
   const tabItems = [
     { key: 'home', label: t('childNav.home'), icon: <HomeOutlined />, path: '/child' },
+    { key: 'journey', label: t('childNav.journey'), icon: <RocketOutlined />, path: '/child/journey' },
     { key: 'tasks', label: t('childNav.tasks'), icon: <StarOutlined />, path: '/child/tasks' },
     { key: 'rewards', label: t('childNav.rewards'), icon: <GiftOutlined />, path: '/child/rewards' },
     { key: 'games', label: t('childNav.games'), icon: <PlayCircleOutlined />, path: '/child/games' },
@@ -66,6 +72,42 @@ export function ChildLayout() {
         </SpaceRow>
         <SpaceRow>
           <LanguageSwitcher variant="onDark" />
+          {progression && (
+            <div
+              onClick={() => navigate('/child/journey')}
+              style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer' }}
+            >
+              <span
+                title={progression.level.title}
+                style={{
+                  background: 'rgba(255,255,255,0.22)',
+                  color: '#fff',
+                  borderRadius: 999,
+                  padding: '3px 10px',
+                  fontWeight: 700,
+                  fontSize: 13,
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                {progression.level.icon} {t('childNav.levelChip', { level: progression.level.level })}
+              </span>
+              {progression.streak.current > 0 && (
+                <span
+                  style={{
+                    background: 'rgba(255,255,255,0.22)',
+                    color: '#fff',
+                    borderRadius: 999,
+                    padding: '3px 10px',
+                    fontWeight: 700,
+                    fontSize: 13,
+                    whiteSpace: 'nowrap',
+                  }}
+                >
+                  🔥 {progression.streak.current}
+                </span>
+              )}
+            </div>
+          )}
           <div
             style={{
               background: '#fff',

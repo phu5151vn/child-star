@@ -29,6 +29,8 @@ export default {
       task_approved: 'Hoàn thành nhiệm vụ',
       reward_redeemed: 'Đổi thưởng',
       manual_adjust: 'Điều chỉnh',
+      weekly_bonus: 'Thưởng mục tiêu tuần',
+      streak_bonus: 'Thưởng chuỗi ngày 🔥',
     },
   },
   weeklyProgress: {
@@ -50,6 +52,8 @@ export default {
     viewDetail: 'Xem chi tiết',
     active: 'Đang bật',
     inactive: 'Đã tắt',
+    doneDaily: '🌙 Hôm nay đã xong — mai làm tiếp nhé!',
+    doneWeekly: '📅 Tuần này đã xong — tuần sau làm tiếp nhé!',
   },
   rewardCard: {
     pendingTag: 'Đang chờ duyệt',

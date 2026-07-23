@@ -1,19 +1,23 @@
-import { Button, Card, Space, Steps, Typography, message } from 'antd';
+import { Alert, Button, Card, Empty, Space, Steps, Typography, message } from 'antd';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 import { api, ApiClientError, type Assignment, type LedgerEntry, type Redemption, type Reward, type Task, type WeeklyProgress } from '@/api/client';
 import { PageState } from '@/components/PageState';
+import { BadgeShelf } from '@/components/BadgeShelf';
 import { CustomRequestButton } from '@/components/CustomRequestButton';
+import { LevelRing } from '@/components/LevelRing';
 import { MediaUpload } from '@/components/MediaUpload';
 import { LedgerTimeline } from '@/components/LedgerTimeline';
 import { PointsBadge } from '@/components/PointsBadge';
 import { PointsProgress } from '@/components/PointsProgress';
 import { RewardCard } from '@/components/RewardCard';
+import { StreakFlame } from '@/components/StreakFlame';
 import { TaskCard } from '@/components/TaskCard';
 import { WeeklyProgressCard } from '@/components/WeeklyProgressCard';
 import { useAuth } from '@/features/auth/AuthContext';
+import { useBadges, useProgression } from '@/features/progression/queries';
 
 const { Title, Text } = Typography;
 
@@ -334,6 +338,86 @@ export function ChildHistoryPage() {
       <Title level={3}>{t('child:history.title')}</Title>
       <PageState isLoading={isLoading} isError={isError} isEmpty={!data?.length} onRetry={refetch} emptyDescription={t('child:history.empty')}>
         <LedgerTimeline entries={data ?? []} />
+      </PageState>
+    </>
+  );
+}
+
+/** Chỉ số nhỏ (tổng tích lũy / tiêu được) hiển thị dưới vòng cấp độ. */
+function StatLine({ emoji, label, value }: { emoji: string; label: string; value: number }) {
+  return (
+    <Space direction="vertical" align="center" size={0}>
+      <Text style={{ fontSize: 20, fontWeight: 800, fontFamily: '"Baloo 2", cursive' }}>
+        {emoji} {value}
+      </Text>
+      <Text type="secondary" style={{ fontSize: 12 }}>
+        {label}
+      </Text>
+    </Space>
+  );
+}
+
+export function ChildJourneyPage() {
+  const { t } = useTranslation();
+  const { me } = useAuth();
+  const { data, isLoading, isError, refetch } = useProgression(me?.child_id);
+  const { data: catalog } = useBadges();
+
+  // Sắp xếp: huy hiệu đã đạt trước, chưa đạt sau; trong mỗi nhóm theo sort_order của catalog,
+  // rồi theo tiến độ giảm dần (teaser gần đạt lên trên).
+  const sortedBadges = useMemo(() => {
+    const list = data?.badges ?? [];
+    const order = new Map((catalog ?? []).map((b, i) => [b.code, b.sort_order ?? i]));
+    return [...list].sort((a, b) => {
+      if (a.earned !== b.earned) return a.earned ? -1 : 1;
+      const oa = order.get(a.code) ?? 999;
+      const ob = order.get(b.code) ?? 999;
+      if (oa !== ob) return oa - ob;
+      return b.progress_pct - a.progress_pct;
+    });
+  }, [data?.badges, catalog]);
+
+  const earnedCount = sortedBadges.filter((b) => b.earned).length;
+
+  return (
+    <>
+      <Title level={3}>{t('child:journey.title')}</Title>
+      <PageState isLoading={isLoading} isError={isError} onRetry={refetch}>
+        {data && (
+          <Space direction="vertical" size="large" className="bn-stagger" style={{ width: '100%' }}>
+            <Card className="bn-card-hover" style={{ borderRadius: 24, background: 'linear-gradient(135deg,#efe9ff,#fdeef7)' }}>
+              <LevelRing level={data.level} />
+              <div style={{ display: 'flex', justifyContent: 'center', gap: 28, marginTop: 14, flexWrap: 'wrap' }}>
+                <StatLine emoji="🏅" label={t('child:journey.lifetime')} value={data.lifetime_points} />
+                <StatLine emoji="⭐" label={t('child:journey.balance')} value={data.balance} />
+              </div>
+            </Card>
+
+            <Card className="bn-card-hover" style={{ borderRadius: 24 }}>
+              <StreakFlame streak={data.streak} />
+            </Card>
+
+            <Card
+              className="bn-card-hover"
+              title={t('child:journey.badgesTitle', { earned: earnedCount, total: sortedBadges.length })}
+              style={{ borderRadius: 24 }}
+            >
+              {earnedCount === 0 && (
+                <Alert
+                  type="info"
+                  showIcon
+                  style={{ marginBottom: 14, borderRadius: 16 }}
+                  message={t('child:journey.badgesEmpty')}
+                />
+              )}
+              {sortedBadges.length > 0 ? (
+                <BadgeShelf badges={sortedBadges} />
+              ) : (
+                <Empty description={t('child:journey.badgesNone')} />
+              )}
+            </Card>
+          </Space>
+        )}
       </PageState>
     </>
   );

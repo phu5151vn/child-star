@@ -1,5 +1,5 @@
 import { PlusOutlined } from '@ant-design/icons';
-import { Button, Card, Form, Input, Modal, Segmented, Space, Typography, message } from 'antd';
+import { Button, Card, Form, Input, Modal, Segmented, Skeleton, Space, Tag, Typography, message } from 'antd';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -11,9 +11,34 @@ import { PageState } from '@/components/PageState';
 import { PointsBadge } from '@/components/PointsBadge';
 import { WeeklyProgressCard } from '@/components/WeeklyProgressCard';
 import { useAuth } from '@/features/auth/AuthContext';
+import { useProgression } from '@/features/progression/queries';
 import { GENDER_OPTIONS } from '@/theme/cute';
 
 const { Title } = Typography;
+
+/** Tóm tắt tiến trình 1 con cho màn quản lý (level + streak + số huy hiệu). */
+function ChildProgressionSummary({ childId }: { childId: string }) {
+  const { t } = useTranslation();
+  const { data, isLoading } = useProgression(childId);
+
+  if (isLoading) return <Skeleton.Button active size="small" style={{ width: 220 }} />;
+  if (!data) return null;
+
+  const earned = data.badges.filter((b) => b.earned).length;
+  return (
+    <Space size={[6, 6]} wrap>
+      <Tag color="purple" style={{ borderRadius: 999, margin: 0 }}>
+        {data.level.icon} {t('parent:children.levelChip', { level: data.level.level, title: data.level.title })}
+      </Tag>
+      <Tag color={data.streak.current > 0 ? 'orange' : 'default'} style={{ borderRadius: 999, margin: 0 }}>
+        🔥 {t('parent:children.streakChip', { count: data.streak.current })}
+      </Tag>
+      <Tag color="gold" style={{ borderRadius: 999, margin: 0 }}>
+        🏅 {t('parent:children.badgeChip', { count: earned })}
+      </Tag>
+    </Space>
+  );
+}
 
 function buildProgress(child: Child, goal?: WeeklyGoal): WeeklyProgress | null {
   if (!goal?.is_active || !goal.target_count || !goal.bonus_points) return null;
@@ -104,6 +129,9 @@ export function ParentChildrenPage() {
                     </Button>
                   </Space>
                 </Space>
+                <div style={{ marginTop: 12 }}>
+                  <ChildProgressionSummary childId={child.id} />
+                </div>
                 {wp && (
                   <div style={{ marginTop: 14 }}>
                     <WeeklyProgressCard progress={wp} compact />

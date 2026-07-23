@@ -21,10 +21,12 @@ export default {
   },
   childNav: {
     home: 'Home',
+    journey: 'Journey',
     tasks: 'Tasks',
     rewards: 'Reward store',
     games: 'Play',
     history: 'History',
+    levelChip: 'Lv.{{level}}',
   },
   language: {
     label: 'Language',

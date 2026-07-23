@@ -29,6 +29,8 @@ export default {
       task_approved: 'Task completed',
       reward_redeemed: 'Reward redeemed',
       manual_adjust: 'Adjustment',
+      weekly_bonus: 'Weekly goal bonus',
+      streak_bonus: 'Streak bonus 🔥',
     },
   },
   weeklyProgress: {
@@ -50,6 +52,8 @@ export default {
     viewDetail: 'View details',
     active: 'Active',
     inactive: 'Off',
+    doneDaily: "🌙 Done for today — come back tomorrow!",
+    doneWeekly: '📅 Done this week — come back next week!',
   },
   rewardCard: {
     pendingTag: 'Pending approval',

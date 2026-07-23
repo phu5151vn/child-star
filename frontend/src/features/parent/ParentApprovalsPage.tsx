@@ -3,8 +3,8 @@ import { CheckOutlined, CloseOutlined, StarFilled } from '@ant-design/icons';
 import { Alert, Button, Card, InputNumber, Space, Tag, Typography, message } from 'antd';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
-import { api, ApiClientError, type Assignment, type Redemption } from '@/api/client';
-import { celebratePoints } from '@/components/CelebrationFx';
+import { api, ApiClientError, type ApproveAssignmentResult, type Assignment, type Redemption } from '@/api/client';
+import { celebratePoints, celebrateProgression } from '@/components/CelebrationFx';
 import { ChildAvatar, EmojiIcon } from '@/components/CuteBits';
 import { MediaImage } from '@/components/MediaImage';
 import { PageState } from '@/components/PageState';
@@ -133,12 +133,25 @@ export function ParentApprovalsPage() {
 
   const approveMut = useMutation({
     mutationFn: ({ id, points }: { id: string; points?: number }) =>
-      api.post(`/assignments/${id}/approve`, points != null ? { points } : undefined),
-    onSuccess: (_d, { id, points }) => {
+      api.post<ApproveAssignmentResult>(`/assignments/${id}/approve`, points != null ? { points } : undefined),
+    onSuccess: (res, { id, points }) => {
       const item = data?.find((a) => a.id === id);
       const awarded = points ?? item?.task_points ?? 0;
       message.success(t('parent:approvals.approved', { points: awarded }));
       celebratePoints();
+      // Ăn mừng các thành tựu vừa mở (level-up / mốc streak / huy hiệu) — BR-PG-15.
+      const cel = celebrateProgression(res?.progression_events);
+      if (cel.leveledUp && res?.progression_events?.level_up) {
+        message.success(
+          t('parent:approvals.levelUp', { title: res.progression_events.level_up.title }),
+        );
+      }
+      if (cel.milestone != null) {
+        message.success(t('parent:approvals.streakMilestone', { days: cel.milestone }));
+      }
+      cel.badges.forEach((b) => {
+        message.success(t('parent:approvals.badgeEarned', { title: b.title }));
+      });
       // Xóa ngay khỏi hàng đợi tại cache (badge menu dùng chung key nên tự giảm),
       // không gọi lại API danh sách.
       qc.setQueryData<Assignment[]>(['assignments', 'submitted'], (old) =>
@@ -150,6 +163,7 @@ export function ParentApprovalsPage() {
       void qc.invalidateQueries({ queryKey: ['ledger'] });
       void qc.invalidateQueries({ queryKey: ['weekly-progress'] });
       void qc.invalidateQueries({ queryKey: ['tasks'] });
+      void qc.invalidateQueries({ queryKey: ['progression'] });
     },
     onError: (e: Error) => message.error(e.message),
   });
@@ -232,6 +246,7 @@ export function ParentRedemptionsPage() {
       void qc.invalidateQueries({ queryKey: ['children'] });
       void qc.invalidateQueries({ queryKey: ['ledger'] });
       void qc.invalidateQueries({ queryKey: ['rewards'] });
+      void qc.invalidateQueries({ queryKey: ['progression'] });
     },
     onError: (e: Error) => {
       const msg = e instanceof ApiClientError ? e.message : e.message;

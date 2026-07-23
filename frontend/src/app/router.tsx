@@ -17,6 +17,7 @@ import {
   ChildTaskDetailPage,
   ChildRewardsPage,
   ChildHistoryPage,
+  ChildJourneyPage,
 } from '@/features/child/ChildPages';
 import { GameLobbyPage } from '@/features/game/GameLobbyPage';
 import { OnlineMatchPage } from '@/features/game/OnlineMatchPage';
@@ -56,6 +57,7 @@ export function AppRouter() {
         <Route element={<RoleRoute role="child" />}>
           <Route element={<ChildLayout />}>
             <Route path="/child" element={<ChildHomePage />} />
+            <Route path="/child/journey" element={<ChildJourneyPage />} />
             <Route path="/child/tasks" element={<ChildTasksPage />} />
             <Route path="/child/tasks/:id" element={<ChildTaskDetailPage />} />
             <Route path="/child/rewards" element={<ChildRewardsPage />} />
