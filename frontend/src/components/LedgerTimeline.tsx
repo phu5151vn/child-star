@@ -17,6 +17,8 @@ export function LedgerTimeline({ entries }: LedgerTimelineProps) {
     task_approved: t('components:ledger.kind.task_approved'),
     reward_redeemed: t('components:ledger.kind.reward_redeemed'),
     manual_adjust: t('components:ledger.kind.manual_adjust'),
+    weekly_bonus: t('components:ledger.kind.weekly_bonus'),
+    streak_bonus: t('components:ledger.kind.streak_bonus'),
   };
 
   return (

@@ -111,6 +111,9 @@ export default {
     deltaLabel: 'Points (+/-)',
     reasonLabel: 'Reason',
     ledgerTitle: 'Points ledger',
+    levelChip: 'Lv.{{level}} {{title}}',
+    streakChip: '{{count}} days',
+    badgeChip: '{{count}} badges',
   },
   card: {
     proofLabel: '📷 Proof photo (tap to enlarge)',
@@ -131,6 +134,9 @@ export default {
     proposedPrefix: 'Kid proposed:',
     proposedSubtitle: 'Your kid proposed this task — enter the star reward when approving',
     pointsPrompt: 'Stars to reward for this task',
+    levelUp: '🎉 Leveled up: {{title}}!',
+    streakMilestone: '🔥 Hit a {{days}}-day streak milestone — bonus stars!',
+    badgeEarned: '🏅 New badge unlocked: {{title}}!',
   },
   redemptions: {
     title: '🎁 Approve redemptions',

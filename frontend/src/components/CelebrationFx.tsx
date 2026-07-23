@@ -1,4 +1,5 @@
 import confetti from 'canvas-confetti';
+import type { ProgressionEvents } from '@/api/client';
 
 const CELEBRATION_KEY = 'benngoan_celebration';
 
@@ -28,4 +29,31 @@ export function celebrateUnlock() {
     origin: { y: 0.5 },
     colors: ['#FFC531', '#7C5CFC', '#FF5C5C'],
   });
+}
+
+export interface ProgressionCelebration {
+  leveledUp: boolean;
+  milestone: number | null;
+  badges: NonNullable<ProgressionEvents['newly_earned_badges']>;
+  has: boolean;
+}
+
+/**
+ * Ăn mừng theo progression_events trả về từ approve (level-up / mốc streak / huy hiệu mới).
+ * Tôn trọng cấu hình tắt hiệu ứng; trả về tóm tắt để hiển thị thông báo.
+ */
+export function celebrateProgression(events?: ProgressionEvents | null): ProgressionCelebration {
+  const leveledUp = !!events?.level_up;
+  const milestone = events?.streak_milestone_reached ?? null;
+  const badges = events?.newly_earned_badges ?? [];
+  const has = leveledUp || milestone != null || badges.length > 0;
+
+  if (has && isCelebrationEnabled()) {
+    celebrateUnlock();
+    if (leveledUp) {
+      // Lên cấp: bắn thêm một lượt cho tưng bừng.
+      setTimeout(() => celebrateUnlock(), 260);
+    }
+  }
+  return { leveledUp, milestone, badges, has };
 }

@@ -189,6 +189,83 @@ export interface ChildProfile {
   gender?: 'male' | 'female' | null;
 }
 
+// ===== Tiến trình (Streak · Huy hiệu · Cấp độ) — khớp architecture §3.1 =====
+
+export type BadgeCriteriaType =
+  | 'first_task'
+  | 'tasks_approved_total'
+  | 'points_earned_total'
+  | 'streak_days'
+  | 'rewards_redeemed_total'
+  | 'weekly_goal_hits';
+
+export interface LevelInfo {
+  level: number;
+  title: string;
+  icon: string;
+  min_points: number;
+  /** null khi đã ở cấp cao nhất. */
+  next_min: number | null;
+  points_to_next: number;
+  progress_pct: number;
+}
+
+export interface StreakInfo {
+  current: number;
+  longest: number;
+  active_today: boolean;
+  /** null khi đã đạt hết các mốc. */
+  next_milestone: number | null;
+  days_to_next: number | null;
+}
+
+export interface BadgeInfo {
+  code: string;
+  title: string;
+  icon: string;
+  description: string;
+  earned: boolean;
+  earned_at: string | null;
+  progress_pct: number;
+  /** Với huy hiệu chưa đạt: tiến độ hiện tại / ngưỡng. */
+  current?: number | null;
+  threshold?: number | null;
+}
+
+export interface Progression {
+  child_id: string;
+  lifetime_points: number;
+  balance: number;
+  level: LevelInfo;
+  streak: StreakInfo;
+  badges: BadgeInfo[];
+}
+
+/** Định nghĩa huy hiệu hệ thống (GET /badges). */
+export interface BadgeCatalogItem {
+  code: string;
+  title: string;
+  icon: string;
+  description: string;
+  criteria_type: BadgeCriteriaType;
+  threshold: number;
+  sort_order?: number;
+}
+
+/** Sự kiện tiến trình phát sinh sau khi duyệt nhiệm vụ (BR-PG-15). */
+export interface ProgressionEvents {
+  level_up?: LevelInfo | null;
+  streak_milestone_reached?: number | null;
+  newly_earned_badges: BadgeInfo[];
+}
+
+/** Payload trả về của POST /assignments/{id}/approve (kèm progression_events). */
+export interface ApproveAssignmentResult {
+  id?: string;
+  status?: string;
+  progression_events?: ProgressionEvents | null;
+}
+
 export interface Child {
   id: string;
   display_name: string;

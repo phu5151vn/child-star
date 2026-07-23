@@ -21,10 +21,12 @@ export default {
   },
   childNav: {
     home: 'Trang chính',
+    journey: 'Hành trình',
     tasks: 'Nhiệm vụ',
     rewards: 'Kho thưởng',
     games: 'Chơi game',
     history: 'Lịch sử',
+    levelChip: 'Lv.{{level}}',
   },
   language: {
     label: 'Ngôn ngữ',

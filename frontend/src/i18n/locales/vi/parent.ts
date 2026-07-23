@@ -111,6 +111,9 @@ export default {
     deltaLabel: 'Số điểm (+/-)',
     reasonLabel: 'Lý do',
     ledgerTitle: 'Sổ điểm',
+    levelChip: 'Lv.{{level}} {{title}}',
+    streakChip: '{{count}} ngày',
+    badgeChip: '{{count}} huy hiệu',
   },
   card: {
     proofLabel: '📷 Ảnh minh chứng (bấm để xem lớn)',
@@ -131,6 +134,9 @@ export default {
     proposedPrefix: 'Con đề xuất:',
     proposedSubtitle: 'Con tự đề xuất việc này — nhập số sao thưởng khi duyệt',
     pointsPrompt: 'Số sao thưởng cho việc này',
+    levelUp: '🎉 Con vừa lên cấp: {{title}}!',
+    streakMilestone: '🔥 Con đạt mốc chuỗi {{days}} ngày — nhận sao thưởng!',
+    badgeEarned: '🏅 Mở huy hiệu mới: {{title}}!',
   },
   redemptions: {
     title: '🎁 Duyệt đổi thưởng',
